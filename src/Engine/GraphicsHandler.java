@@ -103,4 +103,14 @@ public class GraphicsHandler {
         g.setStroke(originalStroke);
         g.setRenderingHints(originalHints);
     }
+
+    public int getHeight() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getHeight'");
+    }
+
+    public Object getFontMetrics() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getFontMetrics'");
+    }
 }
