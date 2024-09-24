@@ -34,12 +34,6 @@ public class WalrusScript extends Script {
             }});
         }});
 
-        scriptActions.add(new ChoiceScriptAction() {{
-            addScriptAction(new ChoiceScriptAction() {{
-                addChoice("Where is Dino?", new TextboxScriptAction("not sure"));
-            }});
-        }});
-
         scriptActions.add(new UnlockPlayerScriptAction());
 
         return scriptActions;
