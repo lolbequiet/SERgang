@@ -195,6 +195,23 @@ public class Rectangle implements IntersectableRectangle {
 				Math.round(intersectRectangle.getY1()) <= Math.round(otherIntersectRectangle.getY2() + 1) && Math.round(intersectRectangle.getY2() + 1) >= Math.round(otherIntersectRectangle.getY1());
 	}
 
+	public boolean isCloseTo(IntersectableRectangle other, double proximityRange) {
+		Rectangle intersectRectangle = getIntersectRectangle();
+		Rectangle otherIntersectRectangle = other.getIntersectRectangle();
+	
+		// Check horizontal proximity
+		boolean horizontalProximity = Math.abs(intersectRectangle.getX1() - otherIntersectRectangle.getX2()) <= proximityRange ||
+									  Math.abs(intersectRectangle.getX2() - otherIntersectRectangle.getX1()) <= proximityRange;
+	
+		// Check vertical proximity
+		boolean verticalProximity = Math.abs(intersectRectangle.getY1() - otherIntersectRectangle.getY2()) <= proximityRange ||
+									Math.abs(intersectRectangle.getY2() - otherIntersectRectangle.getY1()) <= proximityRange;
+	
+		// They are close if the proximity is within the range horizontally or vertically
+		return horizontalProximity && verticalProximity;
+	}
+	
+
 	// calculates the area that a rectangle is overlapping another rectangle by
 	// and returns the total number of pixels
 	public float getAreaOverlapped(IntersectableRectangle other) {

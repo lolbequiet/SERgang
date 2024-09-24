@@ -1,13 +1,16 @@
 package Maps;
 
 import EnhancedMapTiles.PushableRock;
+import EnhancedMapTiles.RemovableRock;
 import Level.*;
 import NPCs.Bug;
 import NPCs.Dinosaur;
+import NPCs.Seb;
 import NPCs.Walrus;
 import Scripts.SimpleTextScript;
 import Scripts.TestMap.*;
 import Tilesets.CommonTileset;
+import Utils.Point;
 
 import java.util.ArrayList;
 
@@ -23,11 +26,22 @@ public class TestMap extends Map {
     public ArrayList<EnhancedMapTile> loadEnhancedMapTiles() {
         ArrayList<EnhancedMapTile> enhancedMapTiles = new ArrayList<>();
 
-        PushableRock pushableRock = new PushableRock(getMapTile(2, 7).getLocation());
-        enhancedMapTiles.add(pushableRock);
+        for(MapTile tile : mapTiles) {  // Checks the map for normal rocks 
+            if (tile.getTileIndex() == 3) { // if it is a normal rock
+                PushableRock pushableRock = new PushableRock(tile.getLocation());
+                enhancedMapTiles.add(pushableRock);
+
+                Point location = tile.getLocation();
+                setMapTile(Math.round(location.x / tileset.getScaledSpriteWidth()), Math.round(location.y / tileset.getScaledSpriteHeight()),tileset.getTile(0).build(location.x, location.y));
+            }
+        }
 
         return enhancedMapTiles;
     }
+
+  
+
+    
 
     @Override
     public ArrayList<NPC> loadNPCs() {
@@ -41,6 +55,12 @@ public class TestMap extends Map {
         dinosaur.setExistenceFlag("hasTalkedToDinosaur");
         dinosaur.setInteractScript(new DinoScript());
         npcs.add(dinosaur);
+
+        //Seb NPC
+        Seb Seb = new Seb(1, getMapTile(5, 15).getLocation().subtractY(40));
+        Seb.setInteractScript(new WalrusScript());
+        npcs.add(Seb);
+
         
         Bug bug = new Bug(3, getMapTile(7, 12).getLocation().subtractX(20));
         bug.setInteractScript(new BugScript());

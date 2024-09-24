@@ -6,6 +6,7 @@ import GameObject.Frame;
 import GameObject.GameObject;
 import GameObject.SpriteSheet;
 import Level.EnhancedMapTile;
+import Level.MapEntityStatus;
 import Level.Player;
 import Level.PlayerState;
 import Level.TileType;
@@ -22,6 +23,12 @@ public class PushableRock extends EnhancedMapTile {
     @Override
     public void update(Player player) {
         super.update(player);
+
+        // Checks if the players is next to the object to be removed 
+        if (player.isCloseTo(this.getIntersectRectangle(), getWidth() * 1.5) && player.isInteracting()){
+            this.setMapEntityStatus(MapEntityStatus.REMOVED);
+        }
+
         if (player.touching(this) && player.getPlayerState() == PlayerState.WALKING) {
             if (player.getCurrentWalkingXDirection() == Direction.LEFT) {
                 if (canMoveLeft(player)) {
@@ -44,6 +51,8 @@ public class PushableRock extends EnhancedMapTile {
                 }
             }
         }
+
+        
     }
 
     private boolean canMoveLeft(Player player) {
