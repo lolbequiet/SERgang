@@ -27,9 +27,16 @@ public class WalrusScript extends Script {
                 addScriptAction(new ChangeFlagScriptAction("hasTalkedToWalrus", true));
             }});
 
+
             addConditionalScriptActionGroup(new ConditionalScriptActionGroup() {{
                 addRequirement(new FlagRequirement("hasTalkedToWalrus", true));
                 addScriptAction(new TextboxScriptAction("I sure love doing walrus things!"));
+            }});
+        }});
+
+        scriptActions.add(new ChoiceScriptAction() {{
+            addScriptAction(new ChoiceScriptAction() {{
+                addChoice("Where is Dino?", new TextboxScriptAction("not sure"));
             }});
         }});
 
