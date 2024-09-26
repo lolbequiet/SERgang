@@ -109,7 +109,7 @@ public class PlayLevelScreen extends Screen {
         int buttonHeight = 30;
     // checks if quest is false when true will evaporate
         if (!flagManager.isFlagSet("hasTalkedToWalrus")) {
-            graphicsHandler.drawString("Talk To Walrus", screenWidth - 170, 60, new Font("Arial", Font.BOLD, 18), Color.WHITE);
+            graphicsHandler.drawString("Talk To Seb", screenWidth - 170, 60, new Font("Arial", Font.BOLD, 18), Color.WHITE);
     }
     
         // Draw a single Inventory button on the left side of the screen
