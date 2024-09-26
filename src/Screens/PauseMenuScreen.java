@@ -23,13 +23,13 @@ public class PauseMenuScreen extends Screen {
     public void update() {
         // Handle inputs for resuming the game or navigating the pause menu options
         // Assuming you will replace this with actual key detection logic or button press
-        if (/* condition to resume */) {
-            screenCoordinator.setGameState(GameState.PLAYING); // Switch back to the game
-        }
+        // if (/* condition to resume */) {
+        //     screenCoordinator.setGameState(GameState.PLAYING); // Switch back to the game
+        // }
 
-        if (/* condition to quit or go back to the menu */) {
-            screenCoordinator.setGameState(GameState.MENU);
-        }
+        // if (/* condition to quit or go back to the menu */) {
+        //     screenCoordinator.setGameState(GameState.MENU);
+        // }
     }
 
     @Override

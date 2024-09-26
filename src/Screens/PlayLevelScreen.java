@@ -69,7 +69,7 @@ public class PlayLevelScreen extends Screen {
         //
     
 
-        if (map.getFlagManager().isFlagSet("hasFoundBall",true)) {
+        if (map.getFlagManager().isFlagSet("hasFoundBall")) {
             playLevelScreenState = PlayLevelScreenState.LEVEL_COMPLETED;
         }
     }
@@ -108,7 +108,7 @@ public class PlayLevelScreen extends Screen {
         int buttonWidth = 60;
         int buttonHeight = 30;
     // checks if quest is false when true will evaporate
-        if (!flagManager.isFlagSet("hasTalkedToWalrus", false)) {
+        if (!flagManager.isFlagSet("hasTalkedToWalrus")) {
             graphicsHandler.drawString("Talk To Walrus", screenWidth - 170, 60, new Font("Arial", Font.BOLD, 18), Color.WHITE);
     }
     
