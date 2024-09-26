@@ -7,7 +7,7 @@ import ScriptActions.*;
 
 // script for talking to walrus npc
 // checkout the documentation website for a detailed guide on how this script works
-public class WalrusScript extends Script {
+public class SebScript extends Script {
 
     @Override
     public ArrayList<ScriptAction> loadScriptActions() {
@@ -36,8 +36,6 @@ public class WalrusScript extends Script {
                 addScriptAction(new TextboxScriptAction() {{
                     addText("You are a quick learner!");
                     addText("Have fun playing the game!");
-
-                    addScriptAction(new ChangeFlagScriptAction("hasTalkedToWalrus", true));
                 }});
             }});
             
@@ -57,7 +55,6 @@ public class WalrusScript extends Script {
                 addScriptAction(new TextboxScriptAction("Those are pretty much the basics, if you need a\nreminder, im always here!"));
                 addScriptAction(new TextboxScriptAction("Have fun!"));
 
-                addScriptAction(new ChangeFlagScriptAction("hasTalkedToWalrus", true));
 
             }});
 
@@ -71,8 +68,6 @@ public class WalrusScript extends Script {
                 });
 
                 scriptActions.add(new UnlockPlayerScriptAction());
-
-                
 
             }});
 

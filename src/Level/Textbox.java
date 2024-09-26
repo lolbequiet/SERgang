@@ -120,7 +120,7 @@ public class Textbox {
                 options = new ArrayList<>();
                 // for each option, crate option text spritefont that will be drawn in options textbox
                 for (int i = 0; i < currentTextItem.getOptions().size(); i++) {
-                    options.add(new SpriteFont(currentTextItem.options.get(i), fontOptionX, fontOptionY + (i *  fontOptionSpacing), "Arial", 30, Color.black));
+                    options.add(new SpriteFont(currentTextItem.options.get(i), fontOptionX, fontOptionY + (i *  fontOptionSpacing), "Arial", 14, Color.black));
                 }
                 selectedOptionIndex = 0;
             }
@@ -181,7 +181,7 @@ public class Textbox {
                 // the start y location of the option pointer depends on whether the options textbox is on top or bottom of screen
                 int optionPointerYStart = !map.getCamera().isAtBottomOfMap() ? optionPointerYBottomStart : optionPointerYTopStart;
                 // draw option selection indicator (small black rectangle)
-                graphicsHandler.drawFilledRectangle(optionPointerX, optionPointerYStart + (selectedOptionIndex * fontOptionSpacing), 10, 10, Color.black);
+                graphicsHandler.drawFilledRectangle(optionPointerX, optionPointerYStart + (selectedOptionIndex * fontOptionSpacing), 10, 8, Color.black);
             }
         }
     }
