@@ -28,10 +28,17 @@ public class PlayLevelScreen extends Screen {
 
     public void initialize() {
         flagManager = new FlagManager();
+        // ----
         flagManager.addFlag("hasLostBall", false);
+        //flag for talked to walrus
         flagManager.addFlag("hasTalkedToWalrus", false);
+
+        
+
+        // ----
         flagManager.addFlag("hasTalkedToDinosaur", false);
         flagManager.addFlag("hasFoundBall", false);
+       
 
         map = new TestMap();
         map.setFlagManager(flagManager);
@@ -58,6 +65,9 @@ public class PlayLevelScreen extends Screen {
                 winScreen.update();
                 break;
         }
+
+        //
+    
 
         if (map.getFlagManager().isFlagSet("hasFoundBall")) {
             playLevelScreenState = PlayLevelScreenState.LEVEL_COMPLETED;
@@ -92,11 +102,16 @@ public class PlayLevelScreen extends Screen {
         graphicsHandler.drawFilledRectangle(20, 50, barWidth, staminaBarHeight, Color.ORANGE);
         graphicsHandler.drawRectangle(20, 50, barWidth, staminaBarHeight, Color.BLACK);
 
+        // Text holder for Quests that are Active (shown below it)
         graphicsHandler.drawString("ACTIVE QUEST:", screenWidth - 180, 30, new Font("Arial", Font.BOLD, 18), Color.WHITE);
 
         int buttonWidth = 60;
         int buttonHeight = 30;
-
+    // checks if quest is false when true will evaporate
+        if (!flagManager.isFlagSet("hasTalkedToWalrus")) {
+            graphicsHandler.drawString("Talk To Walrus", screenWidth - 170, 60, new Font("Arial", Font.BOLD, 18), Color.WHITE);
+    }
+    
         // Draw a single Inventory button on the left side of the screen
         graphicsHandler.drawFilledRectangle(10, screenHeight / 2 - buttonHeight / 2, buttonWidth, buttonHeight, Color.GRAY);
         graphicsHandler.drawRectangle(10, screenHeight / 2 - buttonHeight / 2, buttonWidth, buttonHeight, Color.BLACK);
