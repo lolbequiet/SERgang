@@ -7,6 +7,7 @@ import Engine.Key;
 import Engine.KeyLocker;
 import Engine.Keyboard;
 import GameObject.GameObject;
+import GameObject.IntersectableRectangle;
 import GameObject.Rectangle;
 import GameObject.SpriteSheet;
 import Utils.Direction;
@@ -38,6 +39,7 @@ public abstract class Player extends GameObject {
     protected Key MOVE_UP_KEY = Key.UP;
     protected Key MOVE_DOWN_KEY = Key.DOWN;
     protected Key INTERACT_KEY = Key.SPACE;
+    protected Key REMOVE_KEY = Key.E;
 
     protected boolean isLocked = false;
 
@@ -82,6 +84,9 @@ public abstract class Player extends GameObject {
                 break;
             case WALKING:
                 playerWalking();
+                break;
+            case INTERACT:
+                isInteracting();
                 break;
         }
     }
@@ -254,6 +259,24 @@ public abstract class Player extends GameObject {
             moveX(speed);
         }
     }
+
+    public abstract boolean isInteracting();
+
+    public boolean isCloseTo(IntersectableRectangle other, double proximityRange) {
+		Rectangle intersectRectangle = getIntersectRectangle();
+		Rectangle otherIntersectRectangle = other.getIntersectRectangle();
+	
+		// Check horizontal proximity
+		boolean horizontalProximity = Math.abs(intersectRectangle.getX1() - otherIntersectRectangle.getX2()) <= proximityRange ||
+									  Math.abs(intersectRectangle.getX2() - otherIntersectRectangle.getX1()) <= proximityRange;
+	
+		// Check vertical proximity
+		boolean verticalProximity = Math.abs(intersectRectangle.getY1() - otherIntersectRectangle.getY2()) <= proximityRange ||
+									Math.abs(intersectRectangle.getY2() - otherIntersectRectangle.getY1()) <= proximityRange;
+	
+		// They are close if the proximity is within the range horizontally or vertically
+		return horizontalProximity && verticalProximity;
+	}
 
     // Uncomment this to have game draw player's bounds to make it easier to visualize
     /*

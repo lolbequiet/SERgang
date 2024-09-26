@@ -8,9 +8,9 @@ import Level.*;
 import Maps.TestMap;
 import Players.Cat;
 import Utils.Direction;
-import Utils.Point;
+import java.awt.Color;
+import java.awt.Font;
 
-// This class is for when the RPG game is actually being played
 public class PlayLevelScreen extends Screen {
     protected ScreenCoordinator screenCoordinator;
     protected Map map;
@@ -19,76 +19,93 @@ public class PlayLevelScreen extends Screen {
     protected WinScreen winScreen;
     protected FlagManager flagManager;
 
+    private final int screenWidth = 800;  // Hardcoded screen width
+    private final int screenHeight = 600; // Hardcoded screen height
+
     public PlayLevelScreen(ScreenCoordinator screenCoordinator) {
         this.screenCoordinator = screenCoordinator;
     }
 
     public void initialize() {
-        // setup state
         flagManager = new FlagManager();
         flagManager.addFlag("hasLostBall", false);
         flagManager.addFlag("hasTalkedToWalrus", false);
         flagManager.addFlag("hasTalkedToDinosaur", false);
         flagManager.addFlag("hasFoundBall", false);
 
-        // define/setup map
         map = new TestMap();
         map.setFlagManager(flagManager);
 
-        // setup player
         player = new Cat(map.getPlayerStartPosition().x, map.getPlayerStartPosition().y);
         player.setMap(map);
         playLevelScreenState = PlayLevelScreenState.RUNNING;
         player.setFacingDirection(Direction.LEFT);
 
         map.setPlayer(player);
-
-        // let pieces of map know which button to listen for as the "interact" button
         map.getTextbox().setInteractKey(player.getInteractKey());
-
-        // preloads all scripts ahead of time rather than loading them dynamically
-        // both are supported, however preloading is recommended
         map.preloadScripts();
-
         winScreen = new WinScreen(this);
     }
 
     public void update() {
-        // based on screen state, perform specific actions
         switch (playLevelScreenState) {
-            // if level is "running" update player and map to keep game logic for the platformer level going
             case RUNNING:
                 player.update();
                 map.update(player);
                 break;
-            // if level has been completed, bring up level cleared screen
+
             case LEVEL_COMPLETED:
                 winScreen.update();
                 break;
         }
 
-        // if flag is set at any point during gameplay, game is "won"
         if (map.getFlagManager().isFlagSet("hasFoundBall")) {
             playLevelScreenState = PlayLevelScreenState.LEVEL_COMPLETED;
         }
     }
 
     public void draw(GraphicsHandler graphicsHandler) {
-        // based on screen state, draw appropriate graphics
         switch (playLevelScreenState) {
             case RUNNING:
                 map.draw(player, graphicsHandler);
+                drawHUD(graphicsHandler);
                 break;
+
             case LEVEL_COMPLETED:
                 winScreen.draw(graphicsHandler);
                 break;
         }
     }
 
+    private void drawHUD(GraphicsHandler graphicsHandler) {
+        int barWidth = 200;
+        int barHeight = 20;
+        int staminaBarHeight = 14;
+
+        // Draw "HEALTH" label above the health bar
+        graphicsHandler.drawString("HEALTH", 20, 15, new Font("Arial", Font.BOLD, 14), Color.WHITE);
+        graphicsHandler.drawFilledRectangle(20, 20, barWidth, barHeight, Color.RED);
+        graphicsHandler.drawRectangle(20, 20, barWidth, barHeight, Color.BLACK);
+
+        // Draw "STAMINA" label above the stamina bar
+        graphicsHandler.drawString("STAMINA", 20, 45, new Font("Arial", Font.BOLD, 14), Color.WHITE);
+        graphicsHandler.drawFilledRectangle(20, 50, barWidth, staminaBarHeight, Color.ORANGE);
+        graphicsHandler.drawRectangle(20, 50, barWidth, staminaBarHeight, Color.BLACK);
+
+        graphicsHandler.drawString("ACTIVE QUEST:", screenWidth - 180, 30, new Font("Arial", Font.BOLD, 18), Color.WHITE);
+
+        int buttonWidth = 60;
+        int buttonHeight = 30;
+
+        // Draw a single Inventory button on the left side of the screen
+        graphicsHandler.drawFilledRectangle(10, screenHeight / 2 - buttonHeight / 2, buttonWidth, buttonHeight, Color.GRAY);
+        graphicsHandler.drawRectangle(10, screenHeight / 2 - buttonHeight / 2, buttonWidth, buttonHeight, Color.BLACK);
+        graphicsHandler.drawString("Inventory", 12, screenHeight / 2, new Font("Arial", Font.PLAIN, 12), Color.WHITE);
+    }
+
     public PlayLevelScreenState getPlayLevelScreenState() {
         return playLevelScreenState;
     }
-
 
     public void resetLevel() {
         initialize();
@@ -98,7 +115,6 @@ public class PlayLevelScreen extends Screen {
         screenCoordinator.setGameState(GameState.MENU);
     }
 
-    // This enum represents the different states this screen can be in
     private enum PlayLevelScreenState {
         RUNNING, LEVEL_COMPLETED
     }

@@ -240,9 +240,12 @@ public abstract class Map {
             MapTile oldMapTile = getMapTile(x, y);
             animatedMapTiles.remove(oldMapTile);
             mapTiles[getConvertedIndex(x, y)] = tile;
-            tile.setMap(this);
-            if (tile.isAnimated()) {
-                animatedMapTiles.add(tile);
+
+            if (tile != null) {
+                tile.setMap(this);
+                if (tile.isAnimated()) {
+                    animatedMapTiles.add(tile);
+                }
             }
         }
     }

@@ -3,10 +3,13 @@ package Players;
 import Builders.FrameBuilder;
 import Engine.GraphicsHandler;
 import Engine.ImageLoader;
+import Engine.Key;
+import Engine.Keyboard;
 import GameObject.Frame;
 import GameObject.ImageEffect;
 import GameObject.SpriteSheet;
 import Level.Player;
+import Level.PlayerState;
 
 import java.util.HashMap;
 
@@ -88,4 +91,9 @@ public class Cat extends Player {
             });
         }};
     }
+
+        @Override
+        public boolean isInteracting() {
+                return Keyboard.isKeyDown(Key.E);
+        }
 }
