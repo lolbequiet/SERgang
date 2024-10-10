@@ -1,7 +1,6 @@
 package Maps;
 
 import EnhancedMapTiles.PushableRock;
-import EnhancedMapTiles.RemovableRock;
 import Level.*;
 import NPCs.Bug;
 import NPCs.Dinosaur;
@@ -57,7 +56,7 @@ public class TestMap extends Map {
         npcs.add(dinosaur);
 
         //Seb NPC
-        Seb Seb = new Seb(1, getMapTile(5, 15).getLocation().subtractY(40));
+        Seb Seb = new Seb(1, getMapTile(3, 15).getLocation().subtractY(40));
         Seb.setInteractScript(new WalrusScript());
         npcs.add(Seb);
 

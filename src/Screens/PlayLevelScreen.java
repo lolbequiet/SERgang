@@ -1,6 +1,9 @@
 package Screens;
 
 import Engine.GraphicsHandler;
+import Engine.Key;
+import Engine.KeyLocker;
+import Engine.Keyboard;
 import Engine.Screen;
 import Game.GameState;
 import Game.ScreenCoordinator;
@@ -13,6 +16,7 @@ import java.awt.Font;
 
 public class PlayLevelScreen extends Screen {
     protected ScreenCoordinator screenCoordinator;
+    protected KeyLocker keyLocker = new KeyLocker();
     protected Map map;
     protected Player player;
     protected PlayLevelScreenState playLevelScreenState;
@@ -52,7 +56,11 @@ public class PlayLevelScreen extends Screen {
         map.getTextbox().setInteractKey(player.getInteractKey());
         map.preloadScripts();
         winScreen = new WinScreen(this);
+
+        keyLocker.lockKey(Key.M);
     }
+
+    private boolean isInLevelSelect = false;
 
     public void update() {
         switch (playLevelScreenState) {
@@ -67,8 +75,16 @@ public class PlayLevelScreen extends Screen {
         }
 
         //
-    
 
+        if (Keyboard.isKeyDown(Key.M) && !keyLocker.isKeyLocked(Key.M)) {
+            screenCoordinator.setGameStatePersist(GameState.LEVEL_SELECT);
+			keyLocker.lockKey(Key.M);
+		}
+
+		if (Keyboard.isKeyUp(Key.M)) {
+			keyLocker.unlockKey(Key.M);
+		}
+    
         if (map.getFlagManager().isFlagSet("hasFoundBall")) {
             playLevelScreenState = PlayLevelScreenState.LEVEL_COMPLETED;
         }

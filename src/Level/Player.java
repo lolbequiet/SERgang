@@ -6,10 +6,12 @@ import Engine.GraphicsHandler;
 import Engine.Key;
 import Engine.KeyLocker;
 import Engine.Keyboard;
+import Game.GameState;
 import GameObject.GameObject;
 import GameObject.IntersectableRectangle;
 import GameObject.Rectangle;
 import GameObject.SpriteSheet;
+import Screens.LevelScreen;
 import Utils.Direction;
 
 public abstract class Player extends GameObject {
@@ -40,6 +42,7 @@ public abstract class Player extends GameObject {
     protected Key MOVE_DOWN_KEY = Key.DOWN;
     protected Key INTERACT_KEY = Key.SPACE;
     protected Key REMOVE_KEY = Key.E;
+    protected Key MAP_KEY = Key.M;
 
     protected boolean isLocked = false;
 
@@ -52,6 +55,7 @@ public abstract class Player extends GameObject {
     }
 
     public void update() {
+
         if (!isLocked) {
             moveAmountX = 0;
             moveAmountY = 0;
