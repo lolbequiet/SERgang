@@ -4,6 +4,7 @@ import Engine.DefaultScreen;
 import Engine.GraphicsHandler;
 import Engine.Screen;
 import Screens.CreditsScreen;
+import Screens.LevelScreen;
 import Screens.MenuScreen;
 import Screens.PlayLevelScreen;
 
@@ -17,6 +18,8 @@ public class ScreenCoordinator extends Screen {
 
 	// keep track of gameState so ScreenCoordinator knows which Screen to show
 	protected GameState gameState;
+	protected Screen previousScreen = null;
+	protected GameState persistedGameState;
 	protected GameState previousGameState;
 
 	public GameState getGameState() {
@@ -25,6 +28,12 @@ public class ScreenCoordinator extends Screen {
 
 	// Other Screens can set the gameState of this class to force it to change the currentScreen
 	public void setGameState(GameState gameState) {
+		this.gameState = gameState;
+	}
+
+	public void setGameStatePersist(GameState gameState) {
+		previousScreen = currentScreen;
+		persistedGameState = this.gameState;
 		this.gameState = gameState;
 	}
 
@@ -47,17 +56,32 @@ public class ScreenCoordinator extends Screen {
 					case LEVEL:
 						currentScreen = new PlayLevelScreen(this);
 						break;
+					case LEVEL_SELECT:
+						currentScreen = new LevelScreen(this);
+						break;
 					case CREDITS:
 						currentScreen = new CreditsScreen(this);
 						break;
 				}
-				currentScreen.initialize();
+
+				if (previousScreen != null && persistedGameState == gameState) {
+					currentScreen = previousScreen;
+
+					previousScreen = null;
+				} else {
+					currentScreen.initialize();
+				}
+
 			}
 			previousGameState = gameState;
 
 			// call the update method for the currentScreen
 			currentScreen.update();
 		} while (previousGameState != gameState);
+	}
+
+	public void SwapScreen(Screen screenToSwap) {
+		previousScreen = screenToSwap;
 	}
 
 	@Override

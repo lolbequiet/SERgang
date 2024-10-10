@@ -8,6 +8,7 @@ public enum GameState {
     PLAYING,
     PAUSED,
     LEVEL, 
+    LEVEL_SELECT,
     GAME_OVER,
     CREDITS,
     INVENTORY
