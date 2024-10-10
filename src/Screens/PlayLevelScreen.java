@@ -10,6 +10,7 @@ import Players.Cat;
 import Utils.Direction;
 import java.awt.Color;
 import java.awt.Font;
+import Engine.*;
 
 public class PlayLevelScreen extends Screen {
     protected ScreenCoordinator screenCoordinator;
@@ -18,13 +19,18 @@ public class PlayLevelScreen extends Screen {
     protected PlayLevelScreenState playLevelScreenState;
     protected WinScreen winScreen;
     protected FlagManager flagManager;
+    protected boolean isInventoryShowing;
+    protected InventoryScreen inventoryScreen;
 
     private final int screenWidth = 800;  // Hardcoded screen width
     private final int screenHeight = 600; // Hardcoded screen height
 
     public PlayLevelScreen(ScreenCoordinator screenCoordinator) {
         this.screenCoordinator = screenCoordinator;
-    }
+        this.inventoryScreen = new InventoryScreen(screenCoordinator);
+        this.isInventoryShowing = false;
+        this.inventoryScreen.initialize();
+    }   
 
     public void initialize() {
         flagManager = new FlagManager();
@@ -59,6 +65,16 @@ public class PlayLevelScreen extends Screen {
             case RUNNING:
                 player.update();
                 map.update(player);
+
+                if (Keyboard.isKeyDown(Key.I) && !isInventoryShowing) {
+                    isInventoryShowing = true;
+                    inventoryScreen.initialize();
+                    screenCoordinator.setGameState(GameState.INVENTORY);
+                } else if (Keyboard.isKeyDown(Key.I) && isInventoryShowing){
+                    isInventoryShowing = false;
+                    screenCoordinator.setGameState(GameState.PLAYING);
+
+                }
                 break;
 
             case LEVEL_COMPLETED:
@@ -79,6 +95,9 @@ public class PlayLevelScreen extends Screen {
             case RUNNING:
                 map.draw(player, graphicsHandler);
                 drawHUD(graphicsHandler);
+                if (isInventoryShowing) {
+                    inventoryScreen.draw(graphicsHandler);
+                }
                 break;
 
             case LEVEL_COMPLETED:

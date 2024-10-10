@@ -9,5 +9,6 @@ public enum GameState {
     PAUSED,
     LEVEL, 
     GAME_OVER,
-    CREDITS
+    CREDITS,
+    INVENTORY
 }
