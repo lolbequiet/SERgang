@@ -1,8 +1,6 @@
 package Screens;
 
 import Engine.*;
-import Engine.GraphicsHandler;
-import Engine.Screen;
 import Game.GameState;
 import Game.ScreenCoordinator;
 import java.awt.Color;
@@ -10,7 +8,7 @@ import java.awt.Font;
 
 public class InventoryScreen extends Screen {
 
-    private KeyLocker keyLocker = new KeyLocker();
+    protected KeyLocker keyLocker = new KeyLocker();
     private ScreenCoordinator screenCoordinator;
 
     public InventoryScreen(ScreenCoordinator screenCoordinator) {
@@ -19,20 +17,30 @@ public class InventoryScreen extends Screen {
 
     @Override
     public void initialize(){
+        screenCoordinator.setGameState(GameState.PLAYING);
         keyLocker.lockKey(Key.I);
     }
 
     public void update(){
 
-        if (Keyboard.isKeyUp(Key.I)) {
-            keyLocker.unlockKey(Key.I);
-        }
-
-        // for closing inventory
         if (Keyboard.isKeyDown(Key.I) && !keyLocker.isKeyLocked(Key.I)) {
-            keyLocker.lockKey(Key.I);
             screenCoordinator.setGameState(GameState.PLAYING);
-        }
+			keyLocker.lockKey(Key.I);
+		}
+
+		if (Keyboard.isKeyUp(Key.I)) {
+			keyLocker.unlockKey(Key.I);
+		}
+
+        // if (Keyboard.isKeyUp(Key.I)) {
+        //     keyLocker.unlockKey(Key.I);
+        // }
+
+        // // for closing inventory
+        // if (Keyboard.isKeyDown(Key.I) && !keyLocker.isKeyLocked(Key.I)) {
+        //     keyLocker.lockKey(Key.I);
+        //     screenCoordinator.setGameState(GameState.PLAYING);
+        // }
     }
 
 

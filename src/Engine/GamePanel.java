@@ -26,7 +26,8 @@ public class GamePanel extends JPanel {
 	private final Key pauseKey = Key.P;
 	private Thread gameLoopProcess;
 
-	
+	private boolean isInventoryShowing = false;
+	private final Key inventoryKey = Key.I;
 
 	private Key showFPSKey = Key.G;
 	private SpriteFont fpsDisplayLabel;
@@ -86,6 +87,9 @@ public class GamePanel extends JPanel {
 	public void update() {
 		updatePauseState();
 		updateShowFPSState();
+		updateInventoryState();
+		
+
 
 		if (!isGamePaused) {
 			screenManager.update();
@@ -101,6 +105,17 @@ public class GamePanel extends JPanel {
 		if (Keyboard.isKeyUp(pauseKey)) {
 			keyLocker.unlockKey(pauseKey);
 		}
+	}
+
+	private void updateInventoryState() {
+		// if (Keyboard.isKeyDown(inventoryKey) && !keyLocker.isKeyLocked(inventoryKey)) {
+		// 	isInventoryShowing = !isInventoryShowing;
+		// 	keyLocker.lockKey(inventoryKey);
+		// }
+
+		// if (Keyboard.isKeyUp(inventoryKey)) {
+		// 	keyLocker.unlockKey(inventoryKey);
+		// }
 	}
 
 	private void updateShowFPSState() {

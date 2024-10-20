@@ -74,22 +74,21 @@ public class PlayLevelScreen extends Screen {
                 player.update();
                 map.update(player);
 
-                if (Keyboard.isKeyDown(Key.I) && !isInventoryShowing) {
-                    isInventoryShowing = true;
-                    inventoryScreen.initialize();
-                    screenCoordinator.setGameState(GameState.INVENTORY);
-                } else if (Keyboard.isKeyDown(Key.I) && isInventoryShowing){
-                    isInventoryShowing = false;
-                    screenCoordinator.setGameState(GameState.PLAYING);
-
-                }
                 break;
-
-            case LEVEL_COMPLETED:
+                
+                case LEVEL_COMPLETED:
                 winScreen.update();
                 break;
-        }
+            }
+            
+            if (Keyboard.isKeyDown(Key.I) && !keyLocker.isKeyLocked(Key.I)) {
+                isInventoryShowing = !isInventoryShowing;
+                inventoryScreen.initialize();
 
+                keyLocker.lockKey(Key.I);
+            } else if (Keyboard.isKeyUp(Key.I)){
+                keyLocker.unlockKey(Key.I);
+            }
         //
 
         if (Keyboard.isKeyDown(Key.M) && !keyLocker.isKeyLocked(Key.M)) {
@@ -134,7 +133,7 @@ public class PlayLevelScreen extends Screen {
 
         // Draw "STAMINA" label above the stamina bar
         graphicsHandler.drawString("STAMINA", 20, 45, new Font("Arial", Font.BOLD, 14), Color.WHITE);
-        graphicsHandler.drawFilledRectangle(20, 50, barWidth, staminaBarHeight, Color.ORANGE);
+        graphicsHandler.drawFilledRectangle(20, 50, player.getStamina(), staminaBarHeight, Color.ORANGE);
         graphicsHandler.drawRectangle(20, 50, barWidth, staminaBarHeight, Color.BLACK);
 
         // Text holder for Quests that are Active (shown below it)

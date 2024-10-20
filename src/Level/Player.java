@@ -17,8 +17,13 @@ import Utils.Direction;
 public abstract class Player extends GameObject {
     // values that affect player movement
     // these should be set in a subclass
-    protected float walkSpeed = 0;
+    protected float walkSpeed = 2.3f;
+    protected float originalWalkSpeed = walkSpeed;
+    protected float sprintSpeed = walkSpeed * 4f;
     protected int interactionRange = 1;
+    protected int stamina = 200;
+    protected float walkCooldown = 0;
+    protected float standCooldown = 0;
     protected Direction currentWalkingXDirection;
     protected Direction currentWalkingYDirection;
     protected Direction lastWalkingXDirection;
@@ -43,8 +48,13 @@ public abstract class Player extends GameObject {
     protected Key INTERACT_KEY = Key.SPACE;
     protected Key REMOVE_KEY = Key.E;
     protected Key MAP_KEY = Key.M;
+    protected Key SPRINT_KEY =Key.SHIFT;
 
     protected boolean isLocked = false;
+
+    public int getStamina(){
+        return stamina;
+    }
 
     public Player(SpriteSheet spriteSheet, float x, float y, String startingAnimationName) {
         super(spriteSheet, x, y, startingAnimationName);
@@ -92,11 +102,14 @@ public abstract class Player extends GameObject {
             case INTERACT:
                 isInteracting();
                 break;
+        
         }
     }
 
     // player STANDING state logic
     protected void playerStanding() {
+        standCooldown+=1;
+        staminaIncrement();
         if (!keyLocker.isKeyLocked(INTERACT_KEY) && Keyboard.isKeyDown(INTERACT_KEY)) {
             keyLocker.lockKey(INTERACT_KEY);
             map.entityInteract(this);
@@ -108,14 +121,43 @@ public abstract class Player extends GameObject {
         }
     }
 
+    protected void staminaDecrement(){
+        if(walkCooldown >= 1.5f && stamina > 0){
+            stamina-=1;
+            walkCooldown = 0;
+        }
+    }
+
+    protected void staminaIncrement(){ // Increases the stamina bar
+        if(standCooldown >= 5 && stamina < 200){
+            stamina+=1;
+            standCooldown = 0;
+        }
+    }
+
     // player WALKING state logic
     protected void playerWalking() {
+
+        if (walkSpeed == sprintSpeed) {
+            walkCooldown += 1;
+            staminaDecrement();
+        } else {
+            standCooldown += 0.25f;
+            staminaIncrement();
+        }
+
         if (!keyLocker.isKeyLocked(INTERACT_KEY) && Keyboard.isKeyDown(INTERACT_KEY)) {
             keyLocker.lockKey(INTERACT_KEY);
             map.entityInteract(this);
         }
 
         // if walk left key is pressed, move player to the left
+        if(Keyboard.isKeyDown(SPRINT_KEY) && stamina > 0){
+            walkSpeed = sprintSpeed;
+        } else {
+            walkSpeed = originalWalkSpeed;
+        }
+
         if (Keyboard.isKeyDown(MOVE_LEFT_KEY)) {
             moveAmountX -= walkSpeed;
             facingDirection = Direction.LEFT;
@@ -125,6 +167,7 @@ public abstract class Player extends GameObject {
 
         // if walk right key is pressed, move player to the right
         else if (Keyboard.isKeyDown(MOVE_RIGHT_KEY)) {
+            
             moveAmountX += walkSpeed;
             facingDirection = Direction.RIGHT;
             currentWalkingXDirection = Direction.RIGHT;
@@ -135,6 +178,7 @@ public abstract class Player extends GameObject {
         }
 
         if (Keyboard.isKeyDown(MOVE_UP_KEY)) {
+            
             moveAmountY -= walkSpeed;
             currentWalkingYDirection = Direction.UP;
             lastWalkingYDirection = Direction.UP;

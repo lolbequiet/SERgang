@@ -27,6 +27,7 @@ public class PushableRock extends EnhancedMapTile {
         // Checks if the players is next to the object to be removed 
         if (player.isCloseTo(this.getIntersectRectangle(), getWidth() * 1.5) && player.isInteracting()){
             this.setMapEntityStatus(MapEntityStatus.REMOVED);
+            
         }
 
         if (player.touching(this) && player.getPlayerState() == PlayerState.WALKING) {
