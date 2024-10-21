@@ -2,10 +2,7 @@ package Maps;
 
 import EnhancedMapTiles.PushableRock;
 import Level.*;
-import NPCs.Bug;
-import NPCs.Dinosaur;
-import NPCs.Seb;
-import NPCs.Walrus;
+import NPCs.*;
 import Scripts.SimpleTextScript;
 import Scripts.TestMap.*;
 import Tilesets.CommonTileset;
@@ -13,7 +10,6 @@ import Utils.Point;
 
 import java.util.ArrayList;
 
-// Represents a test map to be used in a level
 public class TestMap extends Map {
 
     public TestMap() {
@@ -25,27 +21,24 @@ public class TestMap extends Map {
     public ArrayList<EnhancedMapTile> loadEnhancedMapTiles() {
         ArrayList<EnhancedMapTile> enhancedMapTiles = new ArrayList<>();
 
-        for(MapTile tile : mapTiles) {  // Checks the map for normal rocks 
+        for (MapTile tile : mapTiles) {  // Checks the map for normal rocks 
             if (tile.getTileIndex() == 3) { // if it is a normal rock
                 PushableRock pushableRock = new PushableRock(tile.getLocation());
                 enhancedMapTiles.add(pushableRock);
 
                 Point location = tile.getLocation();
-                setMapTile(Math.round(location.x / tileset.getScaledSpriteWidth()), Math.round(location.y / tileset.getScaledSpriteHeight()),tileset.getTile(0).build(location.x, location.y));
+                setMapTile(Math.round(location.x / tileset.getScaledSpriteWidth()), Math.round(location.y / tileset.getScaledSpriteHeight()), tileset.getTile(0).build(location.x, location.y));
             }
         }
 
         return enhancedMapTiles;
     }
 
-  
-
-    
-
     @Override
     public ArrayList<NPC> loadNPCs() {
         ArrayList<NPC> npcs = new ArrayList<>();
 
+        // Existing NPCs
         Walrus walrus = new Walrus(1, getMapTile(4, 28).getLocation().subtractY(40));
         walrus.setInteractScript(new WalrusScript());
         npcs.add(walrus);
@@ -55,15 +48,23 @@ public class TestMap extends Map {
         dinosaur.setInteractScript(new DinoScript());
         npcs.add(dinosaur);
 
-        //Seb NPC
-        Seb Seb = new Seb(1, getMapTile(3, 15).getLocation().subtractY(40));
-        Seb.setInteractScript(new WalrusScript());
-        npcs.add(Seb);
+        Seb seb = new Seb(3, getMapTile(5, 15).getLocation().subtractY(40));
+        seb.setInteractScript(new WalrusScript());
+        npcs.add(seb);
 
-        
-        Bug bug = new Bug(3, getMapTile(7, 12).getLocation().subtractX(20));
+        Bug bug = new Bug(4, getMapTile(7, 12).getLocation().subtractX(20));
         bug.setInteractScript(new BugScript());
         npcs.add(bug);
+
+        // Additional NPCs
+        Bug beetle = new Bug(5, getMapTile(15, 22).getLocation().subtractX(30)); // New Beetle NPC
+beetle.setInteractScript(new BugScript());
+npcs.add(beetle);
+
+Seb ant = new Seb(6, getMapTile(14, 18).getLocation().subtractX(30)); // New Ant NPC
+ant.setInteractScript(new BugScript());
+npcs.add(ant);
+
 
         return npcs;
     }
@@ -88,4 +89,3 @@ public class TestMap extends Map {
         getMapTile(2, 6).setInteractScript(new TreeScript());
     }
 }
-
