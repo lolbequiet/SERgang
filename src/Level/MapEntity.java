@@ -3,12 +3,10 @@ package Level;
 import GameObject.Frame;
 import GameObject.GameObject;
 import GameObject.SpriteSheet;
-
 import java.util.HashMap;
 
 // This class represents a map entity, which is any "entity" on a map besides the player
-// it is basically a game object with a few extra features for handling things what to do upon the player interacting with them
-public class MapEntity extends GameObject {
+public abstract class MapEntity extends GameObject {
     protected MapEntityStatus mapEntityStatus = MapEntityStatus.ACTIVE;
 
     // if true, entity cannot go out of camera's update range
@@ -17,14 +15,8 @@ public class MapEntity extends GameObject {
     // if true, entity will no longer be updated or drawn on the map
     protected boolean isHidden = false;
 
-    // if given an existence flag, and that flag gets set, the entity will no longer exist until the flag is unset
     protected String existenceFlag;
-
-    // script that executes when entity is interacted with by the player
     protected Script interactScript;
-
-    // set to true if you do not want this entity to be able to be collided with by other entities
-    // example of why you would use this: this is an entity that you want to overlap the player, but you do not want the player to be blocked by/have to worry about this entity's collision bounds when trying to move
     protected boolean isUncollidable = false;
 
     public MapEntity(float x, float y, SpriteSheet spriteSheet, String startingAnimation) {
@@ -64,7 +56,7 @@ public class MapEntity extends GameObject {
     }
 
     public Script getInteractScript() { return interactScript; }
-    
+
     public void setInteractScript(Script interactScript) {
         this.interactScript = interactScript;
         this.interactScript.setMapEntity(this);
@@ -101,4 +93,7 @@ public class MapEntity extends GameObject {
     public void setIsUncollidable(boolean isUncollidable) {
         this.isUncollidable = isUncollidable;
     }
+
+    // Abstract update method to be implemented by child classes (e.g., NPC)
+    public abstract void update(Player player);
 }

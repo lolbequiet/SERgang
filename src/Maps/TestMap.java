@@ -21,16 +21,19 @@ public class TestMap extends Map {
     public ArrayList<EnhancedMapTile> loadEnhancedMapTiles() {
         ArrayList<EnhancedMapTile> enhancedMapTiles = new ArrayList<>();
 
-        for (MapTile tile : mapTiles) {  // Checks the map for normal rocks 
-            if (tile.getTileIndex() == 3) { // if it is a normal rock
+        for (MapTile tile : mapTiles) {
+            if (tile.getTileIndex() == 3) {
                 PushableRock pushableRock = new PushableRock(tile.getLocation());
                 enhancedMapTiles.add(pushableRock);
 
                 Point location = tile.getLocation();
-                setMapTile(Math.round(location.x / tileset.getScaledSpriteWidth()), Math.round(location.y / tileset.getScaledSpriteHeight()), tileset.getTile(0).build(location.x, location.y));
+                setMapTile(
+                    Math.round(location.x / tileset.getScaledSpriteWidth()),
+                    Math.round(location.y / tileset.getScaledSpriteHeight()),
+                    tileset.getTile(0).build(location.x, location.y)
+                );
             }
         }
-
         return enhancedMapTiles;
     }
 
@@ -38,7 +41,7 @@ public class TestMap extends Map {
     public ArrayList<NPC> loadNPCs() {
         ArrayList<NPC> npcs = new ArrayList<>();
 
-        // Existing NPCs
+        // Adding existing NPCs
         Walrus walrus = new Walrus(1, getMapTile(4, 28).getLocation().subtractY(40));
         walrus.setInteractScript(new WalrusScript());
         npcs.add(walrus);
@@ -56,15 +59,18 @@ public class TestMap extends Map {
         bug.setInteractScript(new BugScript());
         npcs.add(bug);
 
-        // Additional NPCs
-        Bug beetle = new Bug(5, getMapTile(15, 22).getLocation().subtractX(30)); // New Beetle NPC
-beetle.setInteractScript(new BugScript());
-npcs.add(beetle);
+        // Additional NPCs with correct spawn locations
+        Bug beetle = new Bug(5, getMapTile(15, 22).getLocation().subtractX(30));
+        beetle.setInteractScript(new BugScript());
+        npcs.add(beetle);
 
-Seb ant = new Seb(6, getMapTile(14, 18).getLocation().subtractX(30)); // New Ant NPC
-ant.setInteractScript(new BugScript());
-npcs.add(ant);
+        Seb ant = new Seb(6, new Point(14 * 32, 18 * 32).subtractX(30));
+        ant.setInteractScript(new BugScript());
+        npcs.add(ant);
 
+        // Adding WalrusMob
+        WalrusMob walrusMob = new WalrusMob(new Point(10 * 32, 10 * 32));
+        npcs.add(walrusMob);
 
         return npcs;
     }
@@ -81,11 +87,8 @@ npcs.add(ant);
     @Override
     public void loadScripts() {
         getMapTile(21, 19).setInteractScript(new SimpleTextScript("Cat's house"));
-
         getMapTile(7, 26).setInteractScript(new SimpleTextScript("Walrus's house"));
-
         getMapTile(20, 4).setInteractScript(new SimpleTextScript("Dino's house"));
-
         getMapTile(2, 6).setInteractScript(new TreeScript());
     }
 }

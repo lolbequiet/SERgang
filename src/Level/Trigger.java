@@ -5,8 +5,8 @@ import GameObject.Rectangle;
 
 import java.awt.*;
 
-// This class represents a trigger script that can be placed on a map
-// upon the player colliding with the trigger, it will play out the attached script
+// This class represents a trigger script that can be placed on a map.
+// Upon the player colliding with the trigger, it activates the attached script.
 public class Trigger extends MapEntity {
     protected Script triggerScript;
 
@@ -27,25 +27,39 @@ public class Trigger extends MapEntity {
         this.existenceFlag = existenceFlag;
     }
 
-    protected Script loadTriggerScript() { return null; }
-
-    public Script getTriggerScript() { return triggerScript; }
-    public void setTriggerScript(Script triggerScript) {
-        this.triggerScript = triggerScript;
+    // Checks if the player collides with the trigger, then activates and updates the script.
+    @Override
+    public void update(Player player) {
+        if (exists() && getBounds().intersects(player.getBounds())) {
+            if (!triggerScript.isActive()) {
+                triggerScript.setIsActive(true);  // Activate the script
+                triggerScript.initialize();  // Initialize the script if needed
+            }
+            triggerScript.update();  // Execute the script logic
+        }
     }
 
-    // only used for debugging purposes if seeing the trigger is necessary
+    // Draws the trigger bounds in red for debugging purposes.
     @Override
     public void draw(GraphicsHandler graphicsHandler) {
-        drawBounds(graphicsHandler, Color.red);
+        drawBounds(graphicsHandler, Color.RED);
     }
 
-    // only used for debugging purposes if seeing the trigger is necessary
+    // Optionally allows the bounds to be drawn in other colors.
     public void draw(GraphicsHandler graphicsHandler, Color color) {
         Rectangle scaledCalibratedBounds = getCalibratedBounds();
         scaledCalibratedBounds.setColor(color);
-        scaledCalibratedBounds.setBorderColor(Color.black);
+        scaledCalibratedBounds.setBorderColor(Color.BLACK);
         scaledCalibratedBounds.setBorderThickness(1);
         scaledCalibratedBounds.draw(graphicsHandler);
+    }
+
+    // Getter and setter methods for the script attached to the trigger.
+    public Script getTriggerScript() {
+        return triggerScript;
+    }
+
+    public void setTriggerScript(Script triggerScript) {
+        this.triggerScript = triggerScript;
     }
 }

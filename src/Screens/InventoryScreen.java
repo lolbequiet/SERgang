@@ -3,6 +3,8 @@ package Screens;
 import Engine.*;
 import Game.GameState;
 import Game.ScreenCoordinator;
+import Engine.Screen;
+import Engine.ScreenManager;
 import java.awt.Color;
 import java.awt.Font;
 
