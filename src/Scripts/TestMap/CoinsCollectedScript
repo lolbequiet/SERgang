@@ -1,0 +1,27 @@
+package Scripts.TestMap;
+
+import java.util.ArrayList;
+
+import Level.Script;
+import ScriptActions.*;
+
+public class CoinsCollectedScript extends Script {
+
+public ArrayList<ScriptAction> loadScriptActions(){
+    ArrayList<ScriptAction> scriptActions = new ArrayList<>();
+
+    scriptActions.add(new coinsScriptAction(1));
+
+    scriptActions.add(new TextboxScriptAction() {{
+
+        addText("mama we made it, im rich asl");
+
+
+    }});
+
+    return scriptActions;
+}
+
+
+
+}

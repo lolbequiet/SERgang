@@ -12,6 +12,11 @@ import java.util.ArrayList;
 
 public class TestMap extends Map {
 
+
+    //new variable to see coins a player has.
+
+    private int playerWallet;
+
     public TestMap() {
         super("test_map.txt", new CommonTileset());
         this.playerStartPosition = getMapTile(17, 20).getLocation();
@@ -81,6 +86,10 @@ public class TestMap extends Map {
         triggers.add(new Trigger(790, 1030, 100, 10, new LostBallScript(), "hasLostBall"));
         triggers.add(new Trigger(790, 960, 10, 80, new LostBallScript(), "hasLostBall"));
         triggers.add(new Trigger(890, 960, 10, 80, new LostBallScript(), "hasLostBall"));
+
+        //new trigger for collecting coins
+        triggers.add(new Trigger(890, 960, 10, 80, new CoinsCollectedScript(), "coinsCollected"));
+
         return triggers;
     }
 
@@ -90,5 +99,23 @@ public class TestMap extends Map {
         getMapTile(7, 26).setInteractScript(new SimpleTextScript("Walrus's house"));
         getMapTile(20, 4).setInteractScript(new SimpleTextScript("Dino's house"));
         getMapTile(2, 6).setInteractScript(new TreeScript());
+    }
+
+    public void addinThatCheesetoTheWallet(int total) {
+        playerWallet += total;
+        System.out.println("new amount:" + playerWallet);
+    }
+
+    public boolean cashinOutOnSomeTuffItems(int total) {
+
+        if(playerWallet >= total) {
+            playerWallet -= total;
+            System.out.println("cashed out, your total:" + total);
+            return true;
+        } else {
+            System.out.println("not enough");
+            return false;
+        }
+
     }
 }
