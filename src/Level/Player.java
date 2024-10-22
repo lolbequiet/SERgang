@@ -76,6 +76,7 @@ public abstract class Player extends GameObject {
     public void takeDamage(int damage) {
         health = Math.max(0, health - damage); // Ensure health doesn't drop below 0
         System.out.println("Player Health: " + health);
+        health = Math.max(health - damage, 0);
         if (health <= 0) {
             die(); // Handle player death
         }
@@ -121,11 +122,14 @@ public abstract class Player extends GameObject {
 
     public Rectangle getInteractionRange() {
         return new Rectangle(
-            getBounds().getX1() - interactionRange,
-            getBounds().getY1() - interactionRange,
-            getBounds().getWidth() + (interactionRange * 2),
-            getBounds().getHeight() + (interactionRange * 2)
-        );
+                getBounds().getX1() - interactionRange,
+                getBounds().getY1() - interactionRange,
+                getBounds().getWidth() + (interactionRange * 2),
+                getBounds().getHeight() + (interactionRange * 2));
+    }
+
+    public PlayerState getPlayerState() {
+        return this.playerState;
     }
 
     public void update() {
@@ -147,6 +151,22 @@ public abstract class Player extends GameObject {
         super.update();
     }
 
+    public Direction getCurrentWalkingXDirection() {
+        return currentWalkingXDirection;
+    }
+
+    public Direction getCurrentWalkingYDirection() {
+        return currentWalkingYDirection;
+    }
+
+    public Direction getLastWalkingXDirection() {
+        return lastWalkingXDirection;
+    }
+
+    public Direction getLastWalkingYDirection() {
+        return lastWalkingYDirection;
+    }
+
     protected void handlePlayerState() {
         switch (playerState) {
             case STANDING -> playerStanding();
@@ -165,7 +185,7 @@ public abstract class Player extends GameObject {
         }
 
         if (Keyboard.isKeyDown(MOVE_LEFT_KEY) || Keyboard.isKeyDown(MOVE_RIGHT_KEY) ||
-            Keyboard.isKeyDown(MOVE_UP_KEY) || Keyboard.isKeyDown(MOVE_DOWN_KEY)) {
+                Keyboard.isKeyDown(MOVE_UP_KEY) || Keyboard.isKeyDown(MOVE_DOWN_KEY)) {
             playerState = PlayerState.WALKING;
         }
     }
