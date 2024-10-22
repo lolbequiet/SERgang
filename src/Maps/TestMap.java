@@ -14,23 +14,23 @@ public class TestMap extends Map {
 
     public TestMap() {
         super("test_map.txt", new CommonTileset());
-        this.playerStartPosition = getMapTile(17, 20).getLocation();
+        this.playerStartPosition = getMapTile(17, 20).getLocation(); // Initial player position
     }
 
     @Override
     public ArrayList<EnhancedMapTile> loadEnhancedMapTiles() {
         ArrayList<EnhancedMapTile> enhancedMapTiles = new ArrayList<>();
 
-        for (MapTile tile : mapTiles) {
-            if (tile.getTileIndex() == 3) {
+        for (MapTile tile : mapTiles) {  
+            if (tile.getTileIndex() == 3) { // If tile is a normal rock
                 PushableRock pushableRock = new PushableRock(tile.getLocation());
                 enhancedMapTiles.add(pushableRock);
 
                 Point location = tile.getLocation();
                 setMapTile(
-                    Math.round(location.x / tileset.getScaledSpriteWidth()),
-                    Math.round(location.y / tileset.getScaledSpriteHeight()),
-                    tileset.getTile(0).build(location.x, location.y)
+                    Math.round(location.x / tileset.getScaledSpriteWidth()), 
+                    Math.round(location.y / tileset.getScaledSpriteHeight()), 
+                    tileset.getTile(0).build(location.x, location.y) // Replace rock with an empty tile
                 );
             }
         }
@@ -41,7 +41,7 @@ public class TestMap extends Map {
     public ArrayList<NPC> loadNPCs() {
         ArrayList<NPC> npcs = new ArrayList<>();
 
-        // Adding existing NPCs
+        // Add NPCs with proper interactions
         Walrus walrus = new Walrus(1, getMapTile(4, 28).getLocation().subtractY(40));
         walrus.setInteractScript(new WalrusScript());
         npcs.add(walrus);
@@ -59,7 +59,7 @@ public class TestMap extends Map {
         bug.setInteractScript(new BugScript());
         npcs.add(bug);
 
-        // Additional NPCs with correct spawn locations
+        // Additional NPCs with corrected spawn points
         Bug beetle = new Bug(5, getMapTile(15, 22).getLocation().subtractX(30));
         beetle.setInteractScript(new BugScript());
         npcs.add(beetle);
@@ -68,7 +68,7 @@ public class TestMap extends Map {
         ant.setInteractScript(new BugScript());
         npcs.add(ant);
 
-        // Adding WalrusMob
+        // Add WalrusMob with starting position
         WalrusMob walrusMob = new WalrusMob(new Point(10 * 32, 10 * 32));
         npcs.add(walrusMob);
 
@@ -90,5 +90,11 @@ public class TestMap extends Map {
         getMapTile(7, 26).setInteractScript(new SimpleTextScript("Walrus's house"));
         getMapTile(20, 4).setInteractScript(new SimpleTextScript("Dino's house"));
         getMapTile(2, 6).setInteractScript(new TreeScript());
+    }
+
+    // Reset the map's state when reloaded
+    public void resetState() {
+        System.out.println("Resetting TestMap state.");
+        // Any additional state reset logic, if needed
     }
 }
