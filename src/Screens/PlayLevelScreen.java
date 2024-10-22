@@ -128,7 +128,7 @@ public class PlayLevelScreen extends Screen {
 
         // Draw "HEALTH" label above the health bar
         graphicsHandler.drawString("HEALTH", 20, 15, new Font("Arial", Font.BOLD, 14), Color.WHITE);
-        graphicsHandler.drawFilledRectangle(20, 20, barWidth, barHeight, Color.RED);
+        graphicsHandler.drawFilledRectangle(20, 20, player.getHealth() * 2, barHeight, Color.RED);
         graphicsHandler.drawRectangle(20, 20, barWidth, barHeight, Color.BLACK);
 
         // Draw "STAMINA" label above the stamina bar

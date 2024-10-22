@@ -62,7 +62,7 @@ public abstract class Player extends GameObject {
     }
 
     public void takeDamage(int damage) {
-        health -= damage;
+        health = Math.max(health - damage, 0);
         if (health <= 0) {
             die();
         }
@@ -70,10 +70,9 @@ public abstract class Player extends GameObject {
     }
 
     protected void die() {
-    System.out.println("Player has died.");
-    ScreenManager.getInstance().setCurrentScreen(new DeathScreen(this)); // Pass the current player instance
-}
-
+        System.out.println("Player has died.");
+        ScreenManager.getInstance().setCurrentScreen(new DeathScreen(this)); // Pass the current player instance
+    }
 
     public void lock() {
         isLocked = true;
@@ -104,11 +103,14 @@ public abstract class Player extends GameObject {
 
     public Rectangle getInteractionRange() {
         return new Rectangle(
-            getBounds().getX1() - interactionRange,
-            getBounds().getY1() - interactionRange,
-            getBounds().getWidth() + (interactionRange * 2),
-            getBounds().getHeight() + (interactionRange * 2)
-        );
+                getBounds().getX1() - interactionRange,
+                getBounds().getY1() - interactionRange,
+                getBounds().getWidth() + (interactionRange * 2),
+                getBounds().getHeight() + (interactionRange * 2));
+    }
+
+    public PlayerState getPlayerState() {
+        return this.playerState;
     }
 
     public void update() {
@@ -128,6 +130,22 @@ public abstract class Player extends GameObject {
         super.update();
     }
 
+    public Direction getCurrentWalkingXDirection() {
+        return currentWalkingXDirection;
+    }
+
+    public Direction getCurrentWalkingYDirection() {
+        return currentWalkingYDirection;
+    }
+
+    public Direction getLastWalkingXDirection() {
+        return lastWalkingXDirection;
+    }
+
+    public Direction getLastWalkingYDirection() {
+        return lastWalkingYDirection;
+    }
+
     protected void handlePlayerState() {
         switch (playerState) {
             case STANDING -> playerStanding();
@@ -144,7 +162,7 @@ public abstract class Player extends GameObject {
             map.entityInteract(this);
         }
         if (Keyboard.isKeyDown(MOVE_LEFT_KEY) || Keyboard.isKeyDown(MOVE_RIGHT_KEY) ||
-            Keyboard.isKeyDown(MOVE_UP_KEY) || Keyboard.isKeyDown(MOVE_DOWN_KEY)) {
+                Keyboard.isKeyDown(MOVE_UP_KEY) || Keyboard.isKeyDown(MOVE_DOWN_KEY)) {
             playerState = PlayerState.WALKING;
         }
     }
