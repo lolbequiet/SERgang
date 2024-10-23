@@ -5,6 +5,7 @@ import Engine.GraphicsHandler;
 import GameObject.Frame;
 import GameObject.ImageEffect;
 import GameObject.SpriteSheet;
+import Level.MapEntityStatus;
 import Level.NPC;
 import Level.Player;
 import Utils.Point;
@@ -101,6 +102,7 @@ public class WalrusMob extends NPC {
     @Override
     public void die() {
         System.out.println("WalrusMob defeated!");
+        setMapEntityStatus(MapEntityStatus.REMOVED);
         setActive(false);
     }
 

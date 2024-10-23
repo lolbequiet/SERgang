@@ -68,11 +68,18 @@ public class TestMap extends Map {
         ant.setInteractScript(new BugScript());
         npcs.add(ant);
 
+        return npcs;
+    }
+
+    @Override
+    public ArrayList<NPC> loadEnemies() {
+        ArrayList<NPC> enemies = new ArrayList<>();
+
         // Adding WalrusMob
         WalrusMob walrusMob = new WalrusMob(new Point(10 * 32, 10 * 32));
-        npcs.add(walrusMob);
+        enemies.add(walrusMob);
 
-        return npcs;
+        return enemies;
     }
 
     @Override
