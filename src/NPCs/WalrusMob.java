@@ -23,14 +23,12 @@ public class WalrusMob extends NPC {
     private long attackCooldown = 2000; // Attack every 2 seconds
     private static final float AGGRO_RADIUS = 150f; // Adjust the following radius
 
-    // Constructor with Point argument
     public WalrusMob(Point location) {
         super(1, location.x, location.y, loadWalrusSprite(), "WALK_LEFT");
         this.health = 50;  // Example health
         this.attackDamage = 10;  // Example damage
     }
 
-    // Load the sprite for the WalrusMob
     private static SpriteSheet loadWalrusSprite() {
         BufferedImage spriteImage = null;
         try {
@@ -58,12 +56,10 @@ public class WalrusMob extends NPC {
         }
     }
 
-    // Calculate the distance to the player
     private float distanceToPlayer(float playerX, float playerY) {
         return (float) Math.sqrt(Math.pow(this.getX() - playerX, 2) + Math.pow(this.getY() - playerY, 2));
     }
 
-    // Move towards the player
     private void moveTowardsPlayer(float playerX, float playerY) {
         if (playerX < this.getX()) {
             this.moveX(-1.5f); // Adjust speed as needed
@@ -78,7 +74,6 @@ public class WalrusMob extends NPC {
         }
     }
 
-    // Handle the attack logic
     @Override
     public void attack(Player player) {
         long currentTime = System.currentTimeMillis();
@@ -88,17 +83,15 @@ public class WalrusMob extends NPC {
         }
     }
 
-    // Handle taking damage
     @Override
     public void takeDamage(int damage) {
         this.health -= damage;
-        System.out.println("WalrusMob health: " + this.health);
+        System.out.println("WalrusMob health: " + this.health);  // Verify health reduction
         if (this.health <= 0) {
             die();
         }
     }
 
-    // Handle death
     @Override
     public void die() {
         System.out.println("WalrusMob defeated!");

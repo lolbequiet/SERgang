@@ -17,25 +17,29 @@ import Utils.Point;
 public abstract class Player extends GameObject {
     protected float walkSpeed = 2.3f;
     protected float originalWalkSpeed = walkSpeed;
-    protected float sprintSpeed = walkSpeed * 4f;
+    protected float sprintSpeed = walkSpeed * 2.3f;
     protected int interactionRange = 1;
-    protected int health = 100; // Added health field
+    
+    protected int health = 100; // Player's current health
+    protected int maxHealth = 100; // Player's maximum health
     protected int stamina = 200;
+
     protected float walkCooldown = 0;
     protected float standCooldown = 0;
+
     protected Direction currentWalkingXDirection;
     protected Direction currentWalkingYDirection;
     protected Direction lastWalkingXDirection;
     protected Direction lastWalkingYDirection;
     protected float moveAmountX, moveAmountY;
     protected float lastAmountMovedX, lastAmountMovedY;
+
     protected PlayerState playerState;
     protected PlayerState previousPlayerState;
     protected Direction facingDirection;
     protected Direction lastMovementDirection;
     protected boolean isLocked = false; // Locking state
 
-    // Key handling
     protected KeyLocker keyLocker = new KeyLocker();
     protected Key MOVE_LEFT_KEY = Key.LEFT;
     protected Key MOVE_RIGHT_KEY = Key.RIGHT;
@@ -54,25 +58,40 @@ public abstract class Player extends GameObject {
         this.affectedByTriggers = true;
     }
 
-    public int getStamina() {
-        return stamina;
-    }
-
+    // Getter for current health
     public int getHealth() {
         return health;
     }
 
-    public void takeDamage(int damage) {
-        health = Math.max(health - damage, 0);
-        if (health <= 0) {
-            die();
-        }
-        System.out.println("Player Health: " + health);
+    // Getter for maximum health
+    public int getMaxHealth() {
+        return maxHealth;
     }
 
+    // Getter for stamina
+    public int getStamina() {
+        return stamina;
+    }
+
+    // Damage the player and update health
+    public void takeDamage(int damage) {
+        health = Math.max(0, health - damage); // Ensure health doesn't drop below 0
+        System.out.println("Player Health: " + health);
+        health = Math.max(health - damage, 0);
+        if (health <= 0) {
+            die(); // Handle player death
+        }
+    }
+
+    // Heal the player
+    public void heal(int amount) {
+        health = Math.min(maxHealth, health + amount); // Ensure health doesn't exceed max health
+    }
+
+    // Handle player death
     protected void die() {
         System.out.println("Player has died.");
-        ScreenManager.getInstance().setCurrentScreen(new DeathScreen(this)); // Pass the current player instance
+        ScreenManager.getInstance().setCurrentScreen(new DeathScreen(this)); // Switch to DeathScreen
     }
 
     public void lock() {
@@ -119,6 +138,7 @@ public abstract class Player extends GameObject {
         if (!isLocked) {
             moveAmountX = 0;
             moveAmountY = 0;
+
             do {
                 previousPlayerState = playerState;
                 handlePlayerState();
@@ -176,10 +196,12 @@ public abstract class Player extends GameObject {
     protected void playerStanding() {
         standCooldown += 1;
         staminaIncrement();
+
         if (!keyLocker.isKeyLocked(INTERACT_KEY) && Keyboard.isKeyDown(INTERACT_KEY)) {
             keyLocker.lockKey(INTERACT_KEY);
             map.entityInteract(this);
         }
+
         if (Keyboard.isKeyDown(MOVE_LEFT_KEY) || Keyboard.isKeyDown(MOVE_RIGHT_KEY) ||
                 Keyboard.isKeyDown(MOVE_UP_KEY) || Keyboard.isKeyDown(MOVE_DOWN_KEY)) {
             playerState = PlayerState.WALKING;
@@ -208,15 +230,18 @@ public abstract class Player extends GameObject {
             standCooldown += 0.25f;
             staminaIncrement();
         }
+
         if (!keyLocker.isKeyLocked(INTERACT_KEY) && Keyboard.isKeyDown(INTERACT_KEY)) {
             keyLocker.lockKey(INTERACT_KEY);
             map.entityInteract(this);
         }
+
         if (Keyboard.isKeyDown(SPRINT_KEY) && stamina > 0) {
             walkSpeed = sprintSpeed;
         } else {
             walkSpeed = originalWalkSpeed;
         }
+
         handleMovement();
     }
 
@@ -266,6 +291,13 @@ public abstract class Player extends GameObject {
             currentAnimationName = (facingDirection == Direction.RIGHT) ? "STAND_RIGHT" : "STAND_LEFT";
         } else if (playerState == PlayerState.WALKING) {
             currentAnimationName = (facingDirection == Direction.RIGHT) ? "WALK_RIGHT" : "WALK_LEFT";
+        }
+    }
+
+    public void attack(NPC npc) {
+        if (npc != null) {
+            npc.takeDamage(20); // Player deals 20 damage
+            System.out.println("Attacked NPC, dealt 20 damage");
         }
     }
 
