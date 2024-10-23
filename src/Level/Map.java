@@ -56,6 +56,7 @@ public abstract class Map {
     // lists to hold map entities that are a part of the map
     protected ArrayList<EnhancedMapTile> enhancedMapTiles;
     protected ArrayList<NPC> npcs;
+    protected ArrayList<NPC> enemies;
     protected ArrayList<Trigger> triggers;
 
     // current script that is being executed (if any)
@@ -105,6 +106,11 @@ public abstract class Map {
         this.npcs = loadNPCs();
         for (NPC npc: this.npcs) {
             npc.setMap(this);
+        }
+
+        this.enemies = loadEnemies();
+        for (NPC enemy: this.enemies) {
+            enemy.setMap(this);
         }
 
         this.triggers = loadTriggers();
@@ -291,6 +297,10 @@ public abstract class Map {
         return new ArrayList<>();
     }
 
+    protected ArrayList<NPC> loadEnemies() {
+        return new ArrayList<>();
+    }
+
     protected ArrayList<Trigger> loadTriggers() {
         return new ArrayList<>();
     }
@@ -306,6 +316,11 @@ public abstract class Map {
     public ArrayList<NPC> getNPCs() {
         return npcs;
     }
+
+    public ArrayList<NPC> getEnemies() {
+        return enemies;
+    }
+
     public ArrayList<Trigger> getTriggers() { return triggers; }
 
     public ArrayList<MapTile> getAnimatedMapTiles() {
@@ -509,6 +524,7 @@ public abstract class Map {
             adjustMovementY(player);
             adjustMovementX(player);
         }
+
         camera.update(player);
         if (textbox.isActive()) {
             textbox.update();

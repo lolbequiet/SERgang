@@ -14,6 +14,7 @@ import GameObject.Rectangle;
 import GameObject.SpriteSheet;
 import Screens.DeathScreen;
 import Utils.Direction;
+import Utils.Point;
 
 public abstract class Player extends GameObject {
     protected float walkSpeed = 2.3f;
@@ -152,6 +153,7 @@ public abstract class Player extends GameObject {
         return this.playerState;
     }
 
+    double nextAttackTime = -1;
     public void update() {
         if (!isLocked) {
             moveAmountX = 0;
@@ -164,6 +166,22 @@ public abstract class Player extends GameObject {
 
             lastAmountMovedY = super.moveYHandleCollision(moveAmountY);
             lastAmountMovedX = super.moveXHandleCollision(moveAmountX);
+        }
+
+        if (Keyboard.isKeyDown(Key.SPACE) && System.currentTimeMillis() > nextAttackTime) {
+            for (NPC enemy : map.getEnemies()) {
+                Point location = enemy.getLocation();
+    
+                double distance =  Math.sqrt(Math.pow(getX() - location.x, 2) + Math.pow(getY() - location.y, 2));
+                System.out.println(distance);
+                if (distance < 100) {
+                    enemy.takeDamage(10);
+                }
+            }
+
+            System.out.println("attacking");
+
+            nextAttackTime = System.currentTimeMillis() + 1500;
         }
 
         handlePlayerAnimation();
