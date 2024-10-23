@@ -1,6 +1,7 @@
 package Maps;
 
 import EnhancedMapTiles.PushableRock;
+import EnhancedMapTiles.Sword; // Import the Sword class
 import Level.*;
 import NPCs.*;
 import Scripts.SimpleTextScript;
@@ -12,9 +13,7 @@ import java.util.ArrayList;
 
 public class TestMap extends Map {
 
-
-    //new variable to see coins a player has.
-
+    // New variable to track the player's wallet (coins collected).
     private int playerWallet;
 
     public TestMap() {
@@ -26,6 +25,7 @@ public class TestMap extends Map {
     public ArrayList<EnhancedMapTile> loadEnhancedMapTiles() {
         ArrayList<EnhancedMapTile> enhancedMapTiles = new ArrayList<>();
 
+        // Add Pushable Rocks if tile index matches.
         for (MapTile tile : mapTiles) {
             if (tile.getTileIndex() == 3) {
                 PushableRock pushableRock = new PushableRock(tile.getLocation());
@@ -39,6 +39,11 @@ public class TestMap extends Map {
                 );
             }
         }
+
+        // Add Sword to the map at a specific location (e.g., tile 10,10).
+        Sword sword = new Sword(getMapTile(10, 10).getLocation());
+        enhancedMapTiles.add(sword);
+
         return enhancedMapTiles;
     }
 
@@ -83,11 +88,13 @@ public class TestMap extends Map {
     @Override
     public ArrayList<Trigger> loadTriggers() {
         ArrayList<Trigger> triggers = new ArrayList<>();
+
+        // Existing triggers for game logic.
         triggers.add(new Trigger(790, 1030, 100, 10, new LostBallScript(), "hasLostBall"));
         triggers.add(new Trigger(790, 960, 10, 80, new LostBallScript(), "hasLostBall"));
         triggers.add(new Trigger(890, 960, 10, 80, new LostBallScript(), "hasLostBall"));
 
-        //new trigger for collecting coins
+        // New trigger for collecting coins.
         triggers.add(new Trigger(890, 960, 10, 80, new CoinsCollectedScript(), "coinsCollected"));
 
         return triggers;
@@ -101,21 +108,21 @@ public class TestMap extends Map {
         getMapTile(2, 6).setInteractScript(new TreeScript());
     }
 
+    // Method to add coins to the player's wallet.
     public void addinCheese(int total) {
         playerWallet += total;
-        System.out.println("new amount:" + playerWallet);
+        System.out.println("new amount: " + playerWallet);
     }
 
+    // Method to subtract coins from the player's wallet.
     public boolean cashinOut(int total) {
-
-        if(playerWallet >= total) {
+        if (playerWallet >= total) {
             playerWallet -= total;
-            System.out.println("cashed out, your total:" + total);
+            System.out.println("Cashed out, your total: " + total);
             return true;
         } else {
-            System.out.println("not enough");
+            System.out.println("Not enough coins.");
             return false;
         }
-
     }
 }
