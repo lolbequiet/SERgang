@@ -49,6 +49,8 @@ public abstract class Player extends GameObject {
     protected Key MAP_KEY = Key.M;
     protected Key SPRINT_KEY = Key.SHIFT;
 
+    private int coins; 
+
     public Player(SpriteSheet spriteSheet, float x, float y, String startingAnimationName) {
         super(spriteSheet, x, y, startingAnimationName);
         facingDirection = Direction.RIGHT;
@@ -281,6 +283,11 @@ public abstract class Player extends GameObject {
             npc.takeDamage(20); // Player deals 20 damage
             System.out.println("Attacked NPC, dealt 20 damage");
         }
+    }
+
+    public void addCoins(int amount){
+        coins += amount;
+        System.out.println("test");
     }
 
     public abstract boolean isInteracting();

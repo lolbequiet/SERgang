@@ -1,5 +1,6 @@
 package Maps;
 
+import EnhancedMapTiles.CollectableCoin;
 import EnhancedMapTiles.PushableRock;
 import Level.*;
 import NPCs.*;
@@ -39,6 +40,10 @@ public class TestMap extends Map {
                 );
             }
         }
+        CollectableCoin collectableCoin = new CollectableCoin(new Point(500,500), 10);
+        CollectableCoin collectableCoin1 = new CollectableCoin(new Point(800 ,600), 10);
+        enhancedMapTiles.add(collectableCoin);
+        enhancedMapTiles.add(collectableCoin1);
         return enhancedMapTiles;
     }
 
