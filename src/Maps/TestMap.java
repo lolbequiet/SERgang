@@ -101,12 +101,12 @@ public class TestMap extends Map {
         getMapTile(2, 6).setInteractScript(new TreeScript());
     }
 
-    public void addinThatCheesetoTheWallet(int total) {
+    public void addinCheese(int total) {
         playerWallet += total;
         System.out.println("new amount:" + playerWallet);
     }
 
-    public boolean cashinOutOnSomeTuffItems(int total) {
+    public boolean cashinOut(int total) {
 
         if(playerWallet >= total) {
             playerWallet -= total;

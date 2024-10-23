@@ -3,10 +3,12 @@ package Scripts.TestMap;
 import java.util.ArrayList;
 
 import Level.Script;
+
 import ScriptActions.*;
 
 public class CoinsCollectedScript extends Script {
 
+@Override
 public ArrayList<ScriptAction> loadScriptActions(){
     ArrayList<ScriptAction> scriptActions = new ArrayList<>();
 
@@ -14,7 +16,7 @@ public ArrayList<ScriptAction> loadScriptActions(){
 
     scriptActions.add(new TextboxScriptAction() {{
 
-        addText("mama we made it, im rich asl");
+        addText("oh nah we rich");
 
 
     }});
