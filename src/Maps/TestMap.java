@@ -1,5 +1,6 @@
 package Maps;
 
+import EnhancedMapTiles.CollectableCoin;
 import EnhancedMapTiles.PushableRock;
 import EnhancedMapTiles.Sword; // Import the Sword class
 import Level.*;
@@ -44,6 +45,10 @@ public class TestMap extends Map {
         Sword sword = new Sword(getMapTile(10, 10).getLocation());
         enhancedMapTiles.add(sword);
 
+        CollectableCoin collectableCoin = new CollectableCoin(new Point(500,500), 10);
+        CollectableCoin collectableCoin1 = new CollectableCoin(new Point(800 ,600), 10);
+        enhancedMapTiles.add(collectableCoin);
+        enhancedMapTiles.add(collectableCoin1);
         return enhancedMapTiles;
     }
 

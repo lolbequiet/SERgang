@@ -57,6 +57,8 @@ public abstract class Player extends GameObject {
     // New Inventory List to store items
     protected List<String> inventory = new ArrayList<>();
 
+    private int coins; 
+
     public Player(SpriteSheet spriteSheet, float x, float y, String startingAnimationName) {
         super(spriteSheet, x, y, startingAnimationName);
         facingDirection = Direction.RIGHT;
@@ -342,6 +344,11 @@ public abstract class Player extends GameObject {
         return inventory.size() >= 3;
     }
      
+
+    public void addCoins(int amount){
+        coins += amount;
+        System.out.println("test");
+    }
 
     public abstract boolean isInteracting();
 }
