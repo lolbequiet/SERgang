@@ -11,6 +11,7 @@ import Level.Player;
 import Utils.Point;
 
 import javax.imageio.ImageIO;
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -18,15 +19,17 @@ import java.util.HashMap;
 
 public class WalrusMob extends NPC {
     private int health;
+    private int maxHealth; // Track maximum health for the health bar
     private int attackDamage;
     private long lastAttackTime;
     private long attackCooldown = 2000; // Attack every 2 seconds
-    private static final float AGGRO_RADIUS = 150f; // Adjust the following radius
+    private static final float AGGRO_RADIUS = 150f; // Aggro radius for following the player
 
     public WalrusMob(Point location) {
         super(1, location.x, location.y, loadWalrusSprite(), "WALK_LEFT");
-        this.health = 50;  // Example health
-        this.attackDamage = 10;  // Example damage
+        this.health = 50;  // Initial health
+        this.maxHealth = 50; // Set max health to the same initial value
+        this.attackDamage = 10;  // Damage dealt to the player on attack
     }
 
     private static SpriteSheet loadWalrusSprite() {
@@ -36,12 +39,13 @@ public class WalrusMob extends NPC {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return new SpriteSheet(spriteImage, 24, 24); // Adjust dimensions as needed
+        return new SpriteSheet(spriteImage, 24, 24); // Adjust dimensions if necessary
     }
 
     @Override
     public void update(Player player) {
         super.update(player);
+
         float playerX = player.getX();
         float playerY = player.getY();
 
@@ -86,7 +90,7 @@ public class WalrusMob extends NPC {
     @Override
     public void takeDamage(int damage) {
         this.health -= damage;
-        System.out.println("WalrusMob health: " + this.health);  // Verify health reduction
+        System.out.println("WalrusMob health: " + this.health); // Verify health reduction
         if (this.health <= 0) {
             die();
         }
@@ -101,6 +105,35 @@ public class WalrusMob extends NPC {
 
     public void setActive(boolean active) {
         this.isActive = active;
+    }
+
+    @Override
+    public void draw(GraphicsHandler graphicsHandler) {
+        super.draw(graphicsHandler);
+
+        // Adjust the health bar position according to the camera offset
+        int screenX = Math.round(getX() - map.getCamera().getX());
+        int screenY = Math.round(getY() - map.getCamera().getY());
+
+        // Health bar dimensions
+        int healthBarWidth = 50;
+        int healthBarHeight = 5;
+        int currentHealthWidth = (int) ((health / (float) maxHealth) * healthBarWidth);
+
+        // Draw the health bar background (gray)
+        graphicsHandler.drawFilledRectangle(
+            screenX, screenY - 10, healthBarWidth, healthBarHeight, Color.GRAY
+        );
+
+        // Draw the current health (red)
+        graphicsHandler.drawFilledRectangle(
+            screenX, screenY - 10, currentHealthWidth, healthBarHeight, Color.RED
+        );
+
+        // Draw the health bar outline (black)
+        graphicsHandler.drawRectangle(
+            screenX, screenY - 10, healthBarWidth, healthBarHeight, Color.BLACK
+        );
     }
 
     @Override
