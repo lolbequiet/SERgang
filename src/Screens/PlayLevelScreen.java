@@ -11,6 +11,7 @@ import Level.*;
 import Maps.TestMap;
 import Players.Cat;
 import Utils.Direction;
+
 import java.awt.Color;
 import java.awt.Font;
 
@@ -25,9 +26,8 @@ public class PlayLevelScreen extends Screen {
     protected boolean isInventoryShowing;
     protected InventoryScreen inventoryScreen;
 
-    private final int screenWidth = 800;  // Hardcoded screen width
-    private final int screenHeight = 600; // Hardcoded screen height
-
+    private final int screenWidth = 800;
+    private final int screenHeight = 600;
     private final int healthBarWidth = 200;
     private final int healthBarHeight = 20;
 
@@ -35,35 +35,36 @@ public class PlayLevelScreen extends Screen {
         this.screenCoordinator = screenCoordinator;
         this.inventoryScreen = new InventoryScreen(screenCoordinator);
         this.isInventoryShowing = false;
-        this.inventoryScreen.initialize();
+        initialize();
     }
 
     public void initialize() {
         flagManager = new FlagManager();
 
-        // Flags for tracking progress
-        flagManager.addFlag("hasLostBall", false);
-        flagManager.addFlag("hasTalkedToWalrus", false);
-        flagManager.addFlag("hasTalkedToDinosaur", false);
-        flagManager.addFlag("hasFoundBall", false);
+        // Flags for tracking progress and sword pickup
+        flagManager.addFlag("pickedUpSword");
+        flagManager.addFlag("hasLostBall");
+        flagManager.addFlag("hasTalkedToWalrus");
+        flagManager.addFlag("hasFoundBall");
 
         map = new TestMap();
         map.setFlagManager(flagManager);
 
         player = new Cat(map.getPlayerStartPosition().x, map.getPlayerStartPosition().y);
         player.setMap(map);
-        playLevelScreenState = PlayLevelScreenState.RUNNING;
         player.setFacingDirection(Direction.LEFT);
+
+        playLevelScreenState = PlayLevelScreenState.RUNNING;
 
         map.setPlayer(player);
         map.getTextbox().setInteractKey(player.getInteractKey());
-        map.preloadScripts();
+
         winScreen = new WinScreen(this);
 
-        keyLocker.lockKey(Key.M);
-    }
+        inventoryScreen.setPlayer((Cat) player);
 
-    private boolean isInLevelSelect = false;
+        keyLocker.lockKey(Key.M); // Lock the 'M' key initially
+    }
 
     public void update() {
         switch (playLevelScreenState) {
@@ -71,11 +72,18 @@ public class PlayLevelScreen extends Screen {
                 player.update();
                 map.update(player);
 
-                // Check for game-over condition
+                // Check if the player picked up the sword and apply the change
+                if (map.getFlagManager().isFlagSet("pickedUpSword")) {
+                    ((Cat) player).pickUpSword();  // Equip sword upon pickup
+                    map.getFlagManager().unsetFlag("pickedUpSword"); // Clear flag after use
+                }
+
+                // Game over logic
                 if (player.getHealth() <= 0) {
                     playLevelScreenState = PlayLevelScreenState.GAME_OVER;
                 }
 
+                // Level completion logic
                 if (map.getFlagManager().isFlagSet("hasFoundBall")) {
                     playLevelScreenState = PlayLevelScreenState.LEVEL_COMPLETED;
                 }
@@ -86,7 +94,6 @@ public class PlayLevelScreen extends Screen {
                 break;
 
             case GAME_OVER:
-                // Handle game over logic
                 goBackToMenu();
                 break;
         }
@@ -94,7 +101,6 @@ public class PlayLevelScreen extends Screen {
         // Toggle Inventory Screen
         if (Keyboard.isKeyDown(Key.I) && !keyLocker.isKeyLocked(Key.I)) {
             isInventoryShowing = !isInventoryShowing;
-            inventoryScreen.initialize();
             keyLocker.lockKey(Key.I);
         } else if (Keyboard.isKeyUp(Key.I)) {
             keyLocker.unlockKey(Key.I);
@@ -107,6 +113,14 @@ public class PlayLevelScreen extends Screen {
         } else if (Keyboard.isKeyUp(Key.M)) {
             keyLocker.unlockKey(Key.M);
         }
+
+        // Reset Level when ESC is pressed
+        if (Keyboard.isKeyDown(Key.ESC) && !keyLocker.isKeyLocked(Key.ESC)) {
+            resetLevel();
+            keyLocker.lockKey(Key.ESC);
+        } else if (Keyboard.isKeyUp(Key.ESC)) {
+            keyLocker.unlockKey(Key.ESC);
+        }
     }
 
     public void draw(GraphicsHandler graphicsHandler) {
@@ -114,6 +128,7 @@ public class PlayLevelScreen extends Screen {
             case RUNNING:
                 map.draw(player, graphicsHandler);
                 drawHUD(graphicsHandler);
+
                 if (isInventoryShowing) {
                     inventoryScreen.draw(graphicsHandler);
                 }
@@ -124,28 +139,33 @@ public class PlayLevelScreen extends Screen {
                 break;
 
             case GAME_OVER:
-                graphicsHandler.drawString("Game Over", screenWidth / 2 - 50, screenHeight / 2,
-                        new Font("Arial", Font.BOLD, 24), Color.RED);
+                graphicsHandler.drawString(
+                    "Game Over",
+                    screenWidth / 2 - 50,
+                    screenHeight / 2,
+                    new Font("Arial", Font.BOLD, 24),
+                    Color.RED
+                );
                 break;
         }
     }
 
     private void drawHUD(GraphicsHandler graphicsHandler) {
-        // Calculate health bar width based on player’s current health percentage
         int currentHealthWidth = (int) ((player.getHealth() / (double) player.getMaxHealth()) * healthBarWidth);
 
-        // Draw the health bar
+        // Draw health bar
         graphicsHandler.drawString("HEALTH", 20, 15, new Font("Arial", Font.BOLD, 14), Color.WHITE);
         graphicsHandler.drawFilledRectangle(20, 20, currentHealthWidth, healthBarHeight, Color.RED);
         graphicsHandler.drawRectangle(20, 20, healthBarWidth, healthBarHeight, Color.BLACK);
 
-        // Draw the stamina bar
+        // Draw stamina bar
         graphicsHandler.drawString("STAMINA", 20, 45, new Font("Arial", Font.BOLD, 14), Color.WHITE);
         graphicsHandler.drawFilledRectangle(20, 50, player.getStamina(), 14, Color.ORANGE);
         graphicsHandler.drawRectangle(20, 50, healthBarWidth, 14, Color.BLACK);
 
         // Active Quest Section
         graphicsHandler.drawString("ACTIVE QUEST:", screenWidth - 180, 30, new Font("Arial", Font.BOLD, 18), Color.WHITE);
+
         if (!flagManager.isFlagSet("hasTalkedToWalrus")) {
             graphicsHandler.drawString("Talk To Seb", screenWidth - 170, 60, new Font("Arial", Font.BOLD, 18), Color.WHITE);
         }
@@ -153,16 +173,25 @@ public class PlayLevelScreen extends Screen {
         // Inventory Button
         int buttonWidth = 60;
         int buttonHeight = 30;
-        graphicsHandler.drawFilledRectangle(10, screenHeight / 2 - buttonHeight / 2, buttonWidth, buttonHeight, Color.GRAY);
-        graphicsHandler.drawRectangle(10, screenHeight / 2 - buttonHeight / 2, buttonWidth, buttonHeight, Color.BLACK);
+        graphicsHandler.drawFilledRectangle(
+            10,
+            screenHeight / 2 - buttonHeight / 2,
+            buttonWidth,
+            buttonHeight,
+            Color.GRAY
+        );
+        graphicsHandler.drawRectangle(
+            10,
+            screenHeight / 2 - buttonHeight / 2,
+            buttonWidth,
+            buttonHeight,
+            Color.BLACK
+        );
         graphicsHandler.drawString("Inventory", 12, screenHeight / 2, new Font("Arial", Font.PLAIN, 12), Color.WHITE);
     }
 
-    public PlayLevelScreenState getPlayLevelScreenState() {
-        return playLevelScreenState;
-    }
-
     public void resetLevel() {
+        System.out.println("Resetting the level...");
         initialize();
     }
 

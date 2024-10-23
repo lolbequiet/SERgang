@@ -15,6 +15,8 @@ import GameObject.SpriteSheet;
 import Screens.DeathScreen;
 import Utils.Direction;
 import Utils.Point;
+import java.awt.Font;
+
 
 public abstract class Player extends GameObject {
     protected float walkSpeed = 2.3f;
@@ -320,6 +322,26 @@ public abstract class Player extends GameObject {
             System.out.println("Attacked NPC, dealt 20 damage");
         }
     }
+    
+
+    public String getInventorySlot(int slot) {
+        if (slot >= 0 && slot < inventory.size()) {
+            return inventory.get(slot);
+        }
+        return null;  // If slot is empty or out of range
+    }
+
+    public void drawInventory(GraphicsHandler graphicsHandler) {
+        for (int i = 0; i < inventory.size(); i++) {
+            String item = inventory.get(i);
+            graphicsHandler.drawString(item, 60, 100 + (i * 50), new Font("Arial", Font.PLAIN, 14), Color.WHITE);
+        }
+    }
+
+    public boolean isInventoryFull() {
+        return inventory.size() >= 3;
+    }
+     
 
     public abstract boolean isInteracting();
 }
