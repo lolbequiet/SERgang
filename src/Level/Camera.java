@@ -74,6 +74,20 @@ public class Camera extends Rectangle {
         for (NPC npc : activeNPCs) {
             npc.update(player);
         }
+
+        ArrayList<NPC> npcsToRemove = new ArrayList<>();
+        for (NPC enemy : map.getEnemies()) {
+            enemy.update(player);
+
+            if (enemy.getMapEntityStatus() == MapEntityStatus.REMOVED) {
+                npcsToRemove.add(enemy);
+            }
+        }
+
+        for (NPC toRemove : npcsToRemove) {
+            map.enemies.remove(toRemove);
+        }
+        npcsToRemove.clear();
     }
 
     // updates any currently running script
@@ -225,6 +239,19 @@ public class Camera extends Rectangle {
                 }
             }
         }
+        ArrayList<NPC> npcsToRemove = new ArrayList<>();
+        for (NPC enemy : map.getEnemies()) {
+            enemy.draw(graphicsHandler);
+
+            if (enemy.getMapEntityStatus() == MapEntityStatus.REMOVED) {
+                npcsToRemove.add(enemy);
+            }
+        }
+
+        for (NPC toRemove : npcsToRemove) {
+            map.enemies.remove(toRemove);
+        }
+        npcsToRemove.clear();
 
         // player is drawn to screen
         player.draw(graphicsHandler);

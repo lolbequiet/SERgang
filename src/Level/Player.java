@@ -1,6 +1,8 @@
 package Level;
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
 import Engine.GraphicsHandler;
 import Engine.Key;
 import Engine.KeyLocker;
@@ -12,13 +14,14 @@ import GameObject.Rectangle;
 import GameObject.SpriteSheet;
 import Screens.DeathScreen;
 import Utils.Direction;
+import Utils.Point;
 
 public abstract class Player extends GameObject {
     protected float walkSpeed = 2.3f;
     protected float originalWalkSpeed = walkSpeed;
     protected float sprintSpeed = walkSpeed * 2.3f;
     protected int interactionRange = 1;
-    
+
     protected int health = 100; // Player's current health
     protected int maxHealth = 100; // Player's maximum health
     protected int stamina = 200;
@@ -49,6 +52,9 @@ public abstract class Player extends GameObject {
     protected Key MAP_KEY = Key.M;
     protected Key SPRINT_KEY = Key.SHIFT;
 
+    // New Inventory List to store items
+    protected List<String> inventory = new ArrayList<>();
+
     private int coins; 
 
     public Player(SpriteSheet spriteSheet, float x, float y, String startingAnimationName) {
@@ -57,6 +63,22 @@ public abstract class Player extends GameObject {
         playerState = PlayerState.STANDING;
         previousPlayerState = playerState;
         this.affectedByTriggers = true;
+    }
+
+    // Add an item to the player's inventory
+    public void addToInventory(String item) {
+        inventory.add(item);
+        System.out.println("Added " + item + " to inventory.");
+    }
+
+    // Get the current inventory
+    public List<String> getInventory() {
+        return inventory;
+    }
+
+    // Check if a specific item is in the inventory
+    public boolean hasItem(String item) {
+        return inventory.contains(item);
     }
 
     // Getter for current health
@@ -78,7 +100,6 @@ public abstract class Player extends GameObject {
     public void takeDamage(int damage) {
         health = Math.max(0, health - damage); // Ensure health doesn't drop below 0
         System.out.println("Player Health: " + health);
-        health = Math.max(health - damage, 0);
         if (health <= 0) {
             die(); // Handle player death
         }
@@ -134,6 +155,7 @@ public abstract class Player extends GameObject {
         return this.playerState;
     }
 
+    double nextAttackTime = -1;
     public void update() {
         if (!isLocked) {
             moveAmountX = 0;
@@ -146,6 +168,22 @@ public abstract class Player extends GameObject {
 
             lastAmountMovedY = super.moveYHandleCollision(moveAmountY);
             lastAmountMovedX = super.moveXHandleCollision(moveAmountX);
+        }
+
+        if (Keyboard.isKeyDown(Key.SPACE) && System.currentTimeMillis() > nextAttackTime) {
+            for (NPC enemy : map.getEnemies()) {
+                Point location = enemy.getLocation();
+    
+                double distance =  Math.sqrt(Math.pow(getX() - location.x, 2) + Math.pow(getY() - location.y, 2));
+                System.out.println(distance);
+                if (distance < 100) {
+                    enemy.takeDamage(10);
+                }
+            }
+
+            System.out.println("attacking");
+
+            nextAttackTime = System.currentTimeMillis() + 1500;
         }
 
         handlePlayerAnimation();
