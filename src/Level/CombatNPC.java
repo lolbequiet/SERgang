@@ -1,4 +1,8 @@
+package Level;
+
 import GameObject.SpriteSheet;
+import Level.NPC;
+import Level.Player;
 
 
 public class CombatNPC extends NPC {

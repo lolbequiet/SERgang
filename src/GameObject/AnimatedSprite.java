@@ -13,7 +13,7 @@ import java.util.HashMap;
 	Subclasses need to call down to this class's update method in order for animation logic to be performed
 	While this class does not extend from Sprite, it is set up in a way where it is still treated by other classes as if it is a singular sprite (based on value of currentFrame)
 */
-public class AnimatedSprite implements IntersectableRectangle {
+public class AnimatedSprite extends Rectangle {
 	// location of entity
 	protected float x, y;
 
