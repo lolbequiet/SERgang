@@ -2,7 +2,7 @@ package Maps;
 
 import EnhancedMapTiles.CollectableCoin;
 import EnhancedMapTiles.PushableRock;
-import EnhancedMapTiles.Sword; // Import the Sword class
+import EnhancedMapTiles.Sword;
 import Level.*;
 import NPCs.*;
 import Scripts.SimpleTextScript;
@@ -11,11 +11,11 @@ import Tilesets.CommonTileset;
 import Utils.Point;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class TestMap extends Map {
 
-    // New variable to track the player's wallet (coins collected).
-    private int playerWallet;
+    private int playerWallet;  // Track the player's wallet (coins collected)
 
     public TestMap() {
         super("test_map.txt", new CommonTileset());
@@ -26,7 +26,6 @@ public class TestMap extends Map {
     public ArrayList<EnhancedMapTile> loadEnhancedMapTiles() {
         ArrayList<EnhancedMapTile> enhancedMapTiles = new ArrayList<>();
 
-        // Add Pushable Rocks if tile index matches.
         for (MapTile tile : mapTiles) {
             if (tile.getTileIndex() == 3) {
                 PushableRock pushableRock = new PushableRock(tile.getLocation());
@@ -41,14 +40,16 @@ public class TestMap extends Map {
             }
         }
 
-        // Add Sword to the map at a specific location (e.g., tile 10,10).
+        // Add a Sword to the map at tile (10,10)
         Sword sword = new Sword(getMapTile(10, 10).getLocation());
         enhancedMapTiles.add(sword);
 
-        CollectableCoin collectableCoin = new CollectableCoin(new Point(500,500), 10);
-        CollectableCoin collectableCoin1 = new CollectableCoin(new Point(800 ,600), 10);
-        enhancedMapTiles.add(collectableCoin);
-        enhancedMapTiles.add(collectableCoin1);
+        // Add coins to the map
+        CollectableCoin coin1 = new CollectableCoin(new Point(500, 500), 10);
+        CollectableCoin coin2 = new CollectableCoin(new Point(800, 600), 10);
+        enhancedMapTiles.add(coin1);
+        enhancedMapTiles.add(coin2);
+
         return enhancedMapTiles;
     }
 
@@ -56,7 +57,6 @@ public class TestMap extends Map {
     public ArrayList<NPC> loadNPCs() {
         ArrayList<NPC> npcs = new ArrayList<>();
 
-        // Adding existing NPCs
         Walrus walrus = new Walrus(1, getMapTile(4, 28).getLocation().subtractY(40));
         walrus.setInteractScript(new WalrusScript());
         npcs.add(walrus);
@@ -74,7 +74,6 @@ public class TestMap extends Map {
         bug.setInteractScript(new BugScript());
         npcs.add(bug);
 
-        // Additional NPCs with correct spawn locations
         Bug beetle = new Bug(5, getMapTile(15, 22).getLocation().subtractX(30));
         beetle.setInteractScript(new BugScript());
         npcs.add(beetle);
@@ -89,10 +88,15 @@ public class TestMap extends Map {
     @Override
     public ArrayList<NPC> loadEnemies() {
         ArrayList<NPC> enemies = new ArrayList<>();
+        Random random = new Random();
 
-        // Adding WalrusMob
-        WalrusMob walrusMob = new WalrusMob(new Point(10 * 32, 10 * 32));
-        enemies.add(walrusMob);
+        // Spawn 5 WalrusMob enemies at random coordinates
+        for (int i = 0; i < 5; i++) {
+            int x = random.nextInt(40) * 32;  // Random x-coordinate within map range
+            int y = random.nextInt(30) * 32;  // Random y-coordinate within map range
+            WalrusMob walrusMob = new WalrusMob(new Point(x, y));
+            enemies.add(walrusMob);
+        }
 
         return enemies;
     }
@@ -101,13 +105,9 @@ public class TestMap extends Map {
     public ArrayList<Trigger> loadTriggers() {
         ArrayList<Trigger> triggers = new ArrayList<>();
 
-        // Existing triggers for game logic.
         triggers.add(new Trigger(790, 1030, 100, 10, new LostBallScript(), "hasLostBall"));
         triggers.add(new Trigger(790, 960, 10, 80, new LostBallScript(), "hasLostBall"));
         triggers.add(new Trigger(890, 960, 10, 80, new LostBallScript(), "hasLostBall"));
-
-        // New trigger for collecting coins.
-        triggers.add(new Trigger(890, 960, 10, 80, new CoinsCollectedScript(), "coinsCollected"));
 
         return triggers;
     }
@@ -120,13 +120,11 @@ public class TestMap extends Map {
         getMapTile(2, 6).setInteractScript(new TreeScript());
     }
 
-    // Method to add coins to the player's wallet.
     public void addinCheese(int total) {
         playerWallet += total;
-        System.out.println("new amount: " + playerWallet);
+        System.out.println("New amount: " + playerWallet);
     }
 
-    // Method to subtract coins from the player's wallet.
     public boolean cashinOut(int total) {
         if (playerWallet >= total) {
             playerWallet -= total;

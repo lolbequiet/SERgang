@@ -12,6 +12,7 @@ import Utils.Point;
 
 import javax.imageio.ImageIO;
 import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -19,27 +20,49 @@ import java.util.HashMap;
 
 public class WalrusMob extends NPC {
     private int health;
-    private int maxHealth; // Track maximum health for the health bar
+    private int maxHealth;
     private int attackDamage;
     private long lastAttackTime;
-    private long attackCooldown = 2000; // Attack every 2 seconds
-    private static final float AGGRO_RADIUS = 150f; // Aggro radius for following the player
+    private long attackCooldown = 2000;
+    private static final float AGGRO_RADIUS = 150f;
 
     public WalrusMob(Point location) {
         super(1, location.x, location.y, loadWalrusSprite(), "WALK_LEFT");
-        this.health = 50;  // Initial health
-        this.maxHealth = 50; // Set max health to the same initial value
-        this.attackDamage = 10;  // Damage dealt to the player on attack
+        this.health = 50;
+        this.maxHealth = 50;
+        this.attackDamage = 10;
     }
 
     private static SpriteSheet loadWalrusSprite() {
         BufferedImage spriteImage = null;
         try {
             spriteImage = ImageIO.read(new File("resources/WalrusMob.png"));
+            spriteImage = applyTransparency(spriteImage, new Color(255, 0, 255)); // Magenta to transparent
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return new SpriteSheet(spriteImage, 24, 24); // Adjust dimensions if necessary
+        return new SpriteSheet(spriteImage, 24, 24);
+    }
+
+    // Apply transparency to a specific color (magenta)
+    private static BufferedImage applyTransparency(BufferedImage image, Color transparentColor) {
+        BufferedImage newImage = new BufferedImage(
+                image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = newImage.createGraphics();
+        
+        for (int y = 0; y < image.getHeight(); y++) {
+            for (int x = 0; x < image.getWidth(); x++) {
+                int pixel = image.getRGB(x, y);
+                if (pixel == transparentColor.getRGB()) {
+                    newImage.setRGB(x, y, 0x00000000); // Fully transparent pixel
+                } else {
+                    newImage.setRGB(x, y, pixel);
+                }
+            }
+        }
+        
+        g2d.dispose();
+        return newImage;
     }
 
     @Override
@@ -49,12 +72,10 @@ public class WalrusMob extends NPC {
         float playerX = player.getX();
         float playerY = player.getY();
 
-        // Move towards the player if within aggro radius
         if (distanceToPlayer(playerX, playerY) <= AGGRO_RADIUS) {
             moveTowardsPlayer(playerX, playerY);
         }
 
-        // Check for collision and handle attack
         if (getBounds().intersects(player.getBounds())) {
             attack(player);
         }
@@ -66,7 +87,7 @@ public class WalrusMob extends NPC {
 
     private void moveTowardsPlayer(float playerX, float playerY) {
         if (playerX < this.getX()) {
-            this.moveX(-1.5f); // Adjust speed as needed
+            this.moveX(-1.5f);
         } else {
             this.moveX(1.5f);
         }
@@ -90,7 +111,7 @@ public class WalrusMob extends NPC {
     @Override
     public void takeDamage(int damage) {
         this.health -= damage;
-        System.out.println("WalrusMob health: " + this.health); // Verify health reduction
+        System.out.println("WalrusMob health: " + this.health);
         if (this.health <= 0) {
             die();
         }
@@ -111,26 +132,21 @@ public class WalrusMob extends NPC {
     public void draw(GraphicsHandler graphicsHandler) {
         super.draw(graphicsHandler);
 
-        // Adjust the health bar position according to the camera offset
         int screenX = Math.round(getX() - map.getCamera().getX());
         int screenY = Math.round(getY() - map.getCamera().getY());
 
-        // Health bar dimensions
         int healthBarWidth = 50;
         int healthBarHeight = 5;
         int currentHealthWidth = (int) ((health / (float) maxHealth) * healthBarWidth);
 
-        // Draw the health bar background (gray)
         graphicsHandler.drawFilledRectangle(
             screenX, screenY - 10, healthBarWidth, healthBarHeight, Color.GRAY
         );
 
-        // Draw the current health (red)
         graphicsHandler.drawFilledRectangle(
             screenX, screenY - 10, currentHealthWidth, healthBarHeight, Color.RED
         );
 
-        // Draw the health bar outline (black)
         graphicsHandler.drawRectangle(
             screenX, screenY - 10, healthBarWidth, healthBarHeight, Color.BLACK
         );

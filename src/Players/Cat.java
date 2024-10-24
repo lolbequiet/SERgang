@@ -9,13 +9,15 @@ import GameObject.Frame;
 import GameObject.ImageEffect;
 import GameObject.SpriteSheet;
 import Level.Player;
+
 import java.util.HashMap;
 
 public class Cat extends Player {
     private boolean swordPickedUp = false;  // Track if the sword has been picked up
     private boolean swordEquipped = false;  // Track if the sword is currently equipped
-    private final int BASE_DAMAGE = 5;      // Default damage
-    private final int SWORD_DAMAGE_BOOST = 10; // Damage boost when the sword is equipped
+    private final int BASE_DAMAGE = 10;     // Default damage
+    private final int SWORD_DAMAGE_BOOST = 10;  // Additional damage when sword equipped
+    private boolean eKeyPressed = false;  // To prevent multiple E key detections
 
     public Cat(float x, float y) {
         super(new SpriteSheet(ImageLoader.load("Cat.png"), 24, 24), x, y, "STAND_RIGHT");
@@ -40,14 +42,17 @@ public class Cat extends Player {
         }
     }
 
-    // Automatically equip the sword upon pickup
+    // Pick up the sword and equip it immediately
     public void pickUpSword() {
-        swordPickedUp = true;
-        equipSword();  // Equip the sword immediately after picking it up
-        System.out.println("You picked up the sword!");
+        if (!swordPickedUp) {  // Ensure it runs only once
+            swordPickedUp = true;
+            System.out.println("You picked up the sword!");
+            equipSword();
+        }
     }
 
-    // Get the player's current damage based on whether the sword is equipped
+    // Override getDamage to reflect equipped sword damage boost
+    @Override
     public int getDamage() {
         return swordEquipped ? BASE_DAMAGE + SWORD_DAMAGE_BOOST : BASE_DAMAGE;
     }
@@ -56,13 +61,18 @@ public class Cat extends Player {
     public void update() {
         super.update();
 
-        // Toggle sword equip/de-equip with 'E' key
-        if (Keyboard.isKeyDown(Key.E)) {
+        // Handle sword equip/de-equip with E key
+        if (swordPickedUp && Keyboard.isKeyDown(Key.E) && !eKeyPressed) {
+            eKeyPressed = true;
             if (swordEquipped) {
-                deEquipSword();  // De-equip the sword if currently equipped
+                deEquipSword();
             } else {
-                equipSword();  // Equip the sword if not currently equipped
+                equipSword();
             }
+        }
+
+        if (Keyboard.isKeyUp(Key.E)) {
+            eKeyPressed = false;  // Reset flag on key release
         }
     }
 
@@ -73,7 +83,7 @@ public class Cat extends Player {
 
     @Override
     public boolean isInteracting() {
-        return Keyboard.isKeyDown(Key.E);  // Check if the player is interacting (E key)
+        return Keyboard.isKeyDown(Key.E);
     }
 
     @Override

@@ -98,6 +98,12 @@ public abstract class Player extends GameObject {
         return stamina;
     }
 
+    // Add this method inside Player.java
+public int getDamage() {
+    return 10;  // Default player damage
+}
+
+
     // Damage the player and update health
     public void takeDamage(int damage) {
         health = Math.max(0, health - damage); // Ensure health doesn't drop below 0
@@ -179,7 +185,7 @@ public abstract class Player extends GameObject {
                 double distance =  Math.sqrt(Math.pow(getX() - location.x, 2) + Math.pow(getY() - location.y, 2));
                 System.out.println(distance);
                 if (distance < 100) {
-                    enemy.takeDamage(10);
+                    enemy.takeDamage(getDamage());
                 }
             }
 
@@ -349,6 +355,59 @@ public abstract class Player extends GameObject {
         coins += amount;
         System.out.println("test");
     }
+
+    public int getCoins() {
+        return coins;
+    }
+    
+    public void resetCoins() {
+        coins = 0;
+    }
+
+    private int experience = 0;  // Current EXP
+private int expToLevelUp = 100;  // EXP required for next level
+private int level = 1;  // Player's current level
+
+// Gain EXP when defeating enemies
+// Inside Player.java
+// Gain EXP when defeating enemies
+public void gainExp(int amount) {
+    experience += amount;
+    System.out.println("Gained " + amount + " EXP. Current EXP: " + experience + "/" + expToLevelUp);
+
+    if (experience >= expToLevelUp) {
+        levelUp();
+    }
+}
+
+// Handle leveling up
+private void levelUp() {
+    level++;
+    experience = 0;  // Reset EXP for the new level
+    expToLevelUp += 50;  // Increase EXP required for next level
+    System.out.println("Leveled up! Current level: " + level);
+}
+
+
+
+// Getter for the player's current experience points
+public int getExperience() {
+    return experience;
+}
+
+// Getter for the EXP required to level up
+public int getExpToLevelUp() {
+    return expToLevelUp;
+}
+
+// Getter for the player's current level
+public int getLevel() {
+    return level;
+}
+
+
+
+    
 
     public abstract boolean isInteracting();
 }

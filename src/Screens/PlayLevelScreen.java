@@ -14,6 +14,7 @@ import Utils.Direction;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.util.List;
 
 public class PlayLevelScreen extends Screen {
     protected ScreenCoordinator screenCoordinator;
@@ -30,6 +31,7 @@ public class PlayLevelScreen extends Screen {
     private final int screenHeight = 600;
     private final int healthBarWidth = 200;
     private final int healthBarHeight = 20;
+    private final int expBarHeight = 14;  // EXP bar height
 
     public PlayLevelScreen(ScreenCoordinator screenCoordinator) {
         this.screenCoordinator = screenCoordinator;
@@ -60,7 +62,6 @@ public class PlayLevelScreen extends Screen {
         map.getTextbox().setInteractKey(player.getInteractKey());
 
         winScreen = new WinScreen(this);
-
         inventoryScreen.setPlayer((Cat) player);
 
         keyLocker.lockKey(Key.M); // Lock the 'M' key initially
@@ -75,10 +76,19 @@ public class PlayLevelScreen extends Screen {
                 // Check if the player picked up the sword and apply the change
                 if (map.getFlagManager().isFlagSet("pickedUpSword")) {
                     ((Cat) player).pickUpSword();  // Equip sword upon pickup
-                    map.getFlagManager().unsetFlag("pickedUpSword"); // Clear flag after use
+                    map.getFlagManager().unsetFlag("pickedUpSword");  // Clear flag
                 }
 
-                // Game over logic
+                // Check for defeated NPCs and grant EXP
+                List<NPC> enemies = map.getEnemies();
+                for (NPC npc : enemies) {
+                    if (!npc.isActive() && npc.hasCombatLogic()) {
+                        npc.setActive(false);  // Deactivate NPC to avoid repeated EXP gain
+                        player.gainExp(npc.getExpReward());  // Grant EXP
+                    }
+                }
+
+                // Handle player death
                 if (player.getHealth() <= 0) {
                     playLevelScreenState = PlayLevelScreenState.GAME_OVER;
                 }
@@ -152,6 +162,7 @@ public class PlayLevelScreen extends Screen {
 
     private void drawHUD(GraphicsHandler graphicsHandler) {
         int currentHealthWidth = (int) ((player.getHealth() / (double) player.getMaxHealth()) * healthBarWidth);
+        int currentExpWidth = (int) ((player.getExperience() / (double) player.getExpToLevelUp()) * healthBarWidth);
 
         // Draw health bar
         graphicsHandler.drawString("HEALTH", 20, 15, new Font("Arial", Font.BOLD, 14), Color.WHITE);
@@ -163,11 +174,28 @@ public class PlayLevelScreen extends Screen {
         graphicsHandler.drawFilledRectangle(20, 50, player.getStamina(), 14, Color.ORANGE);
         graphicsHandler.drawRectangle(20, 50, healthBarWidth, 14, Color.BLACK);
 
+        // Draw EXP bar
+        graphicsHandler.drawString("EXP", 20, 75, new Font("Arial", Font.BOLD, 14), Color.WHITE);
+        graphicsHandler.drawFilledRectangle(20, 80, currentExpWidth, expBarHeight, Color.BLUE);
+        graphicsHandler.drawRectangle(20, 80, healthBarWidth, expBarHeight, Color.BLACK);
+
+        // Draw player level
+        graphicsHandler.drawString(
+            "LEVEL: " + player.getLevel(),
+            20, 110, new Font("Arial", Font.BOLD, 18), Color.YELLOW
+        );
+
+        // Draw currency display
+        graphicsHandler.drawString(
+            "Coins: " + player.getCoins(),
+            screenWidth - 120, 20, new Font("Arial", Font.BOLD, 18), Color.YELLOW
+        );
+
         // Active Quest Section
-        graphicsHandler.drawString("ACTIVE QUEST:", screenWidth - 180, 30, new Font("Arial", Font.BOLD, 18), Color.WHITE);
+        graphicsHandler.drawString("ACTIVE QUEST:", screenWidth - 180, 60, new Font("Arial", Font.BOLD, 18), Color.WHITE);
 
         if (!flagManager.isFlagSet("hasTalkedToWalrus")) {
-            graphicsHandler.drawString("Talk To Seb", screenWidth - 170, 60, new Font("Arial", Font.BOLD, 18), Color.WHITE);
+            graphicsHandler.drawString("Talk To Seb", screenWidth - 170, 90, new Font("Arial", Font.BOLD, 18), Color.WHITE);
         }
 
         // Inventory Button

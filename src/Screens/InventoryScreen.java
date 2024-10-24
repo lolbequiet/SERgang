@@ -20,30 +20,32 @@ public class InventoryScreen extends Screen {
     private ScreenCoordinator screenCoordinator;
     private Cat player;
     private BufferedImage swordSprite;
-    private int equippedSlot = -1;  // Track the currently equipped slot (-1 means nothing equipped)
-    private boolean isSwordLoaded = false; // Track if sword sprite is loaded successfully
+    private boolean isSwordLoaded = false;
+    private boolean hasSword = false; // Track if the sword is picked up
+    private boolean swordEquipped = false; // Track if the sword is equipped
 
     public InventoryScreen(ScreenCoordinator screenCoordinator) {
         this.screenCoordinator = screenCoordinator;
-        swordSprite = loadImage("resources/Sword.png"); // Try to load the sword sprite
+        swordSprite = loadImage("resources/Sword.png"); // Attempt to load the sword sprite
     }
 
+    /**
+     * Load an image from the given path. If it fails, create a placeholder image.
+     */
     private BufferedImage loadImage(String path) {
         try {
-            File imageFile = new File(path);
-            if (!imageFile.exists()) {
-                System.out.println("Image not found at: " + imageFile.getAbsolutePath());
-                return createPlaceholderImage(); // Use placeholder if not found
-            }
-            BufferedImage image = ImageIO.read(imageFile);
+            BufferedImage image = ImageIO.read(new File(path));
             isSwordLoaded = true;
             return image;
         } catch (IOException e) {
             System.err.println("Error loading image: " + e.getMessage());
-            return createPlaceholderImage(); // Use placeholder on failure
+            return createPlaceholderImage(); // Placeholder on failure
         }
     }
 
+    /**
+     * Create a placeholder image for the sword.
+     */
     private BufferedImage createPlaceholderImage() {
         BufferedImage placeholder = new BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = placeholder.createGraphics();
@@ -55,78 +57,95 @@ public class InventoryScreen extends Screen {
         return placeholder;
     }
 
+    /**
+     * Set the player reference for inventory access.
+     */
     public void setPlayer(Cat player) {
         this.player = player;
+    }
+
+    /**
+     * Call this method when the player picks up the sword.
+     */
+    public void pickUpSword() {
+        hasSword = true;
+        System.out.println("Sword added to inventory.");
     }
 
     @Override
     public void initialize() {
         screenCoordinator.setGameState(GameState.PLAYING);
-        keyLocker.lockKey(Key.I);
+        keyLocker.lockKey(Key.I); // Lock the inventory key initially
     }
 
     @Override
     public void update() {
-        // Equip or de-equip based on slot keys (1, 2, 3)
-        if (Keyboard.isKeyDown(Key.ONE) && !keyLocker.isKeyLocked(Key.ONE)) {
-            toggleSlot(0);  // Toggle slot 1
-            keyLocker.lockKey(Key.ONE);
+        // Equip or de-equip the sword when E is pressed
+        if (Keyboard.isKeyDown(Key.E) && !keyLocker.isKeyLocked(Key.E)) {
+            toggleSword(); // Toggle sword state
+            keyLocker.lockKey(Key.E);
         }
-        if (Keyboard.isKeyDown(Key.TWO) && !keyLocker.isKeyLocked(Key.TWO)) {
-            toggleSlot(1);  // Toggle slot 2
-            keyLocker.lockKey(Key.TWO);
+        if (Keyboard.isKeyUp(Key.E)) {
+            keyLocker.unlockKey(Key.E);
         }
-        if (Keyboard.isKeyDown(Key.THREE) && !keyLocker.isKeyLocked(Key.THREE)) {
-            toggleSlot(2);  // Toggle slot 3
-            keyLocker.lockKey(Key.THREE);
-        }
-
-        if (Keyboard.isKeyUp(Key.ONE)) keyLocker.unlockKey(Key.ONE);
-        if (Keyboard.isKeyUp(Key.TWO)) keyLocker.unlockKey(Key.TWO);
-        if (Keyboard.isKeyUp(Key.THREE)) keyLocker.unlockKey(Key.THREE);
     }
 
-    private void toggleSlot(int slot) {
-        if (equippedSlot == slot) {
-            // If the slot is already equipped, de-equip it
-            equippedSlot = -1;
-            player.deEquipSword();  // Reset player damage
-            System.out.println("Slot " + (slot + 1) + " de-equipped.");
+    /**
+     * Toggles the sword between equipped and de-equipped states.
+     */
+    private void toggleSword() {
+        if (hasSword) {
+            swordEquipped = !swordEquipped;
+
+            if (swordEquipped) {
+                player.equipSword();
+                System.out.println("Sword equipped.");
+            } else {
+                player.deEquipSword();
+                System.out.println("Sword de-equipped.");
+            }
         } else {
-            // Equip the selected slot
-            equippedSlot = slot;
-            if (slot == 0) player.equipSword();  // Equip sword if it's slot 1
-            System.out.println("Slot " + (slot + 1) + " equipped.");
+            System.out.println("You don't have the sword.");
         }
     }
 
     @Override
     public void draw(GraphicsHandler graphicsHandler) {
+        // Draw inventory background
         graphicsHandler.drawFilledRectangle(50, 50, 180, 300, new Color(0, 0, 0, 150));
         graphicsHandler.drawRectangle(49, 49, 182, 302, Color.WHITE);
+
+        // Draw inventory title
         graphicsHandler.drawString("Inventory", 60, 40, new Font("Arial", Font.BOLD, 20), Color.WHITE);
 
-        // Draw Slot 1 (Sword slot)
-        drawSlot(graphicsHandler, 0, 50, "Sword");
+        // Draw each slot with its content
+        drawSlot(graphicsHandler, 0, 50); // Slot 1: Sword
+        drawSlot(graphicsHandler, 1, 150); // Slot 2
+        drawSlot(graphicsHandler, 2, 250); // Slot 3
 
-        // Draw Slot 2
-        drawSlot(graphicsHandler, 1, 150, "Empty");
-
-        // Draw Slot 3
-        drawSlot(graphicsHandler, 2, 250, "Empty");
-
+        // Instructions at the bottom
         graphicsHandler.drawString("Press I to open/close inventory", 55, 370, new Font("Arial", Font.PLAIN, 14), Color.WHITE);
     }
 
-    private void drawSlot(GraphicsHandler graphicsHandler, int slot, int y, String item) {
-        Color borderColor = (slot == equippedSlot) ? Color.GREEN : Color.WHITE;
-        graphicsHandler.drawRectangle(50, y, 180, 100, borderColor);
-        graphicsHandler.drawString(String.valueOf(slot + 1), 80, y + 50, new Font("Arial", Font.PLAIN, 12), Color.WHITE);
+    /**
+     * Draws a single inventory slot with its content and background.
+     */
+    private void drawSlot(GraphicsHandler graphicsHandler, int slot, int y) {
+        // Background color: green if equipped, otherwise black
+        Color backgroundColor = (swordEquipped && slot == 0) ? new Color(0, 255, 0, 100) : new Color(0, 0, 0, 100);
+        graphicsHandler.drawFilledRectangle(50, y, 180, 100, backgroundColor);
 
-        if (slot == 0 && isSwordLoaded) {
-            graphicsHandler.drawImage(swordSprite, 100, y + 20, 32, 32);
+        // Draw slot border
+        graphicsHandler.drawRectangle(50, y, 180, 100, Color.WHITE);
+
+        // Draw slot number
+        graphicsHandler.drawString(String.valueOf(slot + 1), 60, y + 20, new Font("Arial", Font.PLAIN, 14), Color.WHITE);
+
+        // Draw item content
+        if (slot == 0 && hasSword) {
+            graphicsHandler.drawImage(swordSprite, 100, y + 30, 32, 32); // Draw sword sprite
         } else {
-            graphicsHandler.drawString(item, 100, y + 40, new Font("Arial", Font.PLAIN, 12), Color.WHITE);
+            graphicsHandler.drawString("Empty", 100, y + 50, new Font("Arial", Font.PLAIN, 14), Color.WHITE);
         }
     }
 }

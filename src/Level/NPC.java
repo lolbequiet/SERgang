@@ -11,9 +11,10 @@ public class NPC extends MapEntity {
     protected int id;
     protected boolean isLocked = false;
     protected boolean isActive = true;  // Track if the NPC is active
-    protected boolean hasCombatLogic = false;  // Can be enabled for combat NPCs
-    protected int health = -1;  // Default: non-combat NPCs don't have health
+    protected boolean hasCombatLogic = false;  // Combat-enabled NPCs
+    protected int health = -1;  // Default: non-combat NPCs have no health
     protected int maxHealth = -1;
+    protected int expReward = 25;  // EXP reward on defeat
 
     public NPC(int id, float x, float y, SpriteSheet spriteSheet, String startingAnimation) {
         super(x, y, spriteSheet, startingAnimation);
@@ -40,6 +41,7 @@ public class NPC extends MapEntity {
         this.id = id;
     }
 
+    // Getters and Setters
     public int getId() {
         return id;
     }
@@ -73,15 +75,32 @@ public class NPC extends MapEntity {
         if (health > 0) {
             health -= damage;
             if (health <= 0) {
-                die();
+                die();  // Handle NPC death
             }
         }
     }
 
     protected void die() {
-        setActive(false);  // Deactivate or remove NPC from the game
+        setActive(false);  // Deactivate NPC upon death
+    
+        // Grant EXP to the player if the player exists on the map.
+        if (map.getPlayer() != null) {
+            Player player = map.getPlayer();
+            player.gainExp(expReward);  // Grant the EXP reward
+            System.out.println("Player gained " + expReward + " EXP.");
+        }
+    }
+    
+
+    public int getExpReward() {
+        return expReward;
     }
 
+    public void setExpReward(int expReward) {
+        this.expReward = expReward;
+    }
+
+    // Make the NPC face the player
     public void facePlayer(Player player) {
         float centerPoint = getBounds().getX() + (getBounds().getWidth() / 2);
         float playerCenterPoint = player.getBounds().getX() + (player.getBounds().getWidth() / 2);
@@ -118,7 +137,6 @@ public class NPC extends MapEntity {
                 moveY(speed);
                 break;
             default:
-                // Maintain the current walking animation
                 break;
         }
     }
@@ -126,32 +144,31 @@ public class NPC extends MapEntity {
     @Override
     public void update(Player player) {
         if (!isActive || isLocked) {
-            return;
+            return;  // Skip update if NPC is inactive or locked
         }
 
-        performAction(player);
+        performAction(player);  // Custom actions for specific NPCs
 
-        // If this NPC has combat logic, check for collision with the player
         if (hasCombatLogic && getBounds().intersects(player.getBounds())) {
-            attack(player);
+            attack(player);  // Trigger attack if player is within bounds
         }
 
         super.update();
     }
 
     protected void attack(Player player) {
-        // Placeholder: This method can be overridden in subclasses like CombatNPC
+        // Override this method in subclasses for combat behavior
     }
 
     protected void performAction(Player player) {
-        // To be implemented by specific NPCs if needed
+        // Placeholder for custom NPC behavior
     }
 
     @Override
     public void draw(GraphicsHandler graphicsHandler) {
         super.draw(graphicsHandler);
 
-        // If NPC has health, draw a health bar above it
+        // Draw health bar if NPC has health
         if (hasCombatLogic && health > 0) {
             drawHealthBar(graphicsHandler);
         }
