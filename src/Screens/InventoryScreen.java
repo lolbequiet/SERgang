@@ -21,12 +21,12 @@ public class InventoryScreen extends Screen {
     private Cat player;
     private BufferedImage swordSprite;
     private boolean isSwordLoaded = false;
-    private boolean hasSword = false; // Track if the sword is picked up
     private boolean swordEquipped = false; // Track if the sword is equipped
 
     public InventoryScreen(ScreenCoordinator screenCoordinator) {
         this.screenCoordinator = screenCoordinator;
-        swordSprite = loadImage("resources/Sword.png"); // Attempt to load the sword sprite
+        swordSprite = loadImage("resources/Sword.png"); // Load sword sprite for slot 1
+        swordEquipped = false;  // Sword starts unequipped by default
     }
 
     /**
@@ -64,14 +64,6 @@ public class InventoryScreen extends Screen {
         this.player = player;
     }
 
-    /**
-     * Call this method when the player picks up the sword.
-     */
-    public void pickUpSword() {
-        hasSword = true;
-        System.out.println("Sword added to inventory.");
-    }
-
     @Override
     public void initialize() {
         screenCoordinator.setGameState(GameState.PLAYING);
@@ -94,18 +86,14 @@ public class InventoryScreen extends Screen {
      * Toggles the sword between equipped and de-equipped states.
      */
     private void toggleSword() {
-        if (hasSword) {
-            swordEquipped = !swordEquipped;
+        swordEquipped = !swordEquipped;
 
-            if (swordEquipped) {
-                player.equipSword();
-                System.out.println("Sword equipped.");
-            } else {
-                player.deEquipSword();
-                System.out.println("Sword de-equipped.");
-            }
+        if (swordEquipped) {
+            player.equipSword();
+            System.out.println("Sword equipped.");
         } else {
-            System.out.println("You don't have the sword.");
+            player.deEquipSword();
+            System.out.println("Sword de-equipped.");
         }
     }
 
@@ -131,21 +119,20 @@ public class InventoryScreen extends Screen {
      * Draws a single inventory slot with its content and background.
      */
     private void drawSlot(GraphicsHandler graphicsHandler, int slot, int y) {
-        // Background color: green if equipped, otherwise black
-        Color backgroundColor = (swordEquipped && slot == 0) ? new Color(0, 255, 0, 100) : new Color(0, 0, 0, 100);
+        // If sword is equipped and this is slot 1, set a green background
+        Color backgroundColor = (swordEquipped && slot == 0) 
+            ? new Color(0, 255, 0, 150)  // Transparent green when equipped
+            : new Color(0, 0, 0, 100);   // Default black background
+    
         graphicsHandler.drawFilledRectangle(50, y, 180, 100, backgroundColor);
-
-        // Draw slot border
-        graphicsHandler.drawRectangle(50, y, 180, 100, Color.WHITE);
-
-        // Draw slot number
+        graphicsHandler.drawRectangle(50, y, 180, 100, Color.WHITE);  // Slot border
         graphicsHandler.drawString(String.valueOf(slot + 1), 60, y + 20, new Font("Arial", Font.PLAIN, 14), Color.WHITE);
-
-        // Draw item content
-        if (slot == 0 && hasSword) {
-            graphicsHandler.drawImage(swordSprite, 100, y + 30, 32, 32); // Draw sword sprite
+    
+        if (slot == 0 && isSwordLoaded) {
+            graphicsHandler.drawImage(swordSprite, 100, y + 30, 32, 32);  // Sword image
         } else {
             graphicsHandler.drawString("Empty", 100, y + 50, new Font("Arial", Font.PLAIN, 14), Color.WHITE);
         }
     }
+    
 }

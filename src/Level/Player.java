@@ -165,35 +165,43 @@ public int getDamage() {
 
     double nextAttackTime = -1;
     public void update() {
+        // Ensure the player isn't locked
         if (!isLocked) {
             moveAmountX = 0;
             moveAmountY = 0;
-
+    
             do {
                 previousPlayerState = playerState;
                 handlePlayerState();
             } while (previousPlayerState != playerState);
-
+    
             lastAmountMovedY = super.moveYHandleCollision(moveAmountY);
             lastAmountMovedX = super.moveXHandleCollision(moveAmountX);
         }
-
+    
+        // Handle player attack logic
         if (Keyboard.isKeyDown(Key.SPACE) && System.currentTimeMillis() > nextAttackTime) {
             for (NPC enemy : map.getEnemies()) {
                 Point location = enemy.getLocation();
     
-                double distance =  Math.sqrt(Math.pow(getX() - location.x, 2) + Math.pow(getY() - location.y, 2));
+                // Calculate the distance between the player and the enemy
+                double distance = Math.sqrt(Math.pow(getX() - location.x, 2) + Math.pow(getY() - location.y, 2));
                 System.out.println(distance);
+                
+                // Attack if within range
                 if (distance < 100) {
                     enemy.takeDamage(getDamage());
                 }
             }
-
+    
             System.out.println("attacking");
-
-            nextAttackTime = System.currentTimeMillis() + 1500;
+            nextAttackTime = System.currentTimeMillis() + 1500;  // Set attack cooldown
         }
-
+    
+        // Regenerate health over time
+        regenerateHealth();
+    
+        // Handle animations and key updates
         handlePlayerAnimation();
         updateLockedKeys();
         super.update();
@@ -404,6 +412,23 @@ public int getExpToLevelUp() {
 public int getLevel() {
     return level;
 }
+
+// Add these fields to track health regeneration
+private long lastHealTime = 0;  // Track the last heal time
+private long healInterval = 3000;  // Heal every 3 seconds
+private int healAmount = 5;  // Heal 5 health points every interval
+
+// Method to regenerate health slowly over time
+private void regenerateHealth() {
+    long currentTime = System.currentTimeMillis();
+    if (currentTime - lastHealTime >= healInterval && health < maxHealth) {
+        heal(healAmount);  // Heal the player by the specified amount
+        System.out.println("Regenerated " + healAmount + " health. Current health: " + health + "/" + maxHealth);
+        lastHealTime = currentTime;  // Update the last heal time
+    }
+}
+
+
 
 
 
