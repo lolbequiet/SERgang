@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import Level.Script;
 import ScriptActions.*;
 
-// script for talking to walrus npc
+// script for talking to seb/walrus npc
 // checkout the documentation website for a detailed guide on how this script works
 public class SebScript extends Script {
 
