@@ -147,4 +147,12 @@ public class Cat extends Player {
             });
         }};
     }
+
+    @Override
+    protected void setPosition(int i, float y) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setPosition'");
+    }
+
+   
 }
