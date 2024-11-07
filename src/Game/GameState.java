@@ -11,5 +11,6 @@ public enum GameState {
     LEVEL_SELECT,
     GAME_OVER,
     CREDITS,
-    INVENTORY
+    INVENTORY,
+    SHOP
 }

@@ -8,6 +8,9 @@ import Screens.InventoryScreen;
 import Screens.LevelScreen;
 import Screens.MenuScreen;
 import Screens.PlayLevelScreen;
+import Screens.ShopScreen;
+
+import Game.*;
 
 /*
  * Based on the current game state, this class determines which Screen should be shown
@@ -64,6 +67,7 @@ public class ScreenCoordinator extends Screen {
 					case CREDITS:
 						currentScreen = new CreditsScreen(this);
 						break;
+					
 				}
 
 				if (previousScreen != null && persistedGameState == gameState) {

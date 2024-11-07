@@ -26,6 +26,7 @@ public class PlayLevelScreen extends Screen {
     protected FlagManager flagManager;
     protected boolean isInventoryShowing;
     protected InventoryScreen inventoryScreen;
+    protected ShopScreen ShopScreen;
 
     private final int screenWidth = 800;
     private final int screenHeight = 600;
@@ -36,6 +37,7 @@ public class PlayLevelScreen extends Screen {
     public PlayLevelScreen(ScreenCoordinator screenCoordinator) {
         this.screenCoordinator = screenCoordinator;
         this.inventoryScreen = new InventoryScreen(screenCoordinator);
+        this.ShopScreen = new ShopScreen(this, player);
         this.isInventoryShowing = false;
         initialize();
     }
@@ -48,6 +50,7 @@ public class PlayLevelScreen extends Screen {
         flagManager.addFlag("hasLostBall");
         flagManager.addFlag("hasTalkedToWalrus");
         flagManager.addFlag("hasFoundBall");
+        flagManager.addFlag("VIPaccess");
 
         map = new TestMap();
         map.setFlagManager(flagManager);
@@ -106,6 +109,14 @@ public class PlayLevelScreen extends Screen {
             case GAME_OVER:
                 goBackToMenu();
                 break;
+
+            case SHOP:
+                ShopScreen.update();
+                break;
+        }
+
+        if (map.getFlagManager().isFlagSet("VIPaccess")) {
+            playLevelScreenState = playLevelScreenState.SHOP;
         }
 
         // Toggle Inventory Screen
@@ -146,6 +157,10 @@ public class PlayLevelScreen extends Screen {
 
             case LEVEL_COMPLETED:
                 winScreen.draw(graphicsHandler);
+                break;
+
+            case SHOP:
+                ShopScreen.draw(graphicsHandler);
                 break;
 
             case GAME_OVER:
@@ -228,6 +243,6 @@ public class PlayLevelScreen extends Screen {
     }
 
     private enum PlayLevelScreenState {
-        RUNNING, LEVEL_COMPLETED, GAME_OVER
+        RUNNING, LEVEL_COMPLETED, GAME_OVER, SHOP
     }
 }
