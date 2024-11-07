@@ -3,6 +3,13 @@ package Level;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
+
 import Engine.GraphicsHandler;
 import Engine.Key;
 import Engine.KeyLocker;
@@ -16,9 +23,14 @@ import Screens.DeathScreen;
 import Utils.Direction;
 import Utils.Point;
 import java.awt.Font;
+import java.io.File;
+import java.io.IOException;
+
 
 
 public abstract class Player extends GameObject {
+    // values that affect player movement
+    // these should be set in a subclass
     protected float walkSpeed = 2.3f;
     protected float originalWalkSpeed = walkSpeed;
     protected float sprintSpeed = walkSpeed * 2.3f;
@@ -35,8 +47,13 @@ public abstract class Player extends GameObject {
     protected Direction currentWalkingYDirection;
     protected Direction lastWalkingXDirection;
     protected Direction lastWalkingYDirection;
+
+        // values used to handle player movement
+
     protected float moveAmountX, moveAmountY;
     protected float lastAmountMovedX, lastAmountMovedY;
+
+        // values used to keep track of player's current state
 
     protected PlayerState playerState;
     protected PlayerState previousPlayerState;
@@ -44,6 +61,7 @@ public abstract class Player extends GameObject {
     protected Direction lastMovementDirection;
     protected boolean isLocked = false; // Locking state
 
+    // define keys
     protected KeyLocker keyLocker = new KeyLocker();
     protected Key MOVE_LEFT_KEY = Key.LEFT;
     protected Key MOVE_RIGHT_KEY = Key.RIGHT;
@@ -58,6 +76,9 @@ public abstract class Player extends GameObject {
     protected List<String> inventory = new ArrayList<>();
 
     private int coins; 
+    // Audio 
+    private Clip walkingClip; // Clip to manage the walking sound
+        private boolean isWalking = false; // Tracks if the player is currently walking
 
     public Player(SpriteSheet spriteSheet, float x, float y, String startingAnimationName) {
         super(spriteSheet, x, y, startingAnimationName);
@@ -65,23 +86,36 @@ public abstract class Player extends GameObject {
         playerState = PlayerState.STANDING;
         previousPlayerState = playerState;
         this.affectedByTriggers = true;
+    
+        initializeWalkingSound(); // Initialize the walking sound
     }
 
-    // Add an item to the player's inventory
-    public void addToInventory(String item) {
-        inventory.add(item);
-        System.out.println("Added " + item + " to inventory.");
-    }
+    
 
-    // Get the current inventory
-    public List<String> getInventory() {
-        return inventory;
+// Add an item to the player's inventory
+public void addToInventory(String item) {
+    if (inventory == null) {
+        inventory = new ArrayList<>(); // Ensure inventory is initialized
     }
+    inventory.add(item);
+    System.out.println("Added " + item + " to inventory.");
+}
 
-    // Check if a specific item is in the inventory
-    public boolean hasItem(String item) {
-        return inventory.contains(item);
+// Get the current inventory
+public List<String> getInventory() {
+    if (inventory == null) {
+        inventory = new ArrayList<>(); // Ensure inventory is initialized
     }
+    return inventory;
+}
+
+// Check if a specific item is in the inventory
+public boolean hasItem(String item) {
+    if (inventory == null) {
+        inventory = new ArrayList<>(); // Ensure inventory is initialized
+    }
+    return inventory.contains(item);
+}
 
     // Getter for current health
     public int getHealth() {
@@ -179,6 +213,19 @@ public int getDamage() {
             lastAmountMovedX = super.moveXHandleCollision(moveAmountX);
         }
     
+        // Manage walking sound
+        manageWalkingSound();
+    
+        // Handle animations and key updates
+        regenerateHealth();
+        
+        handlePlayerAnimation();
+
+        updateLockedKeys();
+
+        super.update();
+    
+    
         // Handle player attack logic
         if (Keyboard.isKeyDown(Key.SPACE) && System.currentTimeMillis() > nextAttackTime) {
             for (NPC enemy : map.getEnemies()) {
@@ -246,6 +293,40 @@ public int getDamage() {
         }
     }
 
+private void initializeWalkingSound() {
+    try {
+        File soundFile = new File("Resources/Audio/cc_walk.wav");
+        AudioInputStream audioStream = AudioSystem.getAudioInputStream(soundFile);
+        walkingClip = AudioSystem.getClip();
+        walkingClip.open(audioStream);
+        walkingClip.loop(Clip.LOOP_CONTINUOUSLY); // Prepare for looping
+        walkingClip.stop(); // Start with sound stopped
+    } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+        System.err.println("Error initializing walking sound: " + e.getMessage());
+    }
+}
+
+private void manageWalkingSound() {
+    boolean isCurrentlyWalking = isMovingKeyPressed();
+
+    if (isCurrentlyWalking && !isWalking) {
+
+        // Restart the clip if it has finished or is stopped
+        if (!walkingClip.isRunning()) {
+            walkingClip.setFramePosition(0); 
+            walkingClip.start(); // Play the sound
+        }
+        isWalking = true;
+    } else if (!isCurrentlyWalking && isWalking) {
+        walkingClip.stop(); // Stop the sound
+        isWalking = false;
+    }
+}
+
+private boolean isMovingKeyPressed() {
+    return Keyboard.isKeyDown(MOVE_LEFT_KEY) || Keyboard.isKeyDown(MOVE_RIGHT_KEY) ||
+           Keyboard.isKeyDown(MOVE_UP_KEY) || Keyboard.isKeyDown(MOVE_DOWN_KEY);
+}
     protected void staminaDecrement() {
         if (walkCooldown >= 1.5f && stamina > 0) {
             stamina -= 1;
@@ -308,6 +389,7 @@ public int getDamage() {
 
         updateLastDirections();
     }
+
 
     private void updateLastDirections() {
         if (currentWalkingXDirection != Direction.NONE) {
@@ -435,4 +517,6 @@ private void regenerateHealth() {
     
 
     public abstract boolean isInteracting();
+
+    protected abstract void setPosition(int i, float y);
 }

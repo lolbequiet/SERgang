@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import Builders.FrameBuilder;
 import Builders.MapTileBuilder;
+import Game.AudioManager;
 import GameObject.Frame;
 import Level.*;
 import ScriptActions.*;
@@ -20,8 +21,16 @@ public class DinoScript extends Script {
     public ArrayList<ScriptAction> loadScriptActions() {
 
         ArrayList<ScriptAction> scriptActions = new ArrayList<>();
+                scriptActions.add(new CustomScriptAction() {
+            @Override
+            public void customExecute() {
+                AudioManager.playSound("Resources/Audio/ccinteract.wav");
+                System.out.println("Interaction sound played.");
+            }
+        });
         scriptActions.add(new LockPlayerScriptAction());
-        scriptActions.add(new TextboxScriptAction("Isn't my garden so lovely?"));
+
+        scriptActions.add(new TextboxScriptAction("Isn't the land lovely?"));
 
         scriptActions.add(new ConditionalScriptAction() {{
             addConditionalScriptActionGroup(new ConditionalScriptActionGroup() {{
@@ -32,9 +41,9 @@ public class DinoScript extends Script {
                 addScriptAction(new NPCFacePlayerScriptAction());
                 addScriptAction(new TextboxScriptAction () {{
                     addText("Oh, you're still here...");
-                    addText("...You heard from Walrus that he saw me with your\nball?");
+                    addText("...You heard from the other cloaks that he saw me with your\n ball?");
                     addText("Well, I saw him playing with it and was worried it would\nroll into my garden.");
-                    addText("So I kicked it as far as I could into the forest to the left.");
+                    addText("So I kicked it as far as I could into the forest.");
                     addText("Now, if you'll excuse me, I have to go.");
                 }});
                 addScriptAction(new NPCStandScriptAction(Direction.RIGHT));

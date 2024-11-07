@@ -11,6 +11,8 @@ public abstract class ScriptAction {
     protected MapEntity entity;
     protected ScriptActionOutputManager outputManager;
 
+
+    
     public void setup() {}
 
     public ScriptState execute() {

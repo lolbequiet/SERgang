@@ -42,7 +42,8 @@ public class LevelScreen extends Screen {
     @Override
     public void update() {
         if (Keyboard.isKeyDown(Key.M) && !keyLocker.isKeyLocked(Key.M)) {
-            screenCoordinator.setGameState(GameState.LEVEL);
+            // screenCoordinator.setGameState(GameState.LEVEL);
+            screenCoordinator.BackToPersist(); // sets it back to previous save
 			keyLocker.lockKey(Key.M);
 		}
 

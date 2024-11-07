@@ -11,6 +11,7 @@ import Screens.PlayLevelScreen;
 import Screens.ShopScreen;
 
 import Game.*;
+import Screens.NewWorldScreen;
 
 /*
  * Based on the current game state, this class determines which Screen should be shown
@@ -38,7 +39,12 @@ public class ScreenCoordinator extends Screen {
 	public void setGameStatePersist(GameState gameState) {
 		previousScreen = currentScreen;
 		persistedGameState = this.gameState;
+
 		this.gameState = gameState;
+	}
+
+	public void BackToPersist() {
+		this.gameState = persistedGameState;
 	}
 
 	@Override
@@ -53,28 +59,33 @@ public class ScreenCoordinator extends Screen {
 			// if previousGameState does not equal gameState, it means there was a change in gameState
 			// this triggers ScreenCoordinator to bring up a new Screen based on what the gameState is
 			if (previousGameState != gameState) {
-				switch(gameState) {
-					case MENU:
-						currentScreen = new MenuScreen(this);
-						break;
-					case LEVEL:
-						currentScreen = new PlayLevelScreen(this);
-						break;
-					case LEVEL_SELECT:
-						currentScreen = new LevelScreen(this);
-						break;
-					
-					case CREDITS:
-						currentScreen = new CreditsScreen(this);
-						break;
-					
-				}
-
+				
 				if (previousScreen != null && persistedGameState == gameState) {
+					// System.out.println(persistedGameState);
 					currentScreen = previousScreen;
-
+					
 					previousScreen = null;
 				} else {
+					switch(gameState) {
+						case MENU:
+							currentScreen = new MenuScreen(this);
+							break;
+						case LEVEL:
+							currentScreen = new PlayLevelScreen(this);
+							break;
+						case LEVEL_SELECT:
+							currentScreen = new LevelScreen(this);
+							break;
+						
+						case CREDITS:
+							currentScreen = new CreditsScreen(this);
+							break;
+						case NEWWORLD:
+							currentScreen = new NewWorldScreen(this);
+							break;
+						
+				}
+
 					currentScreen.initialize();
 				}
 
