@@ -3,6 +3,7 @@ package Maps;
 import EnhancedMapTiles.CollectableCoin;
 import EnhancedMapTiles.PushableRock;
 import EnhancedMapTiles.Sword;
+import GameObject.SpriteSheet;
 import Level.*;
 import NPCs.*;
 import Scripts.SimpleTextScript;
@@ -12,6 +13,12 @@ import Utils.Point;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.awt.Image;
+import java.awt.Toolkit;
+
+
+
+import Engine.ImageLoader;
 
 public class TestMap extends Map {
 
@@ -19,8 +26,11 @@ public class TestMap extends Map {
 
     public TestMap() {
         super("test_map.txt", new CommonTileset());
+    
         this.playerStartPosition = getMapTile(17, 20).getLocation();
+        
     }
+    
 
     @Override
     public ArrayList<EnhancedMapTile> loadEnhancedMapTiles() {
@@ -57,9 +67,18 @@ public class TestMap extends Map {
     public ArrayList<NPC> loadNPCs() {
         ArrayList<NPC> npcs = new ArrayList<>();
 
-        Walrus walrus = new Walrus(1, getMapTile(4, 28).getLocation().subtractY(40));
+        // Spawn Friend near the player
+        Point friendSpawnLocation = getMapTile(18, 20).getLocation(); 
+        Friend friend = new Friend(friendSpawnLocation);
+        npcs.add(friend);
+
+
+        Walrus walrus = new Walrus(1, getMapTile(20,21).getLocation().subtractY(40));
         walrus.setInteractScript(new WalrusScript());
         npcs.add(walrus);
+
+
+
 
         Dinosaur dinosaur = new Dinosaur(2, getMapTile(13, 4).getLocation());
         dinosaur.setExistenceFlag("hasTalkedToDinosaur");
@@ -81,10 +100,10 @@ public class TestMap extends Map {
         Seb ant = new Seb(6, new Point(14 * 32, 18 * 32).subtractX(30));
         ant.setInteractScript(new BugScript());
         npcs.add(ant);
-
+        
         return npcs;
     }
-
+    
     @Override
     public ArrayList<NPC> loadEnemies() {
         ArrayList<NPC> enemies = new ArrayList<>();
@@ -100,6 +119,7 @@ public class TestMap extends Map {
 
         return enemies;
     }
+
 
     @Override
     public ArrayList<Trigger> loadTriggers() {
