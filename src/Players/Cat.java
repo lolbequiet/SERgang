@@ -11,8 +11,6 @@ import GameObject.SpriteSheet;
 import Level.Player;
 
 import java.util.HashMap;
-import Game.AudioManager;
-
 
 public class Cat extends Player {
     private boolean swordPickedUp = false;  // Track if the sword has been picked up
@@ -20,7 +18,7 @@ public class Cat extends Player {
     private final int BASE_DAMAGE = 10;     // Default damage
     private final int SWORD_DAMAGE_BOOST = 10;  // Additional damage when sword equipped
     private boolean eKeyPressed = false;  // To prevent multiple E key detections
-    
+    private boolean isAttacking = false;  // Track if the attack animation is playing
 
     public Cat(float x, float y) {
         super(new SpriteSheet(ImageLoader.load("Cat.png"), 24, 24), x, y, "STAND_RIGHT");
@@ -77,6 +75,32 @@ public class Cat extends Player {
         if (Keyboard.isKeyUp(Key.E)) {
             eKeyPressed = false;  // Reset flag on key release
         }
+
+        // Handle attack animation with SPACE key
+        if (Keyboard.isKeyDown(Key.SPACE) && !isAttacking) {
+            isAttacking = true;
+            if (getCurrentAnimationName().contains("LEFT")) {
+                this.setCurrentAnimationName("ATTACK_LEFT"); // Attack facing left
+            } else {
+                this.setCurrentAnimationName("ATTACK_RIGHT"); // Attack facing right
+            }
+        }
+
+        // Reset to idle or walking animation after attack animation finishes
+        if (isAttacking && !this.getCurrentAnimationName().startsWith("ATTACK")) {
+            isAttacking = false;
+            resetToIdleOrWalk(); // Reset animation to idle or walk
+        }
+    }
+
+    private void resetToIdleOrWalk() {
+        if (Keyboard.isKeyDown(Key.RIGHT)) {
+            this.setCurrentAnimationName("WALK_RIGHT");
+        } else if (Keyboard.isKeyDown(Key.LEFT)) {
+            this.setCurrentAnimationName("WALK_LEFT");
+        } else {
+            this.setCurrentAnimationName("STAND_RIGHT");
+        }
     }
 
     @Override
@@ -87,8 +111,6 @@ public class Cat extends Player {
     @Override
     public boolean isInteracting() {
         return Keyboard.isKeyDown(Key.E);
-
-
     }
 
     @Override
@@ -150,14 +172,53 @@ public class Cat extends Player {
                     .withBounds(6, 12, 12, 7)
                     .build()
             });
+
+            put("ATTACK_RIGHT", new Frame[]{
+                new FrameBuilder(spriteSheet.getSprite(2, 0), 30) // Slower attack frame 1
+                    .withScale(3)
+                    .withBounds(6, 12, 12, 7)
+                    .build(),
+                new FrameBuilder(spriteSheet.getSprite(2, 1), 30) // Slower attack frame 2
+                    .withScale(3)
+                    .withBounds(6, 12, 12, 7)
+                    .build(),
+                new FrameBuilder(spriteSheet.getSprite(2, 2), 30) // Slower attack frame 3
+                    .withScale(3)
+                    .withBounds(6, 12, 12, 7)
+                    .build(),
+                new FrameBuilder(spriteSheet.getSprite(2, 3), 30) // Slower attack frame 4
+                    .withScale(3)
+                    .withBounds(6, 12, 12, 7)
+                    .build()
+            });
+
+            put("ATTACK_LEFT", new Frame[]{
+                new FrameBuilder(spriteSheet.getSprite(2, 0), 30)
+                    .withScale(3)
+                    .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                    .withBounds(6, 12, 12, 7)
+                    .build(),
+                new FrameBuilder(spriteSheet.getSprite(2, 1), 30)
+                    .withScale(3)
+                    .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                    .withBounds(6, 12, 12, 7)
+                    .build(),
+                new FrameBuilder(spriteSheet.getSprite(2, 2), 30)
+                    .withScale(3)
+                    .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                    .withBounds(6, 12, 12, 7)
+                    .build(),
+                new FrameBuilder(spriteSheet.getSprite(2, 3), 30)
+                    .withScale(3)
+                    .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                    .withBounds(6, 12, 12, 7)
+                    .build()
+            });
         }};
     }
 
     @Override
     protected void setPosition(int i, float y) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'setPosition'");
     }
-
-   
 }
