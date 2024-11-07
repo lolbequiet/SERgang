@@ -12,7 +12,7 @@ public class AudioManager {
 
     // Play a sound in a loop
     public static void playLoop(String filePath) {
-        play(filePath, true, 0.1f); // Default volume: 1.0 (100%)
+        play(filePath, true, 0.3f); // Default volume: 1.0 (100%)
     }
 
     public static void playSound(String filePath, float volume) {

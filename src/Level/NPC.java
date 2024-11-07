@@ -15,6 +15,7 @@ public class NPC extends MapEntity {
     protected int health = -1;  // Default: non-combat NPCs have no health
     protected int maxHealth = -1;
     protected int expReward = 25;  // EXP reward on defeat
+    protected boolean expGranted = false;  // Prevent EXP from being granted multiple times
 
     public NPC(int id, float x, float y, SpriteSheet spriteSheet, String startingAnimation) {
         super(x, y, spriteSheet, startingAnimation);
@@ -81,16 +82,20 @@ public class NPC extends MapEntity {
     }
 
     protected void die() {
-        setActive(false);  // Deactivate NPC upon death
-    
-        // Grant EXP to the player if the player exists on the map.
-        if (map.getPlayer() != null) {
+        setActive(false);
+        System.out.println("NPC " + id + " has died.");  // Ensure this prints
+
+        if (!expGranted && map.getPlayer() != null) {
             Player player = map.getPlayer();
-            player.gainExp(expReward);  // Grant the EXP reward
-            System.out.println("NPC died: " + this.getId() + ", granting EXP: " + expReward);
+            player.gainExp(expReward);  // Grant EXP reward
+            setExpGranted(true);  // Ensure EXP is granted only once
+            System.out.println("Granted " + expReward + " EXP to Player.");
+        } else if (expGranted) {
+            System.out.println("EXP already granted for NPC " + id);
+        } else {
+            System.out.println("Player not found!");
         }
     }
-    
 
     public int getExpReward() {
         return expReward;
@@ -98,6 +103,14 @@ public class NPC extends MapEntity {
 
     public void setExpReward(int expReward) {
         this.expReward = expReward;
+    }
+
+    public boolean isExpGranted() {
+        return expGranted;
+    }
+
+    public void setExpGranted(boolean granted) {
+        this.expGranted = granted;
     }
 
     // Make the NPC face the player
