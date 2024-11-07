@@ -109,10 +109,10 @@ public class Keyboard {
      */
     private static EnumMap<Key, Integer> buildKeyMap() {
         return new EnumMap<>(Key.class) {{
-            put(Key.UP, KeyEvent.VK_UP);
-            put(Key.DOWN, KeyEvent.VK_DOWN);
-            put(Key.LEFT, KeyEvent.VK_LEFT);
-            put(Key.RIGHT, KeyEvent.VK_RIGHT);
+            put(Key.UP, KeyEvent.VK_W);
+            put(Key.DOWN, KeyEvent.VK_S);
+            put(Key.LEFT, KeyEvent.VK_A);
+            put(Key.RIGHT, KeyEvent.VK_D);
             put(Key.ENTER, KeyEvent.VK_ENTER);
             put(Key.SPACE, KeyEvent.VK_SPACE);
             put(Key.ESC, KeyEvent.VK_ESCAPE);
