@@ -11,6 +11,8 @@ import GameObject.SpriteSheet;
 import Level.Player;
 
 import java.util.HashMap;
+import Game.AudioManager;
+
 
 public class Cat extends Player {
     private boolean swordPickedUp = false;  // Track if the sword has been picked up
@@ -84,6 +86,8 @@ public class Cat extends Player {
     @Override
     public boolean isInteracting() {
         return Keyboard.isKeyDown(Key.E);
+
+
     }
 
     @Override

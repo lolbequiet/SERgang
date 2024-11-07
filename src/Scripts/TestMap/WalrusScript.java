@@ -2,6 +2,7 @@ package Scripts.TestMap;
 
 import java.util.ArrayList;
 
+import Game.AudioManager;
 import Level.Script;
 import ScriptActions.*;
 
@@ -12,6 +13,13 @@ public class WalrusScript extends Script {
     @Override
     public ArrayList<ScriptAction> loadScriptActions() {
         ArrayList<ScriptAction> scriptActions = new ArrayList<>();
+                scriptActions.add(new CustomScriptAction() {
+            @Override
+            public void customExecute() {
+                AudioManager.playSound("Resources/Audio/ccinteract.wav");
+                System.out.println("Interaction sound played.");
+            }
+        });
         scriptActions.add(new LockPlayerScriptAction());
 
         scriptActions.add(new NPCFacePlayerScriptAction());

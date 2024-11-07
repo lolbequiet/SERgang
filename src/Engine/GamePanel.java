@@ -4,7 +4,6 @@ import GameObject.Rectangle;
 import Screens.LevelScreen;
 import SpriteFont.SpriteFont;
 import Utils.Colors;
-
 import javax.swing.*;
 import java.awt.*;
 
@@ -12,8 +11,9 @@ import java.awt.*;
  * This is where the game loop process and render back buffer is set up.
  */
 public class GamePanel extends JPanel {
-    // Loads Screens on to the JPanel; each screen has its own update and draw methods
-    private ScreenManager screenManager;
+    // loads Screens on to the JPanel
+	// each screen has its own update and draw methods defined to handle a "section" of the game.
+	private ScreenManager screenManager;
 
     // Used to draw graphics to the panel
     private GraphicsHandler graphicsHandler;

@@ -11,11 +11,13 @@ import Utils.Point;
 
 import java.util.HashMap;
 
+//this file will hold the tutorial dude!!! NPC
+
 // This class is for the seb/walrus NPC
 public class Walrus extends NPC {
 
     public Walrus(int id, Point location) {
-        super(id, location.x, location.y, new SpriteSheet(ImageLoader.load("Walrus.png"), 24, 24), "STAND_LEFT");
+        super(id, location.x, location.y, new SpriteSheet(ImageLoader.load("Walrus-2.png"), 24, 24), "STAND_LEFT");
     }
 
     @Override

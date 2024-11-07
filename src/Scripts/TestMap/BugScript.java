@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import Level.Script;
 import ScriptActions.*;
 
+import Game.AudioManager;
+import Engine.Key;
+import Engine.Keyboard;
+
 // script for talking to bug npc
 // checkout the documentation website for a detailed guide on how this script works
 public class BugScript extends Script {
@@ -12,6 +16,16 @@ public class BugScript extends Script {
     @Override
     public ArrayList<ScriptAction> loadScriptActions() {
         ArrayList<ScriptAction> scriptActions = new ArrayList<>();
+        
+        scriptActions.add(new CustomScriptAction() {
+            @Override
+            public void customExecute() {
+                AudioManager.playSound("Resources/Audio/ccinteract.wav");
+                System.out.println("Interaction sound played.");
+            }
+        });
+
+
         scriptActions.add(new LockPlayerScriptAction());
 
         scriptActions.add(new NPCLockScriptAction());
@@ -19,6 +33,7 @@ public class BugScript extends Script {
         scriptActions.add(new NPCFacePlayerScriptAction());
 
         scriptActions.add(new TextboxScriptAction() {{
+            
             addText("Hello!");
             addText("Do you like bugs?", new String[] { "Yes", "No" });
         }});

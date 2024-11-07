@@ -57,7 +57,13 @@ public class TestMap extends Map {
     public ArrayList<NPC> loadNPCs() {
         ArrayList<NPC> npcs = new ArrayList<>();
 
-        Walrus walrus = new Walrus(1, getMapTile(4, 28).getLocation().subtractY(40));
+        // Spawn Friend near the player
+        Point friendSpawnLocation = getMapTile(18, 20).getLocation(); // Adjust location as needed
+        Friend friend = new Friend(friendSpawnLocation);
+        npcs.add(friend);
+
+
+        Walrus walrus = new Walrus(1, getMapTile(20,21).getLocation().subtractY(40));
         walrus.setInteractScript(new WalrusScript());
         npcs.add(walrus);
 
@@ -81,10 +87,10 @@ public class TestMap extends Map {
         Seb ant = new Seb(6, new Point(14 * 32, 18 * 32).subtractX(30));
         ant.setInteractScript(new BugScript());
         npcs.add(ant);
-
+        
         return npcs;
     }
-
+    
     @Override
     public ArrayList<NPC> loadEnemies() {
         ArrayList<NPC> enemies = new ArrayList<>();
@@ -100,6 +106,7 @@ public class TestMap extends Map {
 
         return enemies;
     }
+
 
     @Override
     public ArrayList<Trigger> loadTriggers() {
