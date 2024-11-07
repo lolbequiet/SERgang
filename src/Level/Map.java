@@ -88,6 +88,8 @@ public abstract class Map {
         this.xMidPoint = ScreenManager.getScreenWidth() / 2;
         this.yMidPoint = (ScreenManager.getScreenHeight() / 2);
         this.playerStartPosition = new Point(0, 0);
+
+        this.flagManager = new FlagManager();
     }
 
     // sets up map by reading in the map file to create the tile map

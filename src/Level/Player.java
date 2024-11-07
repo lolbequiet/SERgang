@@ -435,4 +435,6 @@ private void regenerateHealth() {
     
 
     public abstract boolean isInteracting();
+
+    protected abstract void setPosition(int i, float y);
 }
