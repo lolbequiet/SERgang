@@ -49,8 +49,8 @@ public class BugScript extends Script {
                 });
 
                 addScriptAction(new TextboxScriptAction() {{
-                    addText("I knew you were a cool cat!");
-                    addText("I'm going to let you in on a little secret...\nYou can push some rocks out of the way.");
+                    addText("I knew you were cool!");
+                    addText("I'm going to let you in on a little secret...\nPress 'e' to pick up rocks.");
                 }});
             }});
 

@@ -10,12 +10,11 @@ public class AudioManager {
         play(filePath, false, 1.0f); // Default volume: 1.0 (100%)
     }
 
-    // Play a sound in a continuous loop
+    // Play a sound in a loop
     public static void playLoop(String filePath) {
         play(filePath, true, 0.1f); // Default volume: 1.0 (100%)
     }
 
-    // Play sound with volume adjustment
     public static void playSound(String filePath, float volume) {
         play(filePath, false, volume);
     }
@@ -24,7 +23,7 @@ public class AudioManager {
         play(filePath, true, volume);
     }
 
-    // Common method to play audio
+    //play audio
     private static void play(String filePath, boolean loop, float volume) {
         try {
             File audioFile = new File(filePath);
@@ -40,7 +39,7 @@ public class AudioManager {
 
             // Set volume
             FloatControl volumeControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-            float dB = (float) (Math.log10(volume) * 20); // Convert linear volume to decibels
+            float dB = (float) (Math.log10(volume) * 20); 
             volumeControl.setValue(dB);
 
             // Play sound

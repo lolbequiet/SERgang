@@ -58,7 +58,7 @@ public class TestMap extends Map {
         ArrayList<NPC> npcs = new ArrayList<>();
 
         // Spawn Friend near the player
-        Point friendSpawnLocation = getMapTile(18, 20).getLocation(); // Adjust location as needed
+        Point friendSpawnLocation = getMapTile(18, 20).getLocation(); 
         Friend friend = new Friend(friendSpawnLocation);
         npcs.add(friend);
 
