@@ -86,16 +86,17 @@ public class InventoryScreen extends Screen {
      * Toggles the sword between equipped and de-equipped states.
      */
     private void toggleSword() {
-        swordEquipped = !swordEquipped;
-
-        if (swordEquipped) {
-            player.equipSword();
-            System.out.println("Sword equipped.");
-        } else {
-            player.deEquipSword();
-            System.out.println("Sword de-equipped.");
+        if (player != null) {
+            if (swordEquipped) {
+                player.deEquipSword();
+                System.out.println("Sword de-equipped.");
+            } else {
+                player.equipSword();
+                System.out.println("Sword equipped.");
+            }
         }
     }
+    
 
     @Override
     public void draw(GraphicsHandler graphicsHandler) {
@@ -119,20 +120,28 @@ public class InventoryScreen extends Screen {
      * Draws a single inventory slot with its content and background.
      */
     private void drawSlot(GraphicsHandler graphicsHandler, int slot, int y) {
-        // If sword is equipped and this is slot 1, set a green background
-        Color backgroundColor = (swordEquipped && slot == 0) 
-            ? new Color(0, 255, 0, 150)  // Transparent green when equipped
-            : new Color(0, 0, 0, 100);   // Default black background
+        // Check if the sword is equipped and this is slot 1
+        Color backgroundColor = (swordEquipped && slot == 0)
+            ? new Color(0, 255, 0, 150)  // Transparent green if equipped
+            : new Color(0, 0, 0, 100);   // Default background
     
+        // Draw the slot background
         graphicsHandler.drawFilledRectangle(50, y, 180, 100, backgroundColor);
-        graphicsHandler.drawRectangle(50, y, 180, 100, Color.WHITE);  // Slot border
+    
+        // Draw the slot border
+        graphicsHandler.drawRectangle(50, y, 180, 100, Color.WHITE);
+    
+        // Draw the slot number
         graphicsHandler.drawString(String.valueOf(slot + 1), 60, y + 20, new Font("Arial", Font.PLAIN, 14), Color.WHITE);
     
-        if (slot == 0 && isSwordLoaded) {
-            graphicsHandler.drawImage(swordSprite, 100, y + 30, 32, 32);  // Sword image
+        // Draw the sword in slot 1
+        if (slot == 0) {
+            graphicsHandler.drawImage(swordSprite, 100, y + 30, 32, 32);  // Sword sprite
         } else {
             graphicsHandler.drawString("Empty", 100, y + 50, new Font("Arial", Font.PLAIN, 14), Color.WHITE);
         }
     }
+    
+    
     
 }

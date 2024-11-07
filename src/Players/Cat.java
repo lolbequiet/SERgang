@@ -18,6 +18,7 @@ public class Cat extends Player {
     private final int BASE_DAMAGE = 10;     // Default damage
     private final int SWORD_DAMAGE_BOOST = 10;  // Additional damage when sword equipped
     private boolean eKeyPressed = false;  // To prevent multiple E key detections
+    
 
     public Cat(float x, float y) {
         super(new SpriteSheet(ImageLoader.load("Cat.png"), 24, 24), x, y, "STAND_RIGHT");
