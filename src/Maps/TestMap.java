@@ -3,6 +3,7 @@ package Maps;
 import EnhancedMapTiles.CollectableCoin;
 import EnhancedMapTiles.PushableRock;
 import EnhancedMapTiles.Sword;
+import GameObject.SpriteSheet;
 import Level.*;
 import NPCs.*;
 import Scripts.SimpleTextScript;
@@ -12,6 +13,12 @@ import Utils.Point;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.awt.Image;
+import java.awt.Toolkit;
+
+
+
+import Engine.ImageLoader;
 
 public class TestMap extends Map {
 
@@ -19,8 +26,11 @@ public class TestMap extends Map {
 
     public TestMap() {
         super("test_map.txt", new CommonTileset());
+    
         this.playerStartPosition = getMapTile(17, 20).getLocation();
+        
     }
+    
 
     @Override
     public ArrayList<EnhancedMapTile> loadEnhancedMapTiles() {
@@ -66,6 +76,9 @@ public class TestMap extends Map {
         Walrus walrus = new Walrus(1, getMapTile(20,21).getLocation().subtractY(40));
         walrus.setInteractScript(new WalrusScript());
         npcs.add(walrus);
+
+
+
 
         Dinosaur dinosaur = new Dinosaur(2, getMapTile(13, 4).getLocation());
         dinosaur.setExistenceFlag("hasTalkedToDinosaur");
