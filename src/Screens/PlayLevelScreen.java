@@ -53,6 +53,10 @@ public class PlayLevelScreen extends Screen {
         flagManager.addFlag("hasTalkedToWalrus");
         flagManager.addFlag("hasFoundBall");
 
+        //sample flag
+        flagManager.addFlag("WalrusMobDefeated", false);
+
+
         map = new TestMap();
         map.setFlagManager(flagManager);
 
@@ -222,11 +226,17 @@ public class PlayLevelScreen extends Screen {
         );
 
         // Active Quest Section
-        graphicsHandler.drawString("ACTIVE QUEST:", screenWidth - 180, 60, new Font("Montserrat", Font.BOLD, 18), Color.WHITE);
+        graphicsHandler.drawString("ACTIVE QUESTS:", screenWidth - 180, 60, new Font("Montserrat", Font.BOLD, 18), Color.WHITE);
 
         if (!flagManager.isFlagSet("hasTalkedToWalrus")) {
-            graphicsHandler.drawString("Talk To Seb", screenWidth - 170, 90, new Font("Montserrat", Font.BOLD, 18), Color.WHITE);
+            graphicsHandler.drawString("Talk To Seb", screenWidth - 167, 125, new Font("Montserrat", Font.BOLD, 18), Color.WHITE);
         }
+
+        if (!flagManager.isFlagSet("WalrusMobDefeated")){
+            graphicsHandler.drawString("Defeat 5 Mobs", screenWidth - 170, 90, new Font("Montserrat", Font.BOLD, 18), Color.WHITE);
+        }
+
+
 
         // Inventory Button
         int buttonWidth = 60;
