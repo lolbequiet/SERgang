@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import Builders.FrameBuilder;
 import Builders.MapTileBuilder;
+import Game.AudioManager;
 import GameObject.Frame;
 import Level.*;
 import ScriptActions.*;
@@ -20,7 +21,15 @@ public class DinoScript extends Script {
     public ArrayList<ScriptAction> loadScriptActions() {
 
         ArrayList<ScriptAction> scriptActions = new ArrayList<>();
+                scriptActions.add(new CustomScriptAction() {
+            @Override
+            public void customExecute() {
+                AudioManager.playSound("Resources/Audio/ccinteract.wav");
+                System.out.println("Interaction sound played.");
+            }
+        });
         scriptActions.add(new LockPlayerScriptAction());
+
         scriptActions.add(new TextboxScriptAction("Isn't the land lovely?"));
 
         scriptActions.add(new ConditionalScriptAction() {{
