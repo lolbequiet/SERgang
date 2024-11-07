@@ -18,13 +18,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
-
 public class Friend extends NPC {
     private static final float FOLLOW_SPEED = 1.5f;
     private static final float SAFE_DISTANCE = 75f;  // Safe distance from the player
 
     public Friend(Point location) {
         super(1, location.x, location.y, loadFriendAnimations(), "STAND_RIGHT");
+        this.isUncollidable = true;  // Make Friend passable
     }
 
     private static HashMap<String, Frame[]> loadFriendAnimations() {
@@ -81,9 +81,11 @@ public class Friend extends NPC {
 
         float distanceToPlayer = distanceToPlayer(playerX, playerY);
 
-        // follow the player 
+        // Follow the player if outside the safe distance
         if (distanceToPlayer > SAFE_DISTANCE) {
             moveTowardsPlayer(playerX, playerY);
+        } else {
+            stopMoving();
         }
     }
 
@@ -94,8 +96,10 @@ public class Friend extends NPC {
     private void moveTowardsPlayer(float playerX, float playerY) {
         if (playerX < this.getX()) {
             this.moveX(-FOLLOW_SPEED);
+            this.currentAnimationName = "WALK_LEFT";
         } else if (playerX > this.getX()) {
             this.moveX(FOLLOW_SPEED);
+            this.currentAnimationName = "WALK_RIGHT";
         }
 
         if (playerY < this.getY()) {
@@ -105,7 +109,16 @@ public class Friend extends NPC {
         }
     }
 
-    //make magenta transparent
+    private void stopMoving() {
+        // Set to standing animation when not moving
+        if (this.currentAnimationName.contains("LEFT")) {
+            this.currentAnimationName = "STAND_LEFT";
+        } else if (this.currentAnimationName.contains("RIGHT")) {
+            this.currentAnimationName = "STAND_RIGHT";
+        }
+    }
+
+    // Make magenta transparent
     private static BufferedImage applyTransparency(BufferedImage image, Color transparentColor) {
         BufferedImage newImage = new BufferedImage(
                 image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
@@ -115,7 +128,7 @@ public class Friend extends NPC {
             for (int x = 0; x < image.getWidth(); x++) {
                 int pixel = image.getRGB(x, y);
                 if (pixel == transparentColor.getRGB()) {
-                    newImage.setRGB(x, y, 0x00000000); 
+                    newImage.setRGB(x, y, 0x00000000);
                 } else {
                     newImage.setRGB(x, y, pixel);
                 }
@@ -126,3 +139,5 @@ public class Friend extends NPC {
         return newImage;
     }
 }
+
+
