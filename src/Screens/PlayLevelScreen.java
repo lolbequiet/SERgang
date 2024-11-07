@@ -27,6 +27,7 @@ public class PlayLevelScreen extends Screen {
     protected FlagManager flagManager;
     protected boolean isInventoryShowing;
     protected InventoryScreen inventoryScreen;
+    protected ShopScreen ShopScreen;
     protected MapTile portal;
 
     private final int screenWidth = 800;
@@ -40,6 +41,7 @@ public class PlayLevelScreen extends Screen {
     public PlayLevelScreen(ScreenCoordinator screenCoordinator) {
         this.screenCoordinator = screenCoordinator;
         this.inventoryScreen = new InventoryScreen(screenCoordinator);
+        this.ShopScreen = new ShopScreen(this, player);
         this.isInventoryShowing = false;
         initialize();
     }
@@ -190,6 +192,10 @@ public class PlayLevelScreen extends Screen {
                 winScreen.draw(graphicsHandler);
                 break;
 
+            case SHOP:
+                ShopScreen.draw(graphicsHandler);
+                break;
+
             case GAME_OVER:
                 graphicsHandler.drawString(
                         "Game Over",
@@ -274,6 +280,6 @@ public class PlayLevelScreen extends Screen {
     }
 
     private enum PlayLevelScreenState {
-        RUNNING, LEVEL_COMPLETED, GAME_OVER
+        RUNNING, LEVEL_COMPLETED, GAME_OVER, SHOP
     }
 }

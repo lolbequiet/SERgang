@@ -10,6 +10,7 @@ import Scripts.SimpleTextScript;
 import Scripts.TestMap.*;
 import Tilesets.CommonTileset;
 import Utils.Point;
+import Game.ScreenCoordinator;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -101,6 +102,12 @@ public class TestMap extends Map {
         ant.setInteractScript(new BugScript());
         npcs.add(ant);
         
+
+        ScreenCoordinator screenCoordinator= new ScreenCoordinator();
+        mikedashopkeeper mikeBANDZ = new mikedashopkeeper(7, getMapTile(39, 4).getLocation());
+        mikeBANDZ.setInteractScript(new mikedashopkeeperScript(screenCoordinator));
+        npcs.add(mikeBANDZ);
+
         return npcs;
     }
     

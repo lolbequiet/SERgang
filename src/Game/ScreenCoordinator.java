@@ -8,6 +8,9 @@ import Screens.InventoryScreen;
 import Screens.LevelScreen;
 import Screens.MenuScreen;
 import Screens.PlayLevelScreen;
+import Screens.ShopScreen;
+
+import Game.*;
 import Screens.NewWorldScreen;
 
 /*
@@ -80,7 +83,8 @@ public class ScreenCoordinator extends Screen {
 						case NEWWORLD:
 							currentScreen = new NewWorldScreen(this);
 							break;
-					}
+						
+				}
 
 					currentScreen.initialize();
 				}
