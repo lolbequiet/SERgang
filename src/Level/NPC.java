@@ -87,7 +87,7 @@ public class NPC extends MapEntity {
         if (map.getPlayer() != null) {
             Player player = map.getPlayer();
             player.gainExp(expReward);  // Grant the EXP reward
-            System.out.println("Player gained " + expReward + " EXP.");
+            System.out.println("NPC died: " + this.getId() + ", granting EXP: " + expReward);
         }
     }
     
