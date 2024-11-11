@@ -17,3 +17,4 @@ public class DefaultScreen extends Screen {
     @Override
     public void draw(GraphicsHandler graphicsHandler) { }
 }
+
