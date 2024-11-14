@@ -16,16 +16,12 @@ public class GameWindow {
         gameWindow = new JFrame("Game");
         gameWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // Get screen dimensions
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int screenWidth = (int) screenSize.getWidth();
-        int screenHeight = (int) screenSize.getHeight();
-
         // Set the game window to fullscreen
         gameWindow.setExtendedState(JFrame.MAXIMIZED_BOTH);
         gameWindow.setUndecorated(true);
-
-        // Create and center the game panel
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int screenWidth = (int) screenSize.getWidth();
+        int screenHeight = (int) screenSize.getHeight();
         gamePanel = new GamePanel();
         gamePanel.setFocusable(true);
         gamePanel.requestFocusInWindow();
