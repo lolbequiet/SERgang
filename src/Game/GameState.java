@@ -12,5 +12,6 @@ public enum GameState {
     GAME_OVER,
     CREDITS,
     INVENTORY,
-    NEWWORLD
+    NEWWORLD,
+    OVERWORLD
 }

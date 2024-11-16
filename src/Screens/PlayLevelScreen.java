@@ -95,7 +95,7 @@ public class PlayLevelScreen extends Screen {
                     if (Keyboard.isKeyDown(Key.ENTER) && !keyLocker.isKeyLocked(Key.ENTER)) {
                        
                         // player.moveRight(100);
-                        screenCoordinator.setGameStatePersist(GameState.NEWWORLD);
+                        screenCoordinator.setGameStatePersist(GameState.OVERWORLD);
                         
                         keyLocker.lockKey(Key.ENTER);
                     } else if (Keyboard.isKeyUp(Key.ENTER)) {

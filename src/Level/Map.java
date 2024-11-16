@@ -2,8 +2,11 @@ package Level;
 
 import Engine.Config;
 import Engine.GraphicsHandler;
+import Engine.ImageLoader;
 import Engine.ScreenManager;
+import GameObject.Frame;
 import GameObject.Rectangle;
+import GameObject.SpriteSheet;
 import Utils.Direction;
 import Utils.Point;
 
@@ -13,6 +16,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
+
+import Builders.FrameBuilder;
+import Builders.MapTileBuilder;
 
 /*
     This class is for defining a map that is used for a specific level
@@ -124,6 +130,25 @@ public abstract class Map {
 
         this.camera = new Camera(0, 0, tileset.getScaledSpriteWidth(), tileset.getScaledSpriteHeight(), this);
         this.textbox = new Textbox(this);
+
+        // create all portals
+        // for (MapTile tile : this.mapTiles) {
+        //     if (tile.getTileIndex() == 23) {
+        //         Point loc = tile.getLocation();
+                
+        //         tile.setMapEntityStatus(MapEntityStatus.REMOVED);
+
+        //         Frame grassFrame = new FrameBuilder(tileset.getSubImage(0, 0))
+        //         .withScale(tileset.getTileScale())
+        //         .build();
+
+        //         MapTile grass = new MapTileBuilder(grassFrame).build(Math.round(loc.x / tileset.getScaledSpriteWidth()), Math.round(loc.y / tileset.getScaledSpriteHeight()));
+        //         grass.setMap(this);
+
+        //         EnhancedMapTile newTile = new EnhancedMapTile(Math.round(loc.x / tileset.getScaledSpriteWidth()), Math.round(loc.y / tileset.getScaledSpriteHeight()), new SpriteSheet(ImageLoader.load("Portal.png"), 16, 16), TileType.PASSABLE);
+        //         // newTile.setMap(this);
+        //     }
+        // }
     }
 
     // reads in a map file to create the map's tilemap

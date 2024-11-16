@@ -9,6 +9,8 @@ import Screens.LevelScreen;
 import Screens.MenuScreen;
 import Screens.PlayLevelScreen;
 import Screens.NewWorldScreen;
+import Screens.OverWorldScreen;
+
 
 /*
  * Based on the current game state, this class determines which Screen should be shown
@@ -79,6 +81,9 @@ public class ScreenCoordinator extends Screen {
 							break;
 						case NEWWORLD:
 							currentScreen = new NewWorldScreen(this);
+							break;
+						case OVERWORLD:
+							currentScreen = new OverWorldScreen(this);
 							break;
 					}
 

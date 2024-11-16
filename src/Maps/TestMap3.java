@@ -13,11 +13,11 @@ import Utils.Point;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class TestMap2 extends Map {
+public class TestMap3 extends Map {
     
     private int playerWallet;
     
-    public TestMap2() {
+    public TestMap3() {
         super("Map design.txt", new CommonTileset2());
         this.playerStartPosition = getMapTile(33, 22).getLocation();
     }
@@ -34,6 +34,8 @@ public class TestMap2 extends Map {
 
         return enhancedMapTiles;
     }
+
+    
 
     @Override
     public ArrayList<NPC> loadNPCs() {
