@@ -10,6 +10,7 @@ import GameObject.ImageEffect;
 import GameObject.SpriteSheet;
 import Level.NPC;
 import Utils.Point;
+import java.awt.*;
 
 import java.util.HashMap;
 
@@ -42,6 +43,25 @@ public class Seb extends NPC {
     @Override
     public void draw(GraphicsHandler graphicsHandler) {
         super.draw(graphicsHandler);
+
+        //boolean for if the player is near, setting it up with method for interaction.
+
+        boolean isPlayerNear = forInteraction();
+
+        //if statement so IF player is near, then this would draw a "press e to interact" statement (spacebar for now)
+        //only for seb of course, if this works will be implemented to other NPC's
+
+        if (isPlayerNear) {
+        graphicsHandler.drawString("Press 'SpaceBar' to interact", (int) getX() - 150,(int) getY() - 30, new Font("Arial", Font.PLAIN, 24), Color.WHITE);
+        }
+    }
+
+
+    //detects if player is near the NPC for interaction
+    private boolean forInteraction() {
+
+        return true;
+
     }
 }
 

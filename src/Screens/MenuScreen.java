@@ -14,7 +14,9 @@ public class MenuScreen extends Screen {
     protected ScreenCoordinator screenCoordinator;
     protected int currentMenuItemHovered = 0; // current menu item being "hovered" over
     protected int menuItemSelected = -1;
+    protected SpriteFont title;
     protected SpriteFont playGame;
+    protected SpriteFont options;
     protected SpriteFont credits;
     protected Map background;
     protected int keyPressTimer;
@@ -27,12 +29,24 @@ public class MenuScreen extends Screen {
 
     @Override
     public void initialize() {
-        playGame = new SpriteFont("PLAY GAME", 200, 123, "Arial", 30, new Color(49, 207, 240));
+        // Title centered at the top-middle
+        title = new SpriteFont("DREAM QUEST", 180, 80, "Montserrat", 48, Color.white);
+        title.setOutlineColor(Color.black);
+        title.setOutlineThickness(4);
+
+        // Centered buttons near the bottom
+        playGame = new SpriteFont("PLAY GAME", 250, 280, "Montserrat", 30, Color.white);
         playGame.setOutlineColor(Color.black);
         playGame.setOutlineThickness(3);
-        credits = new SpriteFont("CREDITS", 200, 223, "Arial", 30, new Color(49, 207, 240));
+
+        options = new SpriteFont("OPTIONS", 250, 350, "Montserrat", 30, Color.white);
+        options.setOutlineColor(Color.black);
+        options.setOutlineThickness(3);
+
+        credits = new SpriteFont("CREDITS", 250, 420, "Montserrat", 30, Color.white);
         credits.setOutlineColor(Color.black);
         credits.setOutlineThickness(3);
+
         background = new TitleScreenMap();
         background.setAdjustCamera(false);
         keyPressTimer = 0;
@@ -44,7 +58,7 @@ public class MenuScreen extends Screen {
         // update background map (to play tile animations)
         background.update(null);
 
-        // if down or up is pressed, change menu item "hovered" over (blue square in front of text will move along with currentMenuItemHovered changing)
+        // if down or up is pressed, change menu item "hovered" over
         if (Keyboard.isKeyDown(Key.DOWN) && keyPressTimer == 0) {
             keyPressTimer = 14;
             currentMenuItemHovered++;
@@ -57,27 +71,35 @@ public class MenuScreen extends Screen {
             }
         }
 
-        // if down is pressed on last menu item or up is pressed on first menu item, "loop" the selection back around to the beginning/end
-        if (currentMenuItemHovered > 1) {
+        // Loop through menu options
+        if (currentMenuItemHovered > 2) {
             currentMenuItemHovered = 0;
         } else if (currentMenuItemHovered < 0) {
-            currentMenuItemHovered = 1;
+            currentMenuItemHovered = 2;
         }
 
-        // sets location for blue square in front of text (pointerLocation) and also sets color of spritefont text based on which menu item is being hovered
+        // Highlight selected menu item
         if (currentMenuItemHovered == 0) {
-            playGame.setColor(new Color(255, 215, 0));
-            credits.setColor(new Color(49, 207, 240));
-            pointerLocationX = 170;
-            pointerLocationY = 130;
+            playGame.setColor(Color.black);
+            options.setColor(Color.white);
+            credits.setColor(Color.white);
+            pointerLocationX = 220;
+            pointerLocationY = 290;
         } else if (currentMenuItemHovered == 1) {
-            playGame.setColor(new Color(49, 207, 240));
-            credits.setColor(new Color(255, 215, 0));
-            pointerLocationX = 170;
-            pointerLocationY = 230;
+            playGame.setColor(Color.white);
+            options.setColor(Color.black);
+            credits.setColor(Color.white);
+            pointerLocationX = 220;
+            pointerLocationY = 360;
+        } else if (currentMenuItemHovered == 2) {
+            playGame.setColor(Color.white);
+            options.setColor(Color.white);
+            credits.setColor(Color.black);
+            pointerLocationX = 220;
+            pointerLocationY = 430;
         }
 
-        // if space is pressed on menu item, change to appropriate screen based on which menu item was chosen
+        // Select menu item on SPACE key press
         if (Keyboard.isKeyUp(Key.SPACE)) {
             keyLocker.unlockKey(Key.SPACE);
         }
@@ -86,6 +108,9 @@ public class MenuScreen extends Screen {
             if (menuItemSelected == 0) {
                 screenCoordinator.setGameState(GameState.LEVEL);
             } else if (menuItemSelected == 1) {
+                // Add logic for options here
+                System.out.println("Options menu (not yet implemented)");
+            } else if (menuItemSelected == 2) {
                 screenCoordinator.setGameState(GameState.CREDITS);
             }
         }
@@ -93,8 +118,10 @@ public class MenuScreen extends Screen {
 
     public void draw(GraphicsHandler graphicsHandler) {
         background.draw(graphicsHandler);
+        title.draw(graphicsHandler);
         playGame.draw(graphicsHandler);
+        options.draw(graphicsHandler);
         credits.draw(graphicsHandler);
-        graphicsHandler.drawFilledRectangleWithBorder(pointerLocationX, pointerLocationY, 20, 20, new Color(49, 207, 240), Color.black, 2);
+        graphicsHandler.drawFilledRectangleWithBorder(pointerLocationX, pointerLocationY, 20, 20, Color.white, Color.black, 2);
     }
 }

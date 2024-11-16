@@ -2,6 +2,7 @@ package Scripts.TestMap;
 
 import java.util.ArrayList;
 
+import Game.AudioManager;
 import Level.Script;
 import ScriptActions.*;
 
@@ -12,14 +13,21 @@ public class SebScript extends Script {
     @Override
     public ArrayList<ScriptAction> loadScriptActions() {
         ArrayList<ScriptAction> scriptActions = new ArrayList<>();
+                scriptActions.add(new CustomScriptAction() {
+            @Override
+            public void customExecute() {
+                AudioManager.playSound("Resources/Audio/ccinteract.wav");
+                System.out.println("Interaction sound played.");
+            }
+        });
         scriptActions.add(new LockPlayerScriptAction());
 
         scriptActions.add(new NPCFacePlayerScriptAction());
 
         scriptActions.add(new TextboxScriptAction() {{
 
-            addText("Hey new player!");
-            addText("Do you know how to play the game?", new String[] { "Yes", "No", "Exit"}); // "Yes! My ball is gone", "No, I'm good!"
+            addText("Hey player!");
+            addText("Do you know who i am?", new String[] { "Yes", "No", "Exit"}); // "Yes! My ball is gone", "No, I'm good!"
 
         }});
 
@@ -34,7 +42,7 @@ public class SebScript extends Script {
                 });
 
                 addScriptAction(new TextboxScriptAction() {{
-                    addText("You are a quick learner!");
+                    addText("Oh...");
                     addText("Have fun playing the game!");
                 }});
             }});
@@ -48,11 +56,7 @@ public class SebScript extends Script {
                     }
                 });
 
-                addScriptAction(new TextboxScriptAction("So the first thing you'll notice is the health and \n stamina bar in the top left"));
-                addScriptAction(new TextboxScriptAction("There is also an inventory button in which you can \n see what items you picked up")); //to be added/interacted
-                addScriptAction(new TextboxScriptAction("To pick up items, simply press 'E' and the item \n will disappear"));
-                addScriptAction(new TextboxScriptAction("You can also press 'P' to pause the game!"));
-                addScriptAction(new TextboxScriptAction("Those are pretty much the basics, if you need a\nreminder, im always here!"));
+                addScriptAction(new TextboxScriptAction("So you can attack mobs by pressing space! \n just thought i should remind you."));
                 addScriptAction(new TextboxScriptAction("Have fun!"));
 
 

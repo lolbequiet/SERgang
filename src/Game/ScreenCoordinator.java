@@ -8,6 +8,9 @@ import Screens.InventoryScreen;
 import Screens.LevelScreen;
 import Screens.MenuScreen;
 import Screens.PlayLevelScreen;
+import Screens.ShopScreen;
+
+import Game.*;
 import Screens.NewWorldScreen;
 import Screens.OverWorldScreen;
 

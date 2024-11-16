@@ -18,6 +18,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
+// flag made "WalrusMobDefeated" ~ implied
+
+
 public class WalrusMob extends NPC {
     private int health;
     private int maxHealth;
@@ -117,12 +120,21 @@ public class WalrusMob extends NPC {
         }
     }
 
+
     @Override
     public void die() {
         System.out.println("WalrusMob defeated!");
         setMapEntityStatus(MapEntityStatus.REMOVED);
         setActive(false);
-    }
+
+        // Check if all mobs are defeated
+        boolean allMobsDefeated = map.getEnemies().stream().noneMatch(NPC::isActive);
+        if (allMobsDefeated && map.getFlagManager() != null) {
+            map.getFlagManager().setFlag("WalrusMobDefeated", true);
+            System.out.println("All mobs defeated!");
+        }
+        }
+    
 
     public void setActive(boolean active) {
         this.isActive = active;

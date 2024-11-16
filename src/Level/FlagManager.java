@@ -16,6 +16,13 @@ public class FlagManager {
         flags.put(flagName, startingValue);
     }
 
+    // Set a flag to a specified value
+    public void setFlag(String flagName, boolean value) {
+        if (flags.containsKey(flagName)) {
+            flags.put(flagName, value);
+        }
+    }
+
     // Set a flag to true
     public void setFlag(String flagName) {
         if (flags.containsKey(flagName)) {
