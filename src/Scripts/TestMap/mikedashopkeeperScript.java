@@ -2,22 +2,16 @@ package Scripts.TestMap;
 
 import java.util.ArrayList;
 
+import Engine.ScreenManager;
 import Game.ScreenCoordinator;
 import Level.Script;
+import Screens.ShopScreen;
 import ScriptActions.*;
 import Game.*;
 
 // script for talking to bug npc
 // checkout the documentation website for a detailed guide on how this script works
 public class mikedashopkeeperScript extends Script {
-
-    private ScreenCoordinator screenCoordinator;
-
-    public mikedashopkeeperScript(ScreenCoordinator screenCoordinator) {
-
-        this.screenCoordinator = screenCoordinator;
-
-    }
 
     @Override
     public ArrayList<ScriptAction> loadScriptActions() {
@@ -53,7 +47,16 @@ public class mikedashopkeeperScript extends Script {
                 }});
                 scriptActions.add(new UnlockPlayerScriptAction());
                 scriptActions.add(new ChangeFlagScriptAction("VIPaccess", true));
-
+                
+                scriptActions.add(new CustomScriptAction() {
+                    @Override 
+                    public void customExecute() {
+                        System.out.println("going to shop");
+                        // screenCoordinator.setGameState(GameState.SHOP);
+                        // ScreenManager.getInstance().setCurrentScreen(new ShopScreen(player));
+                        ScreenManager.getScreenCoordinator().setGameStatePersist(GameState.SHOP);
+                    }
+                });
 
             }});
 

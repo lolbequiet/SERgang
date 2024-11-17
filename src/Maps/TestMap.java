@@ -31,7 +31,6 @@ public class TestMap extends Map {
         this.playerStartPosition = getMapTile(17, 20).getLocation();
         
     }
-    
 
     @Override
     public ArrayList<EnhancedMapTile> loadEnhancedMapTiles() {
@@ -103,9 +102,8 @@ public class TestMap extends Map {
         npcs.add(ant);
         
 
-        ScreenCoordinator screenCoordinator= new ScreenCoordinator();
         mikedashopkeeper mikeBANDZ = new mikedashopkeeper(7, getMapTile(39, 4).getLocation());
-        mikeBANDZ.setInteractScript(new mikedashopkeeperScript(screenCoordinator));
+        mikeBANDZ.setInteractScript(new mikedashopkeeperScript());
         npcs.add(mikeBANDZ);
 
         return npcs;

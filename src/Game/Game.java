@@ -25,7 +25,8 @@ public class Game {
 
         GameWindow gameWindow = new GameWindow();
         ScreenManager screenManager = gameWindow.getScreenManager();
-        screenManager.setCurrentScreen(new ScreenCoordinator());
+        screenManager.SetScreenCoordinator(new ScreenCoordinator());
+        screenManager.setCurrentScreen(ScreenManager.getScreenCoordinator());
         gameWindow.startGame();
     }
 }

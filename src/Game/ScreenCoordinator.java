@@ -78,7 +78,6 @@ public class ScreenCoordinator extends Screen {
 						case LEVEL_SELECT:
 							currentScreen = new LevelScreen(this);
 							break;
-						
 						case CREDITS:
 							currentScreen = new CreditsScreen(this);
 							break;
@@ -87,6 +86,9 @@ public class ScreenCoordinator extends Screen {
 							break;
 						case OVERWORLD:
 							currentScreen = new OverWorldScreen(this);
+							break;
+						case SHOP:
+							currentScreen = new ShopScreen(this);
 							break;
 					}
 

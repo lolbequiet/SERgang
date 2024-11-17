@@ -26,7 +26,8 @@ import java.awt.Font;
 import java.io.File;
 import java.io.IOException;
 
-
+import java.awt.MouseInfo;
+import java.awt.Toolkit;
 
 public abstract class Player extends GameObject {
     // values that affect player movement
@@ -78,7 +79,9 @@ public abstract class Player extends GameObject {
     private int coins; 
     // Audio 
     private Clip walkingClip; // Clip to manage the walking sound
-        private boolean isWalking = false; // Tracks if the player is currently walking
+    private boolean isWalking = false; // Tracks if the player is currently walking
+
+    Toolkit toolkit = Toolkit.getDefaultToolkit();
 
     public Player(SpriteSheet spriteSheet, float x, float y, String startingAnimationName) {
         super(spriteSheet, x, y, startingAnimationName);
@@ -86,6 +89,8 @@ public abstract class Player extends GameObject {
         playerState = PlayerState.STANDING;
         previousPlayerState = playerState;
         this.affectedByTriggers = true;
+
+       
     
         initializeWalkingSound(); // Initialize the walking sound
     }
@@ -214,6 +219,11 @@ public int getDamage() {
             lastAmountMovedY = super.moveYHandleCollision(moveAmountY);
             lastAmountMovedX = super.moveXHandleCollision(moveAmountX);
         }
+
+        Point mousePointer = new Point(MouseInfo.getPointerInfo().getLocation().x - map.getCamera().getX(), MouseInfo.getPointerInfo().getLocation().y - map.getCamera().getY());
+        Point playerLocation = new Point(getCalibratedXLocation(), getCalibratedYLocation());
+
+        // System.out.println(playerLocation + " " + mousePointer);
     
         // Manage walking sound
         manageWalkingSound();
