@@ -10,6 +10,7 @@ import GameObject.SpriteSheet;
 import Utils.Direction;
 import Utils.Point;
 
+import java.awt.List;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -46,6 +47,8 @@ public abstract class Map {
 
     // location player should start on when this map is first loaded
     protected Point playerStartPosition;
+
+    protected ArrayList<Projectile> projectiles = new ArrayList<>();
 
     // the location of the "mid point" of the screen
     // this is what tells the game that the player has reached the center of the screen, therefore the camera should move instead of the player
@@ -556,6 +559,24 @@ public abstract class Map {
         if (textbox.isActive()) {
             textbox.update();
         }
+
+        ArrayList<Projectile> toRemove = new ArrayList<>();
+        for (Projectile projectile : projectiles) {
+            projectile.update();
+
+            for (NPC enemy : this.enemies) {
+                if (!toRemove.contains(projectile) && projectile.intersects(enemy)) {
+                    enemy.takeDamage((int) projectile.damage);
+                    toRemove.add(projectile);
+                }
+            }
+        }
+
+        for (Projectile projectile : toRemove) {
+            projectiles.remove(projectile);
+        }
+
+        toRemove.clear();
     }
 
     // based on the player's current X position (which in a level can potentially be updated each frame),
@@ -618,12 +639,20 @@ public abstract class Map {
 
     public void draw(GraphicsHandler graphicsHandler) {
         camera.draw(graphicsHandler);
+
+        for (Projectile projectile : projectiles) {
+            projectile.draw(graphicsHandler);;
+        }
     }
 
     public void draw(Player player, GraphicsHandler graphicsHandler) {
         camera.draw(player, graphicsHandler);
         if (textbox.isActive()) {
             textbox.draw(graphicsHandler);
+        }
+
+        for (Projectile projectile : projectiles) {
+            projectile.draw(graphicsHandler);;
         }
     }
 
