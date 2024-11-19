@@ -27,7 +27,6 @@ public class PlayLevelScreen extends Screen {
     protected FlagManager flagManager;
     protected boolean isInventoryShowing;
     protected InventoryScreen inventoryScreen;
-    protected ShopScreen ShopScreen;
     protected MapTile portal;
 
     private final int screenWidth = 800;
@@ -41,7 +40,6 @@ public class PlayLevelScreen extends Screen {
     public PlayLevelScreen(ScreenCoordinator screenCoordinator) {
         this.screenCoordinator = screenCoordinator;
         this.inventoryScreen = new InventoryScreen(screenCoordinator);
-        this.ShopScreen = new ShopScreen(this, player);
         this.isInventoryShowing = false;
         initialize();
     }
@@ -91,6 +89,40 @@ public class PlayLevelScreen extends Screen {
                 handleNPCExp();
                 handlePeriodicExpGain();  // Adds EXP every 10 seconds
 
+                // }
+
+                Point portalLoc = portal.getLocation();
+                Point playerLoc = player.getLocation();
+                
+                double distance = Math.sqrt(Math.pow(portalLoc.x - playerLoc.x, 2) + Math.pow(portalLoc.y - playerLoc.y, 2));
+                if (distance < 75) {
+                    if (Keyboard.isKeyDown(Key.ENTER) && !keyLocker.isKeyLocked(Key.ENTER)) {
+                       
+                        // player.moveRight(100);
+                        screenCoordinator.setGameStatePersist(GameState.OVERWORLD);
+                        
+                        keyLocker.lockKey(Key.ENTER);
+                    } else if (Keyboard.isKeyUp(Key.ENTER)) {
+                        keyLocker.unlockKey(Key.ENTER);
+                    }
+                }
+
+                // Check if the player picked up the sword and apply the change
+                if (map.getFlagManager().isFlagSet("pickedUpSword")) {
+                    ((Cat) player).pickUpSword();  // Equip sword upon pickup
+                    map.getFlagManager().unsetFlag("pickedUpSword");  // Clear flag
+                }
+
+                // Check for defeated NPCs and grant EXP
+                List<NPC> enemies = map.getEnemies();
+                for (NPC npc : enemies) {
+                    if (!npc.isActive() && npc.hasCombatLogic()) {
+                        npc.setActive(false);  // Deactivate NPC to avoid repeated EXP gain
+                        player.gainExp(npc.getExpReward());  // Grant EXP
+                    }
+                }
+
+                // Handle player death
                 if (player.getHealth() <= 0) {
                     playLevelScreenState = PlayLevelScreenState.GAME_OVER;
                 }
@@ -190,10 +222,6 @@ public class PlayLevelScreen extends Screen {
 
             case LEVEL_COMPLETED:
                 winScreen.draw(graphicsHandler);
-                break;
-
-            case SHOP:
-                ShopScreen.draw(graphicsHandler);
                 break;
 
             case GAME_OVER:

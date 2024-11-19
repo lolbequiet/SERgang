@@ -319,6 +319,15 @@ public class CommonTileset extends Tileset {
 
         mapTiles.add(topWaterTile);
 
+        Frame portal = new FrameBuilder(getSubImage(6, 0))
+                .withScale(tileScale)
+                .build();
+
+        MapTileBuilder portalTile = new MapTileBuilder(portal)
+                .withTileType(TileType.PASSABLE);
+
+        mapTiles.add(portalTile);
+
 
         return mapTiles;
     }

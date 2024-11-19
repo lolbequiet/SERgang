@@ -12,6 +12,8 @@ import Screens.ShopScreen;
 
 import Game.*;
 import Screens.NewWorldScreen;
+import Screens.OverWorldScreen;
+
 
 /*
  * Based on the current game state, this class determines which Screen should be shown
@@ -76,15 +78,19 @@ public class ScreenCoordinator extends Screen {
 						case LEVEL_SELECT:
 							currentScreen = new LevelScreen(this);
 							break;
-						
 						case CREDITS:
 							currentScreen = new CreditsScreen(this);
 							break;
 						case NEWWORLD:
 							currentScreen = new NewWorldScreen(this);
 							break;
-						
-				}
+						case OVERWORLD:
+							currentScreen = new OverWorldScreen(this);
+							break;
+						case SHOP:
+							currentScreen = new ShopScreen(this);
+							break;
+					}
 
 					currentScreen.initialize();
 				}

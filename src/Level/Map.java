@@ -2,17 +2,24 @@ package Level;
 
 import Engine.Config;
 import Engine.GraphicsHandler;
+import Engine.ImageLoader;
 import Engine.ScreenManager;
+import GameObject.Frame;
 import GameObject.Rectangle;
+import GameObject.SpriteSheet;
 import Utils.Direction;
 import Utils.Point;
 
+import java.awt.List;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
+
+import Builders.FrameBuilder;
+import Builders.MapTileBuilder;
 
 /*
     This class is for defining a map that is used for a specific level
@@ -40,6 +47,8 @@ public abstract class Map {
 
     // location player should start on when this map is first loaded
     protected Point playerStartPosition;
+
+    protected ArrayList<Projectile> projectiles = new ArrayList<>();
 
     // the location of the "mid point" of the screen
     // this is what tells the game that the player has reached the center of the screen, therefore the camera should move instead of the player
@@ -124,6 +133,25 @@ public abstract class Map {
 
         this.camera = new Camera(0, 0, tileset.getScaledSpriteWidth(), tileset.getScaledSpriteHeight(), this);
         this.textbox = new Textbox(this);
+
+        // create all portals
+        // for (MapTile tile : this.mapTiles) {
+        //     if (tile.getTileIndex() == 23) {
+        //         Point loc = tile.getLocation();
+                
+        //         tile.setMapEntityStatus(MapEntityStatus.REMOVED);
+
+        //         Frame grassFrame = new FrameBuilder(tileset.getSubImage(0, 0))
+        //         .withScale(tileset.getTileScale())
+        //         .build();
+
+        //         MapTile grass = new MapTileBuilder(grassFrame).build(Math.round(loc.x / tileset.getScaledSpriteWidth()), Math.round(loc.y / tileset.getScaledSpriteHeight()));
+        //         grass.setMap(this);
+
+        //         EnhancedMapTile newTile = new EnhancedMapTile(Math.round(loc.x / tileset.getScaledSpriteWidth()), Math.round(loc.y / tileset.getScaledSpriteHeight()), new SpriteSheet(ImageLoader.load("Portal.png"), 16, 16), TileType.PASSABLE);
+        //         // newTile.setMap(this);
+        //     }
+        // }
     }
 
     // reads in a map file to create the map's tilemap
@@ -531,6 +559,24 @@ public abstract class Map {
         if (textbox.isActive()) {
             textbox.update();
         }
+
+        ArrayList<Projectile> toRemove = new ArrayList<>();
+        for (Projectile projectile : projectiles) {
+            projectile.update();
+
+            for (NPC enemy : this.enemies) {
+                if (!toRemove.contains(projectile) && projectile.intersects(enemy)) {
+                    enemy.takeDamage((int) projectile.damage);
+                    toRemove.add(projectile);
+                }
+            }
+        }
+
+        for (Projectile projectile : toRemove) {
+            projectiles.remove(projectile);
+        }
+
+        toRemove.clear();
     }
 
     // based on the player's current X position (which in a level can potentially be updated each frame),
@@ -593,12 +639,20 @@ public abstract class Map {
 
     public void draw(GraphicsHandler graphicsHandler) {
         camera.draw(graphicsHandler);
+
+        for (Projectile projectile : projectiles) {
+            projectile.draw(graphicsHandler);;
+        }
     }
 
     public void draw(Player player, GraphicsHandler graphicsHandler) {
         camera.draw(player, graphicsHandler);
         if (textbox.isActive()) {
             textbox.draw(graphicsHandler);
+        }
+
+        for (Projectile projectile : projectiles) {
+            projectile.draw(graphicsHandler);;
         }
     }
 
