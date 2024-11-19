@@ -65,7 +65,7 @@ public class ShopScreen extends Screen {
 
     @Override
     public void draw(GraphicsHandler graphicsHandler) {
-        graphicsHandler.drawFilledRectangle(0, 0, 800, 600, new Color(10, 10, 10, 150));
+        graphicsHandler.drawFilledRectangle(0, 0, 1500, 800, new Color(10, 10, 10, 150));
         background.draw(graphicsHandler);
         topText.draw(graphicsHandler);
     }
