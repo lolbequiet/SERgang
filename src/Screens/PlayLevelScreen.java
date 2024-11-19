@@ -213,61 +213,53 @@ public class PlayLevelScreen extends Screen {
         int currentExpWidth = (int) ((player.getExperience() / (double) player.getExpToLevelUp()) * healthBarWidth);
 
         // Health Bar
-        graphicsHandler.drawString("HEALTH", 20, 15, new Font("Montserrat", Font.BOLD, 14), Color.WHITE);
-        graphicsHandler.drawFilledRectangle(20, 20, currentHealthWidth, healthBarHeight, Color.RED);
-        graphicsHandler.drawRectangle(20, 20, healthBarWidth, healthBarHeight, Color.BLACK);
+        graphicsHandler.drawString("HEALTH", 70, 45, new Font("Montserrat", Font.BOLD, 14), Color.WHITE);
+        graphicsHandler.drawFilledRectangle(70, 50, currentHealthWidth, healthBarHeight, Color.RED);
+        graphicsHandler.drawRectangle(70, 50, healthBarWidth, healthBarHeight, Color.BLACK);
 
         // Stamina Bar
-        graphicsHandler.drawString("STAMINA", 20, 45, new Font("Montserrat", Font.BOLD, 14), Color.WHITE);
-        graphicsHandler.drawFilledRectangle(20, 50, player.getStamina(), 14, Color.ORANGE);
-        graphicsHandler.drawRectangle(20, 50, healthBarWidth, 14, Color.BLACK);
+        graphicsHandler.drawString("STAMINA", 70, 85, new Font("Montserrat", Font.BOLD, 14), Color.WHITE);
+        graphicsHandler.drawFilledRectangle(70, 90, player.getStamina(), 14, Color.ORANGE);
+        graphicsHandler.drawRectangle(70, 90, healthBarWidth, 14, Color.BLACK);
 
         // EXP Bar
-        graphicsHandler.drawString("EXP", 20, 75, new Font("Montserrat", Font.BOLD, 14), Color.WHITE);
-        graphicsHandler.drawFilledRectangle(20, 80, currentExpWidth, expBarHeight, Color.BLUE);
-        graphicsHandler.drawRectangle(20, 80, healthBarWidth, expBarHeight, Color.BLACK);
+        graphicsHandler.drawString("EXP", 70, 125, new Font("Montserrat", Font.BOLD, 14), Color.WHITE);
+        graphicsHandler.drawFilledRectangle(70, 130, currentExpWidth, expBarHeight, Color.BLUE);
+        graphicsHandler.drawRectangle(70, 130, healthBarWidth, expBarHeight, Color.BLACK);
 
         // Player Level
+        // Posiitoned as close as possible to the cetner of screen to show player the level
         graphicsHandler.drawString(
                 "LEVEL: " + player.getLevel(),
-                20, 110, new Font("Montserrat", Font.BOLD, 18), Color.YELLOW
+                720, 45, new Font("Montserrat", Font.BOLD, 18), Color.YELLOW
         );
 
         // Coins
         graphicsHandler.drawString(
-                "Coins: " + player.getCoins(),
-                screenWidth - 120, 20, new Font("Montserrat", Font.BOLD, 18), Color.YELLOW
+                "Coins: " + player.getCoins(), 
+                screenWidth + 530, 45, new Font("Montserrat", Font.BOLD, 18), Color.YELLOW
         );
 
         // Active Quests
-        graphicsHandler.drawString("ACTIVE QUESTS:", screenWidth - 180, 60, new Font("Montserrat", Font.BOLD, 18), Color.WHITE);
+        graphicsHandler.drawString("ACTIVE QUESTS:", screenWidth + 530, 80, new Font("Montserrat", Font.BOLD, 18), Color.WHITE);
 
         if (!flagManager.isFlagSet("hasTalkedToWalrus")) {
-            graphicsHandler.drawString("Talk To Seb", screenWidth - 167, 125, new Font("Montserrat", Font.BOLD, 18), Color.WHITE);
+            graphicsHandler.drawString("Talk To Seb", screenWidth + 530, 110, new Font("Montserrat", Font.BOLD, 18), Color.WHITE);
         }
 
         if (!flagManager.isFlagSet("WalrusMobDefeated")) {
-            graphicsHandler.drawString("Defeat 5 Mobs", screenWidth - 170, 90, new Font("Montserrat", Font.BOLD, 18), Color.WHITE);
+            graphicsHandler.drawString("Defeat 5 Mobs", screenWidth + 530, 140, new Font("Montserrat", Font.BOLD, 18), Color.WHITE);
         }
 
         // Inventory Button
         int buttonWidth = 60;
         int buttonHeight = 30;
-        graphicsHandler.drawFilledRectangle(
-                10,
-                screenHeight / 2 - buttonHeight / 2,
-                buttonWidth,
-                buttonHeight,
-                Color.RED
-        );
-        graphicsHandler.drawRectangle(
-                10,
-                screenHeight / 2 - buttonHeight / 2,
-                buttonWidth,
-                buttonHeight,
-                Color.BLACK
-        );
-        graphicsHandler.drawString("Inventory", 12, screenHeight / 2, new Font("Montserrat", Font.PLAIN, 12), Color.WHITE);
+        graphicsHandler.drawFilledRectangle(40, 300, buttonWidth, buttonHeight, Color.RED);
+
+
+        graphicsHandler.drawRectangle(40, 300, buttonWidth, buttonHeight, Color.BLACK);
+
+        graphicsHandler.drawString("Inventory", 43, 320, new Font("Montserrat", Font.PLAIN, 12), Color.WHITE);
     }
 
     public void resetLevel() {

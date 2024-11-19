@@ -12,8 +12,8 @@ public class Config {
     public static final int TARGET_FPS = 60;
     public static final String RESOURCES_PATH = "Resources/";
     public static final String MAP_FILES_PATH = "MapFiles/";
-    public static int GAME_WINDOW_WIDTH = 800; //change to 1920
-    public static int GAME_WINDOW_HEIGHT = 605; // change to 1080
+    public static int GAME_WINDOW_WIDTH = 1500; //change to 800
+    public static int GAME_WINDOW_HEIGHT = 800; // change to 605
     public static final Color TRANSPARENT_COLOR = Colors.MAGENTA;
 
     // POWER_SAVER does not hog CPU as much, but can potentially stutter/lag on lower end computers if they cannot handle reaching the target FPS
