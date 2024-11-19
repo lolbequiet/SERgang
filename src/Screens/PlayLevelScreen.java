@@ -27,7 +27,6 @@ public class PlayLevelScreen extends Screen {
     protected FlagManager flagManager;
     protected boolean isInventoryShowing;
     protected InventoryScreen inventoryScreen;
-    protected ShopScreen ShopScreen;
     protected MapTile portal;
 
     private final int screenWidth = 800;
@@ -39,7 +38,6 @@ public class PlayLevelScreen extends Screen {
     public PlayLevelScreen(ScreenCoordinator screenCoordinator) {
         this.screenCoordinator = screenCoordinator;
         this.inventoryScreen = new InventoryScreen(screenCoordinator);
-        this.ShopScreen = new ShopScreen(this, player);
         this.isInventoryShowing = false;
         initialize();
     }
@@ -47,12 +45,17 @@ public class PlayLevelScreen extends Screen {
     public void initialize() {
         flagManager = new FlagManager();
 
+        // screenCoordinator.OverridePersistState(GameState.LEVEL, this);
+
         // Flags for tracking progress and sword pickup
         flagManager.addFlag("pickedUpSword");
         flagManager.addFlag("hasLostBall");
         flagManager.addFlag("hasTalkedToWalrus");
         flagManager.addFlag("hasFoundBall");
-        flagManager.addFlag("VIPaccess");
+
+        //sample flag
+        flagManager.addFlag("WalrusMobDefeated", false);
+
 
         map = new TestMap();
         map.setFlagManager(flagManager);
@@ -72,40 +75,37 @@ public class PlayLevelScreen extends Screen {
         keyLocker.lockKey(Key.M); // Lock the 'M' key initially
         keyLocker.lockKey(Key.ENTER);
 
-        //make a portal object
-
-        portal = map.getMapTile(1,23);
+        // make a portal object
+        portal = map.getMapTile(1, 23);
     }
 
     public void update() {
+       
         switch (playLevelScreenState) {
             case RUNNING:
                 player.update();
                 map.update(player);
 
                 // Checks if the player switch maps
-               // if(player.cat){
+                // if(player.cat){
 
+                // }
 
-               // }
-
-
-               Point portalLoc = portal.getLocation();
-               Point playerLoc = player.getLocation();
-              
-               double distance = Math.sqrt(Math.pow(portalLoc.x - playerLoc.x, 2) + Math.pow(portalLoc.y - playerLoc.y, 2));
-               if (distance < 75) {
-                   if (Keyboard.isKeyDown(Key.ENTER) && !keyLocker.isKeyLocked(Key.ENTER)) {
-                     
-                       // player.moveRight(100);
-                       screenCoordinator.setGameStatePersist(GameState.NEWWORLD);
-                      
-                       keyLocker.lockKey(Key.ENTER);
-                   } else if (Keyboard.isKeyUp(Key.ENTER)) {
-                       keyLocker.unlockKey(Key.ENTER);
-                   }
-               }
-
+                Point portalLoc = portal.getLocation();
+                Point playerLoc = player.getLocation();
+                
+                double distance = Math.sqrt(Math.pow(portalLoc.x - playerLoc.x, 2) + Math.pow(portalLoc.y - playerLoc.y, 2));
+                if (distance < 75) {
+                    if (Keyboard.isKeyDown(Key.ENTER) && !keyLocker.isKeyLocked(Key.ENTER)) {
+                       
+                        // player.moveRight(100);
+                        screenCoordinator.setGameStatePersist(GameState.NEWWORLD);
+                        
+                        keyLocker.lockKey(Key.ENTER);
+                    } else if (Keyboard.isKeyUp(Key.ENTER)) {
+                        keyLocker.unlockKey(Key.ENTER);
+                    }
+                }
 
                 // Check if the player picked up the sword and apply the change
                 if (map.getFlagManager().isFlagSet("pickedUpSword")) {
@@ -140,14 +140,6 @@ public class PlayLevelScreen extends Screen {
             case GAME_OVER:
                 goBackToMenu();
                 break;
-
-            case SHOP:
-                ShopScreen.update();
-                break;
-        }
-
-        if (map.getFlagManager().isFlagSet("VIPaccess")) {
-            playLevelScreenState = playLevelScreenState.SHOP;
         }
 
         // Toggle Inventory Screen
@@ -190,16 +182,12 @@ public class PlayLevelScreen extends Screen {
                 winScreen.draw(graphicsHandler);
                 break;
 
-            case SHOP:
-                ShopScreen.draw(graphicsHandler);
-                break;
-
             case GAME_OVER:
                 graphicsHandler.drawString(
                     "Game Over",
                     screenWidth / 2 - 50,
                     screenHeight / 2,
-                    new Font("Arial", Font.BOLD, 24),
+                    new Font("Montserrat", Font.BOLD, 24),
                     Color.RED
                 );
                 break;
@@ -211,38 +199,44 @@ public class PlayLevelScreen extends Screen {
         int currentExpWidth = (int) ((player.getExperience() / (double) player.getExpToLevelUp()) * healthBarWidth);
 
         // Draw health bar
-        graphicsHandler.drawString("HEALTH", 20, 15, new Font("Arial", Font.BOLD, 14), Color.WHITE);
+        graphicsHandler.drawString("HEALTH", 20, 15, new Font("Montserrat", Font.BOLD, 14), Color.WHITE);
         graphicsHandler.drawFilledRectangle(20, 20, currentHealthWidth, healthBarHeight, Color.RED);
         graphicsHandler.drawRectangle(20, 20, healthBarWidth, healthBarHeight, Color.BLACK);
 
         // Draw stamina bar
-        graphicsHandler.drawString("STAMINA", 20, 45, new Font("Arial", Font.BOLD, 14), Color.WHITE);
+        graphicsHandler.drawString("STAMINA", 20, 45, new Font("Montserrat", Font.BOLD, 14), Color.WHITE);
         graphicsHandler.drawFilledRectangle(20, 50, player.getStamina(), 14, Color.ORANGE);
         graphicsHandler.drawRectangle(20, 50, healthBarWidth, 14, Color.BLACK);
 
         // Draw EXP bar
-        graphicsHandler.drawString("EXP", 20, 75, new Font("Arial", Font.BOLD, 14), Color.WHITE);
+        graphicsHandler.drawString("EXP", 20, 75, new Font("Montserrat", Font.BOLD, 14), Color.WHITE);
         graphicsHandler.drawFilledRectangle(20, 80, currentExpWidth, expBarHeight, Color.BLUE);
         graphicsHandler.drawRectangle(20, 80, healthBarWidth, expBarHeight, Color.BLACK);
 
         // Draw player level
         graphicsHandler.drawString(
             "LEVEL: " + player.getLevel(),
-            20, 110, new Font("Arial", Font.BOLD, 18), Color.YELLOW
+            20, 110, new Font("Montserrat", Font.BOLD, 18), Color.YELLOW
         );
 
         // Draw currency display
         graphicsHandler.drawString(
             "Coins: " + player.getCoins(),
-            screenWidth - 120, 20, new Font("Arial", Font.BOLD, 18), Color.YELLOW
+            screenWidth - 120, 20, new Font("Montserrat", Font.BOLD, 18), Color.YELLOW
         );
 
         // Active Quest Section
-        graphicsHandler.drawString("ACTIVE QUEST:", screenWidth - 180, 60, new Font("Arial", Font.BOLD, 18), Color.WHITE);
+        graphicsHandler.drawString("ACTIVE QUESTS:", screenWidth - 180, 60, new Font("Montserrat", Font.BOLD, 18), Color.WHITE);
 
         if (!flagManager.isFlagSet("hasTalkedToWalrus")) {
-            graphicsHandler.drawString("Talk To Seb", screenWidth - 170, 90, new Font("Arial", Font.BOLD, 18), Color.WHITE);
+            graphicsHandler.drawString("Talk To Seb", screenWidth - 167, 125, new Font("Montserrat", Font.BOLD, 18), Color.WHITE);
         }
+
+        if (!flagManager.isFlagSet("WalrusMobDefeated")){
+            graphicsHandler.drawString("Defeat 5 Mobs", screenWidth - 170, 90, new Font("Montserrat", Font.BOLD, 18), Color.WHITE);
+        }
+
+
 
         // Inventory Button
         int buttonWidth = 60;
@@ -252,7 +246,7 @@ public class PlayLevelScreen extends Screen {
             screenHeight / 2 - buttonHeight / 2,
             buttonWidth,
             buttonHeight,
-            Color.GRAY
+            Color.RED
         );
         graphicsHandler.drawRectangle(
             10,
@@ -261,7 +255,7 @@ public class PlayLevelScreen extends Screen {
             buttonHeight,
             Color.BLACK
         );
-        graphicsHandler.drawString("Inventory", 12, screenHeight / 2, new Font("Arial", Font.PLAIN, 12), Color.WHITE);
+        graphicsHandler.drawString("Inventory", 12, screenHeight / 2, new Font("Montserrat", Font.PLAIN, 12), Color.WHITE);
     }
 
     public void resetLevel() {
@@ -274,6 +268,6 @@ public class PlayLevelScreen extends Screen {
     }
 
     private enum PlayLevelScreenState {
-        RUNNING, LEVEL_COMPLETED, GAME_OVER, SHOP
+        RUNNING, LEVEL_COMPLETED, GAME_OVER
     }
 }

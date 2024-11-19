@@ -144,6 +144,8 @@ public int getDamage() {
         System.out.println("Player Health: " + health);
         if (health <= 0) {
             die(); // Handle player death
+
+        updateExpOverTime();
         }
     }
 
@@ -462,13 +464,14 @@ private int level = 1;  // Player's current level
 // Inside Player.java
 // Gain EXP when defeating enemies
 public void gainExp(int amount) {
-    experience += amount;
-    System.out.println("Gained " + amount + " EXP. Current EXP: " + experience + "/" + expToLevelUp);
-
+    experience += amount;  // Add EXP
+    System.out.println("Gained EXP: " + amount + ". Current EXP: " + experience + "/" + expToLevelUp);
+    
     if (experience >= expToLevelUp) {
         levelUp();
     }
 }
+
 
 // Handle leveling up
 private void levelUp() {
@@ -509,6 +512,18 @@ private void regenerateHealth() {
         lastHealTime = currentTime;  // Update the last heal time
     }
 }
+
+private long lastExpGainTime = 0;  // Tracks the last time EXP was gained
+private final long expGainInterval = 10000;  // 10 seconds in milliseconds
+
+public void updateExpOverTime() {
+    long currentTime = System.currentTimeMillis();
+    if (currentTime - lastExpGainTime >= expGainInterval) {
+        gainExp(10);  // Add 10 EXP every 10 seconds
+        lastExpGainTime = currentTime;  // Update the last EXP gain time
+    }
+}
+
 
 
 
