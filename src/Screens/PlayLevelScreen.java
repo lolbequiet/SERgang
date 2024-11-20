@@ -1,5 +1,7 @@
 package Screens;
 
+import java.awt.Graphics2D;
+import java.awt.FontMetrics;
 import Engine.GraphicsHandler;
 import Engine.Key;
 import Engine.KeyLocker;
@@ -26,6 +28,7 @@ public class PlayLevelScreen extends Screen {
     protected WinScreen winScreen;
     protected FlagManager flagManager;
     protected boolean isInventoryShowing;
+    protected boolean showRectangle; // Toggle flag for rectangle
     protected InventoryScreen inventoryScreen;
     protected MapTile portal;
 
@@ -41,8 +44,10 @@ public class PlayLevelScreen extends Screen {
         this.screenCoordinator = screenCoordinator;
         this.inventoryScreen = new InventoryScreen(screenCoordinator);
         this.isInventoryShowing = false;
+        this.showRectangle = false; // Rectangle is hidden initially
         initialize();
     }
+
 
     public void initialize() {
         flagManager = new FlagManager();
@@ -159,6 +164,7 @@ public class PlayLevelScreen extends Screen {
         }
     }
 
+    
     private void handleSwordPickup() {
         if (map.getFlagManager().isFlagSet("pickedUpSword")) {
             ((Cat) player).pickUpSword();
@@ -187,12 +193,22 @@ public class PlayLevelScreen extends Screen {
         }
     }
 
+
+
     private void handleKeyToggles() {
         if (Keyboard.isKeyDown(Key.I) && !keyLocker.isKeyLocked(Key.I)) {
             isInventoryShowing = !isInventoryShowing;
             keyLocker.lockKey(Key.I);
         } else if (Keyboard.isKeyUp(Key.I)) {
             keyLocker.unlockKey(Key.I);
+        }
+
+        //Triangle for Quests
+        if (Keyboard.isKeyDown(Key.Q) && !keyLocker.isKeyLocked(Key.Q)) {
+            showRectangle = !showRectangle; 
+            keyLocker.lockKey(Key.Q);
+        } else if (Keyboard.isKeyUp(Key.Q)) {
+            keyLocker.unlockKey(Key.Q);
         }
 
         if (Keyboard.isKeyDown(Key.M) && !keyLocker.isKeyLocked(Key.M)) {
@@ -215,10 +231,37 @@ public class PlayLevelScreen extends Screen {
             case RUNNING:
                 map.draw(player, graphicsHandler);
                 drawHUD(graphicsHandler);
+
                 if (isInventoryShowing) {
                     inventoryScreen.draw(graphicsHandler);
                 }
-                break;
+
+                if (showRectangle) {
+                    // Draw a red rectangle in the middle of the screen
+                    int rectWidth = 200;
+                    int rectHeight = 100;
+                    int x = (screenWidth - rectWidth) / 2;
+                    int y = (screenHeight - rectHeight) / 2;
+                    graphicsHandler.drawString("Active Quests", 1200, 390, new Font("Arial", Font.BOLD, 20), Color.WHITE);
+                    graphicsHandler.drawFilledRectangle(1200, 400, 250, 200, new Color(0, 0, 0, 150));
+                    graphicsHandler.drawRectangle(1200, 400, 252, 202, Color.WHITE);
+                    graphicsHandler.drawString("Press Q to open/close Quests", 1200, 630, new Font("Arial", Font.PLAIN, 14), Color.WHITE);
+
+                    // Active Quests
+                    if (!flagManager.isFlagSet("hasTalkedToWalrus")) {
+                        graphicsHandler.drawString("Talk To Seb", 1210, 430, new Font("Montserrat", Font.BOLD, 18), Color.WHITE);
+                    } else {
+                        graphicsHandler.drawString("Talk To Seb", 1210, 430, new Font("Montserrat", Font.PLAIN, 18), Color.GRAY);
+                    }
+                
+                    if (!flagManager.isFlagSet("WalrusMobDefeated")) {
+                        graphicsHandler.drawString("Defeat 5 Mobs", 1210, 460, new Font("Montserrat", Font.BOLD, 18), Color.WHITE);
+                    } else {
+                        graphicsHandler.drawString("Defeat 5 Mobs", 1210, 460, new Font("Montserrat", Font.PLAIN, 18), Color.GRAY);
+                    }
+                }
+                
+            break;
 
             case LEVEL_COMPLETED:
                 winScreen.draw(graphicsHandler);
@@ -268,16 +311,6 @@ public class PlayLevelScreen extends Screen {
                 screenWidth + 530, 45, new Font("Montserrat", Font.BOLD, 18), Color.YELLOW
         );
 
-        // Active Quests
-        graphicsHandler.drawString("ACTIVE QUESTS:", screenWidth + 530, 80, new Font("Montserrat", Font.BOLD, 18), Color.WHITE);
-
-        if (!flagManager.isFlagSet("hasTalkedToWalrus")) {
-            graphicsHandler.drawString("Talk To Seb", screenWidth + 530, 110, new Font("Montserrat", Font.BOLD, 18), Color.WHITE);
-        }
-
-        if (!flagManager.isFlagSet("WalrusMobDefeated")) {
-            graphicsHandler.drawString("Defeat 5 Mobs", screenWidth + 530, 140, new Font("Montserrat", Font.BOLD, 18), Color.WHITE);
-        }
 
         // Inventory Button
         int buttonWidth = 60;
@@ -288,7 +321,20 @@ public class PlayLevelScreen extends Screen {
         graphicsHandler.drawRectangle(40, 300, buttonWidth, buttonHeight, Color.BLACK);
 
         graphicsHandler.drawString("Inventory", 43, 320, new Font("Montserrat", Font.PLAIN, 12), Color.WHITE);
+        
+        //Quest Button
+        Font questFont = new Font("Montserrat", Font.BOLD, 12);
+
+        graphicsHandler.drawFilledRectangle(1400, 300, buttonWidth, buttonHeight, Color.BLUE); // Draw rectangle
+        graphicsHandler.drawRectangle(1400, 300, buttonWidth, buttonHeight, Color.BLACK); // Draw border
+        
+        // Approximate center: Adjust offsets as necessary
+        int textX = 1393 + buttonWidth / 4; 
+        int textY = 300 + buttonHeight / 2 + 4; 
+        graphicsHandler.drawString("Quest", textX, textY, questFont, Color.WHITE); // Draw text
     }
+
+    
 
     public void resetLevel() {
         System.out.println("Resetting the level...");
