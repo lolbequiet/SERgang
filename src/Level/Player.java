@@ -16,7 +16,6 @@ import Engine.Key;
 import Engine.KeyLocker;
 import Engine.Keyboard;
 import Engine.ScreenManager;
-import EnhancedMapTiles.Fire;
 import Game.GameState;
 import GameObject.Frame;
 import GameObject.GameObject;

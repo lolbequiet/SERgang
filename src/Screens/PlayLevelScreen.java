@@ -151,7 +151,7 @@ public class PlayLevelScreen extends Screen {
 
         if (distance < 75) {
             if (Keyboard.isKeyDown(Key.ENTER) && !keyLocker.isKeyLocked(Key.ENTER)) {
-                screenCoordinator.setGameStatePersist(GameState.NEWWORLD);
+                screenCoordinator.setGameStatePersist(GameState.OVERWORLD);
                 keyLocker.lockKey(Key.ENTER);
             } else if (Keyboard.isKeyUp(Key.ENTER)) {
                 keyLocker.unlockKey(Key.ENTER);
