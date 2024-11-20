@@ -101,20 +101,31 @@ public class InventoryScreen extends Screen {
     @Override
     public void draw(GraphicsHandler graphicsHandler) {
         // Draw inventory background
-        graphicsHandler.drawFilledRectangle(50, 50, 180, 300, new Color(0, 0, 0, 150));
-        graphicsHandler.drawRectangle(49, 49, 182, 302, Color.WHITE);
+        graphicsHandler.drawFilledRectangle(50, 400, 180, 300, new Color(0, 0, 0, 150));
+        graphicsHandler.drawRectangle(49, 400, 182, 302, Color.WHITE);
 
         // Draw inventory title
-        graphicsHandler.drawString("Inventory", 60, 40, new Font("Arial", Font.BOLD, 20), Color.WHITE);
+        graphicsHandler.drawString("Inventory", 50, 390, new Font("Arial", Font.BOLD, 20), Color.WHITE);
 
         // Draw each slot with its content
-        drawSlot(graphicsHandler, 0, 50); // Slot 1: Sword
-        drawSlot(graphicsHandler, 1, 150); // Slot 2
-        drawSlot(graphicsHandler, 2, 250); // Slot 3
+        drawSlot(graphicsHandler, 0, 400); // Slot 1: Sword
+        drawSlot(graphicsHandler, 1, 500); // Slot 2
+        drawSlot(graphicsHandler, 2, 600); // Slot 3
 
         // Instructions at the bottom
-        graphicsHandler.drawString("Press I to open/close inventory", 55, 370, new Font("Arial", Font.PLAIN, 14), Color.WHITE);
+        graphicsHandler.drawString("Press I to open/close inventory", 50, 730, new Font("Arial", Font.PLAIN, 14), Color.WHITE);
     }
+
+// add boolean or flag that changes the slot the sword is in to green when equiping the sword
+// have a indicator for when sword is equiped not just the terminal!
+
+//code
+//code
+//code
+//code
+//code
+//code
+
 
     /**
      * Draws a single inventory slot with its content and background.

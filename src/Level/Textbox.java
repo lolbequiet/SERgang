@@ -22,11 +22,11 @@ public class Textbox {
     protected boolean isActive;
 
     // textbox constants
-    protected final int x = 22;
-    protected final int bottomY = 460;
+    protected final int x = 350;
+    protected final int bottomY = 550;
     protected final int topY = 22;
-    protected final int fontX = 35;
-    protected final int fontBottomY = 472;
+    protected final int fontX = 360;
+    protected final int fontBottomY = 556;
     protected final int fontTopY = 34;
     protected final int width = 750;
     protected final int height = 100;
@@ -53,6 +53,9 @@ public class Textbox {
     private ArrayList<SpriteFont> options = null;
     private KeyLocker keyLocker = new KeyLocker();
     private Key interactKey = Key.SPACE;
+
+    // add a keylocker so that the WASD do not bug out when choosing a optional dialouge
+
 
     private Map map;
 
