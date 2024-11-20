@@ -18,7 +18,7 @@ public class TestMap2 extends Map {
     private int playerWallet;
     
     public TestMap2() {
-        super("Map design.txt", new CommonTileset2());
+        super("Map design2.txt", new CommonTileset2());
         this.playerStartPosition = getMapTile(33, 22).getLocation();
     }
 
@@ -31,6 +31,20 @@ public class TestMap2 extends Map {
          CollectableCoin coin2 = new CollectableCoin(new Point(800, 600), 10);
          enhancedMapTiles.add(coin1);
          enhancedMapTiles.add(coin2);
+
+         for (MapTile tile : mapTiles) {
+            if (tile.getTileIndex() == 3) {
+                PushableRock pushableRock = new PushableRock(tile.getLocation());
+                enhancedMapTiles.add(pushableRock);
+
+                Point location = tile.getLocation();
+                setMapTile(
+                    Math.round(location.x / tileset.getScaledSpriteWidth()),
+                    Math.round(location.y / tileset.getScaledSpriteHeight()),
+                    tileset.getTile(0).build(location.x, location.y)
+                );
+            }
+        }
 
         return enhancedMapTiles;
     }

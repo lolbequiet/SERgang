@@ -1,24 +1,24 @@
 package Maps;
 
-import EnhancedMapTiles.CollectableCoin;
-import EnhancedMapTiles.PushableRock;
-import EnhancedMapTiles.Sword;
 import Level.*;
 import NPCs.*;
 import Scripts.SimpleTextScript;
 import Scripts.TestMap.*;
 import Tilesets.CommonTileset2;
+import Tilesets.CommonTileset3;
 import Utils.Point;
 
 import java.util.ArrayList;
 import java.util.Random;
+
+import EnhancedMapTiles.CollectableCoin;
 
 public class TestMap3 extends Map {
     
     private int playerWallet;
     
     public TestMap3() {
-        super("Map design.txt", new CommonTileset2());
+        super("Map design1.txt", new CommonTileset3());
         this.playerStartPosition = getMapTile(33, 22).getLocation();
     }
 
