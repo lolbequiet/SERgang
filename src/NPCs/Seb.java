@@ -52,7 +52,7 @@ public class Seb extends NPC {
         //only for seb of course, if this works will be implemented to other NPC's
 
         if (isPlayerNear) {
-        graphicsHandler.drawString("Press 'SpaceBar' to interact", (int) getX() - 150,(int) getY() - 30, new Font("Arial", Font.PLAIN, 24), Color.WHITE);
+        graphicsHandler.drawString("Press 'SpaceBar' to interact", (int) getX() + 180,(int) getY() + 130, new Font("Arial", Font.PLAIN, 26), Color.WHITE);
         }
     }
 
