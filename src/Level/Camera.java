@@ -39,6 +39,7 @@ public class Camera extends Rectangle {
         this.leftoverSpaceY = ScreenManager.getScreenHeight() % tileHeight;
     }
 
+
     // gets the tile index that the camera's x and y values are currently on (top left tile)
     // this is used to determine a starting place for the rectangle of area the camera currently contains on the map
     public Point getTileIndexByCameraPosition() {
