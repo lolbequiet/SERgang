@@ -32,8 +32,8 @@ public class DeathScreen extends Screen {
     @Override
     public void draw(GraphicsHandler graphicsHandler) {
         graphicsHandler.drawFilledRectangle(0, 0, 800, 600, Color.BLACK);
-        graphicsHandler.drawString("Game Over!", 300, 250, new Font("Arial", Font.BOLD, 36), Color.RED);
-        graphicsHandler.drawString("Press Enter to Restart", 270, 320, new Font("Arial", Font.PLAIN, 24), Color.WHITE);
+        graphicsHandler.drawString("You Have Died", 300, 250, new Font("Arial", Font.BOLD, 36), Color.RED);
+        graphicsHandler.drawString("Please Reconfigure The Game.", 270, 320, new Font("Arial", Font.PLAIN, 24), Color.WHITE);
     }
 }
 

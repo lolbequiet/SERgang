@@ -3,20 +3,17 @@ package Maps;
 import Level.*;
 import NPCs.*;
 import Scripts.SimpleTextScript;
-import Scripts.TestMap.*;
-import Tilesets.CommonTileset2;
 import Tilesets.CommonTileset3;
 import Utils.Point;
+import EnhancedMapTiles.CollectableCoin;
 
 import java.util.ArrayList;
 import java.util.Random;
 
-import EnhancedMapTiles.CollectableCoin;
-
 public class TestMap3 extends Map {
     
     private int playerWallet;
-    
+
     public TestMap3() {
         super("Map design1.txt", new CommonTileset3());
         this.playerStartPosition = getMapTile(33, 22).getLocation();
@@ -26,20 +23,23 @@ public class TestMap3 extends Map {
     public ArrayList<EnhancedMapTile> loadEnhancedMapTiles() {
         ArrayList<EnhancedMapTile> enhancedMapTiles = new ArrayList<>();
 
-         // Add coins to the map
-         CollectableCoin coin1 = new CollectableCoin(new Point(500, 500), 10);
-         CollectableCoin coin2 = new CollectableCoin(new Point(800, 600), 10);
-         enhancedMapTiles.add(coin1);
-         enhancedMapTiles.add(coin2);
+        // Add coins to the map
+        CollectableCoin coin1 = new CollectableCoin(new Point(500, 500), 10);
+        CollectableCoin coin2 = new CollectableCoin(new Point(800, 600), 10);
+        enhancedMapTiles.add(coin1);
+        enhancedMapTiles.add(coin2);
 
         return enhancedMapTiles;
     }
 
-    
-
     @Override
     public ArrayList<NPC> loadNPCs() {
         ArrayList<NPC> npcs = new ArrayList<>();
+
+        // Add BossNPC at tile (18, 4)
+        Point bossSpawnLocation = getMapTile(18, 4).getLocation();
+        BossNPC boss = new BossNPC(bossSpawnLocation);
+        npcs.add(boss);
 
         return npcs;
     }
@@ -49,17 +49,31 @@ public class TestMap3 extends Map {
         ArrayList<NPC> enemies = new ArrayList<>();
         Random random = new Random();
 
+        // Spawn 5 WalrusMob enemies at random locations
+        for (int i = 0; i < 5; i++) {
+            int x = random.nextInt(40) * 32; // Random x-coordinate within map range
+            int y = random.nextInt(30) * 32; // Random y-coordinate within map range
+            WalrusMob walrusMob = new WalrusMob(new Point(x, y));
+            enemies.add(walrusMob);
+        }
+
         return enemies;
     }
 
     @Override
     public ArrayList<Trigger> loadTriggers() {
         ArrayList<Trigger> triggers = new ArrayList<>();
+
+        // Example trigger for an event near the boss
+        triggers.add(new Trigger(550, 120, 50, 50, new SimpleTextScript("You're approaching the boss!"), "bossArea"));
+
         return triggers;
     }
 
     @Override
     public void loadScripts() {
+        // Example scripts for tiles
+        getMapTile(18, 3).setInteractScript(new SimpleTextScript("This is the boss's domain."));
     }
 
     public void addinCheese(int total) {
