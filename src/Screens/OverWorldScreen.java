@@ -12,6 +12,7 @@ import Level.Map;
 import Level.MapTile;
 import Level.Player;
 import Maps.TestMap2;
+import Maps.TestMap3;
 import Maps.TitleScreenMap;
 import Players.Cat;
 import SpriteFont.SpriteFont;
@@ -21,18 +22,18 @@ import Game.GameState;
 import java.awt.Color;
 import java.awt.Font;
 
-public class NewWorldScreen extends Screen {
+public class OverWorldScreen extends Screen {
     protected Player player;
     private ScreenCoordinator screenCoordinator;
     protected FlagManager flagManager;
     protected KeyLocker keyLocker = new KeyLocker();
-    protected NewWorldScreenState NewWorldScreenState;
     protected Map background;
     protected Map map;
     protected MapTile nextPortal;
     protected MapTile backPortal;
     protected boolean isInventoryShowing;
     protected InventoryScreen inventoryScreen;
+    protected OverWorldScreenState OverWorldScreenState;
     //protected WinScreen winScreen;
 
     private final int screenWidth = 800;
@@ -44,12 +45,12 @@ public class NewWorldScreen extends Screen {
     protected SpriteFont topText;
 
 
-    private enum NewWorldScreenState {
+    private enum OverWorldScreenState {
         RUNNING, LEVEL_COMPLETED, GAME_OVER
     }
     
     
-    public NewWorldScreen(ScreenCoordinator screenCoordinator) {
+    public OverWorldScreen(ScreenCoordinator screenCoordinator) {
         this.screenCoordinator = screenCoordinator;
         this.inventoryScreen = new InventoryScreen(screenCoordinator);
         this.isInventoryShowing = false;
@@ -60,7 +61,7 @@ public class NewWorldScreen extends Screen {
     @Override
     public void initialize() {
         flagManager = new FlagManager();
-        map = new TestMap2();
+        map = new TestMap3();
         background = new TitleScreenMap();
 
         // screenCoordinator.OverridePersistState(GameState.NEWWORLD, this);
@@ -75,7 +76,7 @@ public class NewWorldScreen extends Screen {
         nextPortal = map.getMapTile(1, 23);
         backPortal = map.getMapTile(Math.round(map.getPlayerStartPosition().x / map.getTileset().getScaledSpriteWidth()), Math.round(map.getPlayerStartPosition().y / map.getTileset().getScaledSpriteHeight()));
 
-        NewWorldScreenState = NewWorldScreenState.RUNNING;
+        OverWorldScreenState = OverWorldScreenState.RUNNING;
 
         map.setPlayer(player);
         map.getTextbox().setInteractKey(player.getInteractKey());
@@ -97,7 +98,7 @@ public class NewWorldScreen extends Screen {
         
         player.update();
         map.update(player);
-        
+
         Point portalLocN = nextPortal.getLocation();
         Point portalLocB = backPortal.getLocation();
         Point playerLoc = player.getLocation();
@@ -105,7 +106,7 @@ public class NewWorldScreen extends Screen {
         double distanceN = Math.sqrt(Math.pow(portalLocN.x - playerLoc.x, 2) + Math.pow(portalLocN.y - playerLoc.y, 2));
         if (distanceN < 75) {
             if (Keyboard.isKeyDown(Key.ENTER) && !keyLocker.isKeyLocked(Key.ENTER)) {
-                screenCoordinator.setGameState(GameState.LEVEL);
+                screenCoordinator.setGameState(GameState.NEWWORLD);
                 
                 keyLocker.lockKey(Key.ENTER);
             } else if (Keyboard.isKeyUp(Key.ENTER)) {
@@ -116,7 +117,7 @@ public class NewWorldScreen extends Screen {
         double distanceB = Math.sqrt(Math.pow(portalLocB.x - playerLoc.x, 2) + Math.pow(portalLocB.y - playerLoc.y, 2));
         if (distanceB < 75) {
             if (Keyboard.isKeyDown(Key.ENTER) && !keyLocker.isKeyLocked(Key.ENTER)) {
-                screenCoordinator.setGameState(GameState.OVERWORLD);
+                screenCoordinator.setGameState(GameState.LEVEL);
                 
                 keyLocker.lockKey(Key.ENTER);
             } else if (Keyboard.isKeyUp(Key.ENTER)) {
@@ -150,7 +151,7 @@ public class NewWorldScreen extends Screen {
         // player.draw(graphicsHandler);
         // topText.draw(graphicsHandler);
         // drawHUD(graphicsHandler);
-            switch (NewWorldScreenState) {
+            switch (OverWorldScreenState) {
                 case RUNNING:
                     map.draw(player, graphicsHandler);
                     drawHUD(graphicsHandler);

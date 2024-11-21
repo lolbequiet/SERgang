@@ -4,6 +4,7 @@ import Engine.GraphicsHandler;
 import Engine.Key;
 import Engine.KeyLocker;
 import Engine.Keyboard;
+import NPCs.mikedashopkeeper;
 import SpriteFont.SpriteFont;
 
 import java.awt.*;
@@ -130,6 +131,8 @@ public class Textbox {
         if (Keyboard.isKeyDown(interactKey) && !keyLocker.isKeyLocked(interactKey)) {
             keyLocker.lockKey(interactKey);
             textQueue.poll();
+
+            
 
             // if an option was selected, set output manager flag to the index of the selected option
             // a script can then look at output manager later to see which option was selected and do with that information what it wants

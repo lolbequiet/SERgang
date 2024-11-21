@@ -25,6 +25,7 @@ public class DeathScreen extends Screen {
     @Override
     public void update() {
         if (Keyboard.isKeyDown(KeyEvent.VK_ENTER)) {
+            player.reset();
             ScreenManager.getInstance().setCurrentScreen(new TestMapScreen(player));
         }
     }

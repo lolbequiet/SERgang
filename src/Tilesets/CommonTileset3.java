@@ -11,9 +11,9 @@ import Level.Tileset;
 import java.util.ArrayList;
 
 // This class represents a "common" tileset of standard tiles defined in the CommonTileset.png file
-public class CommonTileset2 extends Tileset {
+public class CommonTileset3 extends Tileset {
 
-    public CommonTileset2() {
+    public CommonTileset3() {
         super(ImageLoader.load("CommonTilesetV4.png"), 16, 16, 3);
     }
 

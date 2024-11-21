@@ -3,6 +3,8 @@ package Game;
 import Engine.GameWindow;
 import Engine.ScreenManager;
 import Game.AudioManager;
+import Maps.*;
+import Screens.ShopScreen;
 
 /*
  * The game starts here
@@ -25,7 +27,15 @@ public class Game {
 
         GameWindow gameWindow = new GameWindow();
         ScreenManager screenManager = gameWindow.getScreenManager();
-        screenManager.setCurrentScreen(new ScreenCoordinator());
+
+        //TestMap testMap = new TestMap();
+
+        //ScreenCoordinator screenCoordinator = new ScreenCoordinator();
+
+        //ShopScreen shopScreen = new ShopScreen(screenCoordinator, testMap);
+
+        screenManager.SetScreenCoordinator(new ScreenCoordinator());
+        screenManager.setCurrentScreen(ScreenManager.getScreenCoordinator());
         gameWindow.startGame();
     }
 }

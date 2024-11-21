@@ -34,5 +34,11 @@ public class Point {
         return new Point(this.x, this.y - y);
     }
 
+    public Point toUnit() {
+        float mag = (float) Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+
+        return new Point(x / mag, y / mag);
+    }
+
     public String toString() { return String.format("(%s, %s)", this.x, this.y); }
 }

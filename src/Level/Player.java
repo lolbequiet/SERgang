@@ -11,11 +11,16 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
 import Engine.GraphicsHandler;
+import Engine.ImageLoader;
 import Engine.Key;
 import Engine.KeyLocker;
 import Engine.Keyboard;
 import Engine.ScreenManager;
+import EnhancedMapTiles.Fire;
+import Game.GameState;
+import GameObject.Frame;
 import GameObject.GameObject;
+import GameObject.ImageEffect;
 import GameObject.IntersectableRectangle;
 import GameObject.Rectangle;
 import GameObject.SpriteSheet;
@@ -26,7 +31,8 @@ import java.awt.Font;
 import java.io.File;
 import java.io.IOException;
 
-
+import java.awt.MouseInfo;
+import java.awt.Toolkit;
 
 public abstract class Player extends GameObject {
     // values that affect player movement
@@ -48,12 +54,12 @@ public abstract class Player extends GameObject {
     protected Direction lastWalkingXDirection;
     protected Direction lastWalkingYDirection;
 
-        // values used to handle player movement
+    // values used to handle player movement
 
     protected float moveAmountX, moveAmountY;
     protected float lastAmountMovedX, lastAmountMovedY;
 
-        // values used to keep track of player's current state
+    // values used to keep track of player's current state
 
     protected PlayerState playerState;
     protected PlayerState previousPlayerState;
@@ -75,10 +81,12 @@ public abstract class Player extends GameObject {
     // New Inventory List to store items
     protected List<String> inventory = new ArrayList<>();
 
-    private int coins; 
-    // Audio 
+    private int coins;
+    // Audio
     private Clip walkingClip; // Clip to manage the walking sound
-        private boolean isWalking = false; // Tracks if the player is currently walking
+    private boolean isWalking = false; // Tracks if the player is currently walking
+
+    Toolkit toolkit = Toolkit.getDefaultToolkit();
 
     public Player(SpriteSheet spriteSheet, float x, float y, String startingAnimationName) {
         super(spriteSheet, x, y, startingAnimationName);
@@ -86,36 +94,40 @@ public abstract class Player extends GameObject {
         playerState = PlayerState.STANDING;
         previousPlayerState = playerState;
         this.affectedByTriggers = true;
-    
+
         initializeWalkingSound(); // Initialize the walking sound
     }
 
-    
 
-// Add an item to the player's inventory
-public void addToInventory(String item) {
-    if (inventory == null) {
-        inventory = new ArrayList<>(); // Ensure inventory is initialized
-    }
-    inventory.add(item);
-    System.out.println("Added " + item + " to inventory.");
-}
+    //test
 
-// Get the current inventory
-public List<String> getInventory() {
-    if (inventory == null) {
-        inventory = new ArrayList<>(); // Ensure inventory is initialized
+    public void reset() {
+        this.health = 100;
     }
-    return inventory;
-}
+    // Add an item to the player's inventory
+    public void addToInventory(String item) {
+        if (inventory == null) {
+            inventory = new ArrayList<>(); // Ensure inventory is initialized
+        }
+        inventory.add(item);
+        System.out.println("Added " + item + " to inventory.");
+    }
 
-// Check if a specific item is in the inventory
-public boolean hasItem(String item) {
-    if (inventory == null) {
-        inventory = new ArrayList<>(); // Ensure inventory is initialized
+    // Get the current inventory
+    public List<String> getInventory() {
+        if (inventory == null) {
+            inventory = new ArrayList<>(); // Ensure inventory is initialized
+        }
+        return inventory;
     }
-    return inventory.contains(item);
-}
+
+    // Check if a specific item is in the inventory
+    public boolean hasItem(String item) {
+        if (inventory == null) {
+            inventory = new ArrayList<>(); // Ensure inventory is initialized
+        }
+        return inventory.contains(item);
+    }
 
     // Getter for current health
     public int getHealth() {
@@ -133,10 +145,9 @@ public boolean hasItem(String item) {
     }
 
     // Add this method inside Player.java
-public int getDamage() {
-    return 10;  // Default player damage
-}
-
+    public int getDamage() {
+        return 10; // Default player damage
+    }
 
     // Damage the player and update health
     public void takeDamage(int damage) {
@@ -145,7 +156,7 @@ public int getDamage() {
         if (health <= 0) {
             die(); // Handle player death
 
-        updateExpOverTime();
+            updateExpOverTime();
         }
     }
 
@@ -199,57 +210,97 @@ public int getDamage() {
         return this.playerState;
     }
 
+    float deltaX;
+    float lastX;
+    float lastY;
+    float deltaY;
+
     double nextAttackTime = -1;
+
     public void update() {
         // Ensure the player isn't locked
         if (!isLocked) {
             moveAmountX = 0;
             moveAmountY = 0;
-    
+
             do {
                 previousPlayerState = playerState;
                 handlePlayerState();
             } while (previousPlayerState != playerState);
-    
+
             lastAmountMovedY = super.moveYHandleCollision(moveAmountY);
             lastAmountMovedX = super.moveXHandleCollision(moveAmountX);
         }
-    
+
         // Manage walking sound
         manageWalkingSound();
-    
+
         // Handle animations and key updates
         regenerateHealth();
-        
+
         handlePlayerAnimation();
 
         updateLockedKeys();
 
         super.update();
-    
-    
+
         // Handle player attack logic
         if (Keyboard.isKeyDown(Key.SPACE) && System.currentTimeMillis() > nextAttackTime) {
             for (NPC enemy : map.getEnemies()) {
                 Point location = enemy.getLocation();
-    
+
                 // Calculate the distance between the player and the enemy
                 double distance = Math.sqrt(Math.pow(getX() - location.x, 2) + Math.pow(getY() - location.y, 2));
                 System.out.println(distance);
-                
+
                 // Attack if within range
                 if (distance < 100) {
                     enemy.takeDamage(getDamage());
                 }
             }
-    
+
             System.out.println("attacking");
-            nextAttackTime = System.currentTimeMillis() + 1500;  // Set attack cooldown
+            nextAttackTime = System.currentTimeMillis() + 1500; // Set attack cooldown
         }
-    
+
+        deltaX = getLocation().x - lastX;
+        lastX = getLocation().x;
+
+        deltaY = getLocation().y - lastY;
+        lastY = getLocation().y;
+
+        Point shootDir = new Point(deltaX, deltaY).toUnit();
+
+        if (Keyboard.isKeyDown(Key.F) && !keyLocker.isKeyLocked(Key.F)) {
+            Projectile fire = new Projectile(getLocation().x, getLocation().y,
+                    new Frame(ImageLoader.loadSubImage("Fireandicespells.png", 0, 0, 16, 16), ImageEffect.NONE, 3f, new Rectangle(0, 0, 16, 16)),
+                    shootDir, 5f, 10f);
+
+            fire.setMap(map);
+            map.projectiles.add(fire);
+
+            keyLocker.lockKey(Key.F);
+        } else if (Keyboard.isKeyUp(Key.F)) {
+            keyLocker.unlockKey(Key.F);
+        }
+
+        if (Keyboard.isKeyDown(Key.R) && !keyLocker.isKeyLocked(Key.R)) {
+            Projectile Ice = new Projectile(getLocation().x, getLocation().y,
+                    new Frame(ImageLoader.loadSubImage("Fireandicespells.png", 34, 0, 16, 16), ImageEffect.NONE, 3f, new Rectangle(0, 0, 16, 16)),
+                    shootDir, 5f, 12f);
+
+            Ice.setMap(map);
+            map.projectiles.add(Ice);
+
+
+            keyLocker.lockKey(Key.R);
+        } else if (Keyboard.isKeyUp(Key.R)) {
+            keyLocker.unlockKey(Key.R);
+        }
+
         // Regenerate health over time
         regenerateHealth();
-    
+
         // Handle animations and key updates
         handlePlayerAnimation();
         updateLockedKeys();
@@ -295,40 +346,41 @@ public int getDamage() {
         }
     }
 
-private void initializeWalkingSound() {
-    try {
-        File soundFile = new File("Resources/Audio/cc_walk.wav");
-        AudioInputStream audioStream = AudioSystem.getAudioInputStream(soundFile);
-        walkingClip = AudioSystem.getClip();
-        walkingClip.open(audioStream);
-        walkingClip.loop(Clip.LOOP_CONTINUOUSLY); // Prepare for looping
-        walkingClip.stop(); // Start with sound stopped
-    } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
-        System.err.println("Error initializing walking sound: " + e.getMessage());
-    }
-}
-
-private void manageWalkingSound() {
-    boolean isCurrentlyWalking = isMovingKeyPressed();
-
-    if (isCurrentlyWalking && !isWalking) {
-
-        // Restart the clip if it has finished or is stopped
-        if (!walkingClip.isRunning()) {
-            walkingClip.setFramePosition(0); 
-            walkingClip.start(); // Play the sound
+    private void initializeWalkingSound() {
+        try {
+            File soundFile = new File("Resources/Audio/cc_walk.wav");
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(soundFile);
+            walkingClip = AudioSystem.getClip();
+            walkingClip.open(audioStream);
+            walkingClip.loop(Clip.LOOP_CONTINUOUSLY); // Prepare for looping
+            walkingClip.stop(); // Start with sound stopped
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+            System.err.println("Error initializing walking sound: " + e.getMessage());
         }
-        isWalking = true;
-    } else if (!isCurrentlyWalking && isWalking) {
-        walkingClip.stop(); // Stop the sound
-        isWalking = false;
     }
-}
 
-private boolean isMovingKeyPressed() {
-    return Keyboard.isKeyDown(MOVE_LEFT_KEY) || Keyboard.isKeyDown(MOVE_RIGHT_KEY) ||
-           Keyboard.isKeyDown(MOVE_UP_KEY) || Keyboard.isKeyDown(MOVE_DOWN_KEY);
-}
+    private void manageWalkingSound() {
+        boolean isCurrentlyWalking = isMovingKeyPressed();
+
+        if (isCurrentlyWalking && !isWalking) {
+
+            // Restart the clip if it has finished or is stopped
+            if (!walkingClip.isRunning()) {
+                walkingClip.setFramePosition(0);
+                walkingClip.start(); // Play the sound
+            }
+            isWalking = true;
+        } else if (!isCurrentlyWalking && isWalking) {
+            walkingClip.stop(); // Stop the sound
+            isWalking = false;
+        }
+    }
+
+    private boolean isMovingKeyPressed() {
+        return Keyboard.isKeyDown(MOVE_LEFT_KEY) || Keyboard.isKeyDown(MOVE_RIGHT_KEY) ||
+                Keyboard.isKeyDown(MOVE_UP_KEY) || Keyboard.isKeyDown(MOVE_DOWN_KEY);
+    }
+
     protected void staminaDecrement() {
         if (walkCooldown >= 1.5f && stamina > 0) {
             stamina -= 1;
@@ -392,7 +444,6 @@ private boolean isMovingKeyPressed() {
         updateLastDirections();
     }
 
-
     private void updateLastDirections() {
         if (currentWalkingXDirection != Direction.NONE) {
             lastWalkingXDirection = currentWalkingXDirection;
@@ -422,13 +473,12 @@ private boolean isMovingKeyPressed() {
             System.out.println("Attacked NPC, dealt 20 damage");
         }
     }
-    
 
     public String getInventorySlot(int slot) {
         if (slot >= 0 && slot < inventory.size()) {
             return inventory.get(slot);
         }
-        return null;  // If slot is empty or out of range
+        return null; // If slot is empty or out of range
     }
 
     public void drawInventory(GraphicsHandler graphicsHandler) {
@@ -441,9 +491,8 @@ private boolean isMovingKeyPressed() {
     public boolean isInventoryFull() {
         return inventory.size() >= 3;
     }
-     
 
-    public void addCoins(int amount){
+    public void addCoins(int amount) {
         coins += amount;
         System.out.println("test");
     }
@@ -451,85 +500,75 @@ private boolean isMovingKeyPressed() {
     public int getCoins() {
         return coins;
     }
-    
+
     public void resetCoins() {
         coins = 0;
     }
 
-    private int experience = 0;  // Current EXP
-private int expToLevelUp = 100;  // EXP required for next level
-private int level = 1;  // Player's current level
+    private int experience = 0; // Current EXP
+    private int expToLevelUp = 100; // EXP required for next level
+    private int level = 1; // Player's current level
 
-// Gain EXP when defeating enemies
-// Inside Player.java
-// Gain EXP when defeating enemies
-public void gainExp(int amount) {
-    experience += amount;  // Add EXP
-    System.out.println("Gained EXP: " + amount + ". Current EXP: " + experience + "/" + expToLevelUp);
-    
-    if (experience >= expToLevelUp) {
-        levelUp();
+    // Gain EXP when defeating enemies
+    // Inside Player.java
+    // Gain EXP when defeating enemies
+    public void gainExp(int amount) {
+        experience += amount; // Add EXP
+        System.out.println("Gained EXP: " + amount + ". Current EXP: " + experience + "/" + expToLevelUp);
+
+        if (experience >= expToLevelUp) {
+            levelUp();
+        }
     }
-}
 
-
-// Handle leveling up
-private void levelUp() {
-    level++;
-    experience = 0;  // Reset EXP for the new level
-    expToLevelUp += 50;  // Increase EXP required for next level
-    System.out.println("Leveled up! Current level: " + level);
-}
-
-
-
-// Getter for the player's current experience points
-public int getExperience() {
-    return experience;
-}
-
-// Getter for the EXP required to level up
-public int getExpToLevelUp() {
-    return expToLevelUp;
-}
-
-// Getter for the player's current level
-public int getLevel() {
-    return level;
-}
-
-// Add these fields to track health regeneration
-private long lastHealTime = 0;  // Track the last heal time
-private long healInterval = 3000;  // Heal every 3 seconds
-private int healAmount = 5;  // Heal 5 health points every interval
-
-// Method to regenerate health slowly over time
-private void regenerateHealth() {
-    long currentTime = System.currentTimeMillis();
-    if (currentTime - lastHealTime >= healInterval && health < maxHealth) {
-        heal(healAmount);  // Heal the player by the specified amount
-        System.out.println("Regenerated " + healAmount + " health. Current health: " + health + "/" + maxHealth);
-        lastHealTime = currentTime;  // Update the last heal time
+    // Handle leveling up
+    private void levelUp() {
+        level++;
+        experience = 0; // Reset EXP for the new level
+        expToLevelUp += 50; // Increase EXP required for next level
+        System.out.println("Leveled up! Current level: " + level);
     }
-}
 
-private long lastExpGainTime = 0;  // Tracks the last time EXP was gained
-private final long expGainInterval = 10000;  // 10 seconds in milliseconds
-
-public void updateExpOverTime() {
-    long currentTime = System.currentTimeMillis();
-    if (currentTime - lastExpGainTime >= expGainInterval) {
-        gainExp(10);  // Add 10 EXP every 10 seconds
-        lastExpGainTime = currentTime;  // Update the last EXP gain time
+    // Getter for the player's current experience points
+    public int getExperience() {
+        return experience;
     }
-}
 
+    // Getter for the EXP required to level up
+    public int getExpToLevelUp() {
+        return expToLevelUp;
+    }
 
+    // Getter for the player's current level
+    public int getLevel() {
+        return level;
+    }
 
+    // Add these fields to track health regeneration
+    private long lastHealTime = 0; // Track the last heal time
+    private long healInterval = 3000; // Heal every 3 seconds
+    private int healAmount = 5; // Heal 5 health points every interval
 
+    // Method to regenerate health slowly over time
+    private void regenerateHealth() {
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastHealTime >= healInterval && health < maxHealth) {
+            heal(healAmount); // Heal the player by the specified amount
+            System.out.println("Regenerated " + healAmount + " health. Current health: " + health + "/" + maxHealth);
+            lastHealTime = currentTime; // Update the last heal time
+        }
+    }
 
+    private long lastExpGainTime = 0; // Tracks the last time EXP was gained
+    private final long expGainInterval = 10000; // 10 seconds in milliseconds
 
-    
+    public void updateExpOverTime() {
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastExpGainTime >= expGainInterval) {
+            gainExp(10); // Add 10 EXP every 10 seconds
+            lastExpGainTime = currentTime; // Update the last EXP gain time
+        }
+    }
 
     public abstract boolean isInteracting();
 

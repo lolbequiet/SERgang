@@ -9,10 +9,12 @@ import Screens.LevelScreen;
 import Screens.MenuScreen;
 import Screens.PlayLevelScreen;
 import Screens.ShopScreen;
-
+import Level.Player;
 import Game.*;
+import Maps.TestMap;
 import Screens.NewWorldScreen;
-import Screens.ShopScreen;
+import Screens.OverWorldScreen;
+
 
 /*
  * Based on the current game state, this class determines which Screen should be shown
@@ -27,6 +29,8 @@ public class ScreenCoordinator extends Screen {
 	protected Screen previousScreen = null;
 	protected GameState persistedGameState;
 	protected GameState previousGameState;
+	protected TestMap TestMap;
+	protected Player player;
 
 	public GameState getGameState() {
 		return gameState;
@@ -77,18 +81,19 @@ public class ScreenCoordinator extends Screen {
 						case LEVEL_SELECT:
 							currentScreen = new LevelScreen(this);
 							break;
-						
 						case CREDITS:
 							currentScreen = new CreditsScreen(this);
 							break;
 						case NEWWORLD:
 							currentScreen = new NewWorldScreen(this);
 							break;
-						case SHOP:
-							currentScreen = new ShopScreen(this);
+						case OVERWORLD:
+							currentScreen = new OverWorldScreen(this);
 							break;
-						
-				}
+						case SHOP:
+							currentScreen = new ShopScreen(this, player, TestMap);
+							break;
+					}
 
 					currentScreen.initialize();
 				}
