@@ -8,45 +8,43 @@ import GameObject.SpriteSheet;
 import Level.MapEntityStatus;
 import Level.NPC;
 import Level.Player;
+import Utils.Direction;
 import Utils.Point;
 
 import javax.imageio.ImageIO;
-import java.awt.Color;
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
-/**
- * A class representing the boss NPC with collision damage and a cooldown.
- */
-public class BossNPC extends NPC {
+public class BossMob extends NPC {
     private int health;
     private int maxHealth;
     private int attackDamage;
-    private static final float AGGRO_RADIUS = 200f;
-    private boolean enraged = false;
-    private long lastAttackTime; // Tracks the last time damage was dealt
-    private static final long ATTACK_COOLDOWN = 1000; // Cooldown in milliseconds (1 second)
+    private long lastAttackTime;
+    private long attackCooldown = 2000; // Boss-specific cooldown
+    private static final float AGGRO_RADIUS = 300f; // Boss's aggro range
+    private boolean isAttacking = false;
 
-    public BossNPC(Point location) {
-        super(1, location.x, location.y, loadBossSprite(), "WALK_LEFT");
-        this.health = 200; // Boss has higher health
+    public BossMob(Point location) {
+        super(1, location.x, location.y, loadBossSprite(), "STAND_RIGHT");
+        this.health = 200; // Higher health for the boss
         this.maxHealth = 200;
-        this.attackDamage = 15; // Damage per hit
-        this.lastAttackTime = 0; // Initialize the attack timer
+        this.attackDamage = 20; // More damage per attack
+        this.setHasCombatLogic(true); // Enables combat logic
+        this.setIsUncollidable(true); // Allows the player to pass through the boss
     }
 
     private static SpriteSheet loadBossSprite() {
         BufferedImage spriteImage = null;
         try {
-            spriteImage = ImageIO.read(new File("resources/boss.png"));
+            spriteImage = ImageIO.read(new File("resources/boss.png")); // Ensure this file exists
             spriteImage = applyTransparency(spriteImage, new Color(255, 0, 255)); // Magenta to transparent
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return new SpriteSheet(spriteImage, 24, 24); // Ensure sprites are 24x24
+        return new SpriteSheet(spriteImage, 24, 24); // Adjust sprite size if necessary
     }
 
     private static BufferedImage applyTransparency(BufferedImage image, Color transparentColor) {
@@ -76,19 +74,19 @@ public class BossNPC extends NPC {
         float playerX = player.getX();
         float playerY = player.getY();
 
-        // Move towards player when within aggro radius
+        // If the player is within the aggro radius, move towards them
         if (distanceToPlayer(playerX, playerY) <= AGGRO_RADIUS) {
+            isAttacking = true;
             moveTowardsPlayer(playerX, playerY);
+        } else {
+            isAttacking = false;
+            stand(playerX < this.getX() ? "STAND_LEFT" : "STAND_RIGHT");
         }
 
-        // Deal damage to the player on collision with a cooldown
+        // Attack the player on collision
         if (getBounds().intersects(player.getBounds())) {
-            dealDamageToPlayer(player);
-        }
-
-        if (!enraged && health <= maxHealth / 2) {
-            enraged = true;
-            System.out.println("Boss is now enraged!");
+            triggerAttackAnimation(player);
+            attack(player);
         }
     }
 
@@ -98,9 +96,9 @@ public class BossNPC extends NPC {
 
     private void moveTowardsPlayer(float playerX, float playerY) {
         if (playerX < this.getX()) {
-            this.moveX(-0.5f); // Slower movement for the boss
+            this.walk(Direction.LEFT, 0.5f); // Use Direction.LEFT
         } else {
-            this.moveX(0.5f);
+            this.walk(Direction.RIGHT, 0.5f); // Use Direction.RIGHT
         }
 
         if (playerY < this.getY()) {
@@ -110,25 +108,34 @@ public class BossNPC extends NPC {
         }
     }
 
-    private void dealDamageToPlayer(Player player) {
-        long currentTime = System.currentTimeMillis();
+    private void stand(String direction) {
+        this.currentAnimationName = direction;
+    }
 
-        // Only deal damage if cooldown has passed
-        if (currentTime - lastAttackTime >= ATTACK_COOLDOWN) {
-            System.out.println("Boss damaged the player for " + attackDamage + " HP!");
+    @Override
+    public void attack(Player player) {
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastAttackTime >= attackCooldown) {
+            System.out.println("Boss damages the player for " + attackDamage + " HP!");
             player.takeDamage(attackDamage);
-            lastAttackTime = currentTime; // Update the last attack time
+            lastAttackTime = currentTime;
+        }
+    }
+
+    private void triggerAttackAnimation(Player player) {
+        if (player.getX() < this.getX()) {
+            this.setCurrentAnimationName("ATTACK_LEFT");
+        } else {
+            this.setCurrentAnimationName("ATTACK_RIGHT");
         }
     }
 
     @Override
     public void takeDamage(int damage) {
-        if (health > 0) {
-            health -= damage;
-            System.out.println("Boss takes " + damage + " damage! Remaining health: " + health);
-            if (health <= 0) {
-                die();
-            }
+        this.health -= damage;
+        System.out.println("Boss health: " + this.health);
+        if (this.health <= 0) {
+            die();
         }
     }
 
@@ -138,14 +145,10 @@ public class BossNPC extends NPC {
         setMapEntityStatus(MapEntityStatus.REMOVED);
         setActive(false);
 
-        // Handle flag updates if necessary
+        // Check if boss defeat flag needs to be set
         if (map.getFlagManager() != null) {
             map.getFlagManager().setFlag("BossDefeated", true);
         }
-    }
-
-    public void setActive(boolean active) {
-        this.isActive = active;
     }
 
     @Override
@@ -155,22 +158,21 @@ public class BossNPC extends NPC {
         int screenX = Math.round(getX() - map.getCamera().getX());
         int screenY = Math.round(getY() - map.getCamera().getY());
 
-        // Draw health bar above boss
         int healthBarWidth = 100;
         int healthBarHeight = 10;
         int currentHealthWidth = (int) ((health / (float) maxHealth) * healthBarWidth);
 
-        // Background of health bar
+        // Draw background of health bar
         graphicsHandler.drawFilledRectangle(
             screenX - healthBarWidth / 2, screenY - 20, healthBarWidth, healthBarHeight, Color.GRAY
         );
 
-        // Current health amount
+        // Draw current health amount
         graphicsHandler.drawFilledRectangle(
             screenX - healthBarWidth / 2, screenY - 20, currentHealthWidth, healthBarHeight, Color.RED
         );
 
-        // Health bar border
+        // Draw health bar border
         graphicsHandler.drawRectangle(
             screenX - healthBarWidth / 2, screenY - 20, healthBarWidth, healthBarHeight, Color.BLACK
         );
@@ -179,31 +181,41 @@ public class BossNPC extends NPC {
     @Override
     public HashMap<String, Frame[]> loadAnimations(SpriteSheet spriteSheet) {
         return new HashMap<>() {{
-            put("WALK_LEFT", new Frame[] {
+            put("WALK_LEFT", new Frame[]{
                 new FrameBuilder(spriteSheet.getSprite(0, 0))
                     .withScale(3)
                     .withBounds(7, 13, 18, 18)
                     .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                     .build()
             });
-
-            put("WALK_RIGHT", new Frame[] {
+            put("WALK_RIGHT", new Frame[]{
                 new FrameBuilder(spriteSheet.getSprite(0, 0))
                     .withScale(3)
                     .withBounds(7, 13, 18, 18)
                     .build()
             });
-
-            put("ATTACK_LEFT", new Frame[] {
-                new FrameBuilder(spriteSheet.getSprite(1, 0), 30)
+            put("STAND_LEFT", new Frame[]{
+                new FrameBuilder(spriteSheet.getSprite(1, 0))
                     .withScale(3)
                     .withBounds(7, 13, 18, 18)
                     .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                     .build()
             });
-
-            put("ATTACK_RIGHT", new Frame[] {
-                new FrameBuilder(spriteSheet.getSprite(1, 0), 30)
+            put("STAND_RIGHT", new Frame[]{
+                new FrameBuilder(spriteSheet.getSprite(1, 0))
+                    .withScale(3)
+                    .withBounds(7, 13, 18, 18)
+                    .build()
+            });
+            put("ATTACK_LEFT", new Frame[]{
+                new FrameBuilder(spriteSheet.getSprite(2, 0), 30)
+                    .withScale(3)
+                    .withBounds(7, 13, 18, 18)
+                    .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                    .build()
+            });
+            put("ATTACK_RIGHT", new Frame[]{
+                new FrameBuilder(spriteSheet.getSprite(2, 0), 30)
                     .withScale(3)
                     .withBounds(7, 13, 18, 18)
                     .build()

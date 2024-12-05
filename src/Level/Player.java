@@ -97,6 +97,12 @@ public abstract class Player extends GameObject {
         initializeWalkingSound(); // Initialize the walking sound
     }
 
+
+    //test
+
+    public void reset() {
+        this.health = 100;
+    }
     // Add an item to the player's inventory
     public void addToInventory(String item) {
         if (inventory == null) {
@@ -141,6 +147,8 @@ public abstract class Player extends GameObject {
     public int getDamage() {
         return 10; // Default player damage
     }
+
+    
 
     // Damage the player and update health
     public void takeDamage(int damage) {
@@ -562,6 +570,65 @@ public abstract class Player extends GameObject {
             lastExpGainTime = currentTime; // Update the last EXP gain time
         }
     }
+    // Setter for health
+public void setHealth(int health) {
+    this.health = Math.min(health, maxHealth); // Ensure health doesn't exceed max health
+    System.out.println("Player health set to: " + this.health);
+}
+
+// Setter for experience
+public void setExperience(int experience) {
+    this.experience = experience;
+    System.out.println("Player experience set to: " + this.experience);
+}
+
+// Setter for stamina
+public void setStamina(int stamina) {
+    this.stamina = Math.max(0, Math.min(stamina, 200)); // Ensure stamina is within valid bounds (0-200)
+    System.out.println("Player stamina set to: " + this.stamina);
+}
+
+// Setter for level
+public void setLevel(int level) {
+    this.level = level;
+    System.out.println("Player level set to: " + this.level);
+}
+
+// Add this field to the Player class
+private boolean hasSword = false; // Tracks if the player has picked up the sword
+
+// Add this method to check if the player has a sword
+public boolean hasSword() {
+    return hasSword;
+}
+
+// Add this method to set the sword status
+public void pickUpSword() {
+    this.hasSword = true;
+    System.out.println("Player picked up the sword!");
+}
+
+// Optionally add this method to drop the sword
+public void dropSword() {
+    this.hasSword = false;
+    System.out.println("Player dropped the sword.");
+}
+
+
+
+public int getMaxStamina() {
+    return maxStamina;
+}
+
+public void setMaxStamina(int maxStamina) {
+    this.maxStamina = maxStamina;
+}
+
+private int maxStamina;  // Maximum stamina
+
+
+
+
 
     public abstract boolean isInteracting();
 

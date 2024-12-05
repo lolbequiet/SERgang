@@ -2,11 +2,9 @@ package Maps;
 
 import EnhancedMapTiles.CollectableCoin;
 import EnhancedMapTiles.PushableRock;
-import EnhancedMapTiles.Sword;
 import Level.*;
 import NPCs.*;
 import Scripts.SimpleTextScript;
-import Scripts.TestMap.*;
 import Tilesets.CommonTileset2;
 import Utils.Point;
 
@@ -26,13 +24,13 @@ public class TestMap2 extends Map {
     public ArrayList<EnhancedMapTile> loadEnhancedMapTiles() {
         ArrayList<EnhancedMapTile> enhancedMapTiles = new ArrayList<>();
 
-         // Add coins to the map
-         CollectableCoin coin1 = new CollectableCoin(new Point(500, 500), 10);
-         CollectableCoin coin2 = new CollectableCoin(new Point(800, 600), 10);
-         enhancedMapTiles.add(coin1);
-         enhancedMapTiles.add(coin2);
+        // Add coins to the map
+        CollectableCoin coin1 = new CollectableCoin(new Point(500, 500), 10);
+        CollectableCoin coin2 = new CollectableCoin(new Point(800, 600), 10);
+        enhancedMapTiles.add(coin1);
+        enhancedMapTiles.add(coin2);
 
-         for (MapTile tile : mapTiles) {
+        for (MapTile tile : mapTiles) {
             if (tile.getTileIndex() == 3) {
                 PushableRock pushableRock = new PushableRock(tile.getLocation());
                 enhancedMapTiles.add(pushableRock);
@@ -53,6 +51,16 @@ public class TestMap2 extends Map {
     public ArrayList<NPC> loadNPCs() {
         ArrayList<NPC> npcs = new ArrayList<>();
 
+        // Add Overworld Villager NPC
+        OverworldVillager overworldVillager = new OverworldVillager(1, getMapTile(25, 15).getLocation());
+        overworldVillager.setInteractScript(new SimpleTextScript("Villager: Welcome to the Overworld!"));
+        npcs.add(overworldVillager);
+
+        // Add Bud NPC
+        Bud bud = new Bud(2, getMapTile(30, 18).getLocation());
+        bud.setInteractScript(new SimpleTextScript("Bud: Stay safe out there!"));
+        npcs.add(bud);
+
         return npcs;
     }
 
@@ -72,6 +80,8 @@ public class TestMap2 extends Map {
 
     @Override
     public void loadScripts() {
+        // Example: Adding interaction with a specific map tile
+        getMapTile(15, 20).setInteractScript(new SimpleTextScript("This path leads to the village."));
     }
 
     public void addinCheese(int total) {

@@ -6,6 +6,7 @@ import Scripts.SimpleTextScript;
 import Tilesets.CommonTileset3;
 import Utils.Point;
 import EnhancedMapTiles.CollectableCoin;
+import NPCs.*;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -38,7 +39,7 @@ public class TestMap3 extends Map {
 
         // Add BossNPC at tile (18, 4)
         Point bossSpawnLocation = getMapTile(18, 4).getLocation();
-        BossNPC boss = new BossNPC(bossSpawnLocation);
+        BossMob boss = new BossMob(bossSpawnLocation);
         npcs.add(boss);
 
         return npcs;

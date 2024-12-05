@@ -64,50 +64,64 @@ public class TestMap extends Map {
     }
 
     @Override
-    public ArrayList<NPC> loadNPCs() {
-        ArrayList<NPC> npcs = new ArrayList<>();
+public ArrayList<NPC> loadNPCs() {
+    ArrayList<NPC> npcs = new ArrayList<>();
 
-        // Spawn Friend near the player
-        Point friendSpawnLocation = getMapTile(18, 20).getLocation(); 
-        Friend friend = new Friend(friendSpawnLocation);
-        npcs.add(friend);
+    // Spawn Friend near the player
+    Point friendSpawnLocation = getMapTile(18, 20).getLocation(); 
+    Friend friend = new Friend(friendSpawnLocation);
+    npcs.add(friend);
 
+    // Add Walrus NPC
+    Walrus walrus = new Walrus(1, getMapTile(20, 21).getLocation().subtractY(40));
+    walrus.setInteractScript(new WalrusScript());
+    npcs.add(walrus);
 
-        Walrus walrus = new Walrus(1, getMapTile(20,21).getLocation().subtractY(40));
-        walrus.setInteractScript(new WalrusScript());
-        npcs.add(walrus);
+    // Add Dinosaur NPC
+    Dinosaur dinosaur = new Dinosaur(2, getMapTile(13, 4).getLocation());
+    dinosaur.setExistenceFlag("hasTalkedToDinosaur");
+    dinosaur.setInteractScript(new DinoScript());
+    npcs.add(dinosaur);
 
+    // Add Seb NPC
+    Seb seb = new Seb(3, getMapTile(5, 15).getLocation().subtractY(40));
+    seb.setInteractScript(new WalrusScript());
+    npcs.add(seb);
 
+    // Add Village Chief NPC
+    VillageChief villageChief = new VillageChief(8, getMapTile(10, 10).getLocation());
+    villageChief.setInteractScript(new SimpleTextScript("The Chief greets you and shares wisdom."));
+    npcs.add(villageChief);
 
-
-        Dinosaur dinosaur = new Dinosaur(2, getMapTile(13, 4).getLocation());
-        dinosaur.setExistenceFlag("hasTalkedToDinosaur");
-        dinosaur.setInteractScript(new DinoScript());
-        npcs.add(dinosaur);
-
-        Seb seb = new Seb(3, getMapTile(5, 15).getLocation().subtractY(40));
-        seb.setInteractScript(new WalrusScript());
-        npcs.add(seb);
-
-        Bug bug = new Bug(4, getMapTile(7, 12).getLocation().subtractX(20));
-        bug.setInteractScript(new BugScript());
-        npcs.add(bug);
-
-        Bug beetle = new Bug(5, getMapTile(15, 22).getLocation().subtractX(30));
-        beetle.setInteractScript(new BugScript());
-        npcs.add(beetle);
-
-        Seb ant = new Seb(6, new Point(14 * 32, 18 * 32).subtractX(30));
-        ant.setInteractScript(new BugScript());
-        npcs.add(ant);
-        
-
-        mikedashopkeeper mikeBANDZ = new mikedashopkeeper(7, getMapTile(39, 4).getLocation());
-        mikeBANDZ.setInteractScript(new mikedashopkeeperScript());
-        npcs.add(mikeBANDZ);
-
-        return npcs;
+    // Add Soldiers (3 random spawn locations)
+    for (int i = 0; i < 3; i++) {
+        Point randomLocation = new Point((int) (Math.random() * 40) * 32, (int) (Math.random() * 30) * 32);
+        Soldier soldier = new Soldier(9 + i, randomLocation);
+        soldier.setInteractScript(new SimpleTextScript("Soldier says: 'Stay vigilant and train hard!'"));
+        npcs.add(soldier);
     }
+
+    // Add Bug NPCs
+    Bug bug = new Bug(4, getMapTile(7, 12).getLocation().subtractX(20));
+    bug.setInteractScript(new BugScript());
+    npcs.add(bug);
+
+    Bug beetle = new Bug(5, getMapTile(15, 22).getLocation().subtractX(30));
+    beetle.setInteractScript(new BugScript());
+    npcs.add(beetle);
+
+    Seb ant = new Seb(6, new Point(14 * 32, 18 * 32).subtractX(30));
+    ant.setInteractScript(new BugScript());
+    npcs.add(ant);
+
+    // Add Shopkeeper NPC
+    mikedashopkeeper mikeBANDZ = new mikedashopkeeper(7, getMapTile(39, 4).getLocation());
+    mikeBANDZ.setInteractScript(new mikedashopkeeperScript());
+    npcs.add(mikeBANDZ);
+
+    return npcs;
+}
+
     
     @Override
     public ArrayList<NPC> loadEnemies() {

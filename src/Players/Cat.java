@@ -221,4 +221,5 @@ public class Cat extends Player {
     protected void setPosition(int i, float y) {
         throw new UnsupportedOperationException("Unimplemented method 'setPosition'");
     }
+    
 }

@@ -45,6 +45,8 @@ public class mikedashopkeeperScript extends Script {
                 addScriptAction(new TextboxScriptAction() {{
                     addText("bet bet, slide");
                 }});
+
+                
                 scriptActions.add(new UnlockPlayerScriptAction());
                 scriptActions.add(new ChangeFlagScriptAction("VIPaccess", true));
                 

@@ -16,8 +16,8 @@ public class LostBallScript extends Script {
         scriptActions.add(new LockPlayerScriptAction());
 
         scriptActions.add(new TextboxScriptAction() {{
-            addText("Where did my ball go!?");
-            addText("I left it right here... how strange\nsomeone must have stole it");
+            addText("Huh? What is this place?");
+            addText("I was just in my room... how strange\nI've got to get out of here!");
             addText("Maybe that guy over there will know where it is!");
         }});
 
