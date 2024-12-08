@@ -1,10 +1,6 @@
 package Screens;
 
-import Engine.GraphicsHandler;
-import Engine.Key;
-import Engine.KeyLocker;
-import Engine.Keyboard;
-import Engine.Screen;
+import Engine.*;
 import Game.GameState;
 import Game.ScreenCoordinator;
 import Players.Cat;
@@ -25,7 +21,7 @@ public class InventoryScreen extends Screen {
 
     public InventoryScreen(ScreenCoordinator screenCoordinator) {
         this.screenCoordinator = screenCoordinator;
-        swordSprite = loadImage("resources/Sword.png"); // Load sword sprite for slot 1
+        swordSprite = loadImage("Resources/Sword.png"); // Load sword sprite for slot 1
         swordEquipped = false;  // Sword starts unequipped by default
     }
 
@@ -34,7 +30,7 @@ public class InventoryScreen extends Screen {
      */
     private BufferedImage loadImage(String path) {
         try {
-            BufferedImage image = ImageIO.read(new File(path));
+            BufferedImage image = ImageIO.read(InventoryScreen.class.getClassLoader().getResource(path));
             isSwordLoaded = true;
             return image;
         } catch (IOException e) {

@@ -2,8 +2,8 @@ package Game;
 
 import Engine.GameWindow;
 import Engine.ScreenManager;
-import Game.AudioManager;
-import Maps.*;
+import EnhancedMapTiles.Sword;
+import Maps.TestMap;
 import Screens.ShopScreen;
 
 /*
@@ -20,6 +20,7 @@ public class Game {
 
  
         AudioManager.playLoop("Resources/Audio/background_lowered_more.wav");
+
     }
 
     public Game() {
@@ -28,11 +29,11 @@ public class Game {
         GameWindow gameWindow = new GameWindow();
         ScreenManager screenManager = gameWindow.getScreenManager();
 
-        //TestMap testMap = new TestMap();
+//        TestMap testMap = new TestMap();
+//
+//        ScreenCoordinator screenCoordinator = new ScreenCoordinator();
 
-        //ScreenCoordinator screenCoordinator = new ScreenCoordinator();
-
-        //ShopScreen shopScreen = new ShopScreen(screenCoordinator, testMap);
+//        ShopScreen shopScreen = nawew ShopScreen(screenCoordinator, testMap);
 
         screenManager.SetScreenCoordinator(new ScreenCoordinator());
         screenManager.setCurrentScreen(ScreenManager.getScreenCoordinator());

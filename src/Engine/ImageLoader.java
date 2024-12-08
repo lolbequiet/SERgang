@@ -18,8 +18,9 @@ public class ImageLoader {
 
     // loads an image and allows the transparent color to be specified
     public static BufferedImage load(String imageFileName, Color transparentColor) {
+        System.out.println("Loading image " + imageFileName);
         try {
-            BufferedImage initialImage = ImageIO.read(new File(Config.RESOURCES_PATH + imageFileName));
+            BufferedImage initialImage = ImageIO.read(ImageLoader.class.getClassLoader().getResource(Config.RESOURCES_PATH + imageFileName));
             return ImageUtils.transformColorToTransparency(initialImage, transparentColor);
         } catch (IOException e) {
             System.out.println("Unable to find file " + Config.RESOURCES_PATH + imageFileName);
@@ -35,7 +36,7 @@ public class ImageLoader {
     // loads a piece of an image from an image file and allows the transparent color to be specified
     public static BufferedImage loadSubImage(String imageFileName, Color transparentColor, int x, int y, int width, int height) {
         try {
-            BufferedImage initialImage = ImageIO.read(new File(Config.RESOURCES_PATH + imageFileName));
+            BufferedImage initialImage = ImageIO.read(ImageLoader.class.getClassLoader().getResource(Config.RESOURCES_PATH + imageFileName));
             BufferedImage transparentImage = ImageUtils.transformColorToTransparency(initialImage, transparentColor);
             return transparentImage.getSubimage(x, y, width, height);
         } catch (IOException e) {

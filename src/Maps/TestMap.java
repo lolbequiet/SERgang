@@ -70,6 +70,7 @@ public class TestMap extends Map {
         // Spawn Friend near the player
         Point friendSpawnLocation = getMapTile(18, 20).getLocation(); 
         Friend friend = new Friend(friendSpawnLocation);
+        System.out.println("Freind: " + friend);
         npcs.add(friend);
 
 

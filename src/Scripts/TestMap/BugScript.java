@@ -6,8 +6,6 @@ import Level.Script;
 import ScriptActions.*;
 
 import Game.AudioManager;
-import Engine.Key;
-import Engine.Keyboard;
 
 // script for talking to bug npc
 // checkout the documentation website for a detailed guide on how this script works

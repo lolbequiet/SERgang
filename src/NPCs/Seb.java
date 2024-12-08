@@ -18,7 +18,7 @@ import java.util.HashMap;
 public class Seb extends NPC {
 
     public Seb(int id, Point location) {
-        super(id, location.x, location.y, new SpriteSheet(ImageLoader.load("walrus.png"), 24, 24), "STAND_LEFT");
+        super(id, location.x, location.y, new SpriteSheet(ImageLoader.load("Walrus.png"), 24, 24), "STAND_LEFT");
     }
 
     @Override

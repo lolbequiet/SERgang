@@ -2,6 +2,7 @@ package Game;
 
 import javax.sound.sampled.*;
 import java.io.File;
+import java.io.IOException;
 
 public class AudioManager {
 
@@ -23,23 +24,25 @@ public class AudioManager {
         play(filePath, true, volume);
     }
 
-    //play audio
-    private static void play(String filePath, boolean loop, float volume) {
+
+    public static void play(String resourcePath, boolean loop, float volume) {
         try {
-            File audioFile = new File(filePath);
-            if (!audioFile.exists()) {
-                System.err.println("Audio file not found: " + filePath);
+            // Load the audio resource using the class loader
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(
+                    AudioManager.class.getClassLoader().getResource(resourcePath)
+            );
+            if (audioStream == null) {
+                System.err.println("Audio resource not found: " + resourcePath);
                 return;
             }
 
-            // Load audio file
-            AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile);
+            // Create and open the audio clip
             Clip clip = AudioSystem.getClip();
             clip.open(audioStream);
 
             // Set volume
             FloatControl volumeControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-            float dB = (float) (Math.log10(volume) * 20); 
+            float dB = (float) (Math.log10(volume) * 20); // Convert linear volume to decibels
             volumeControl.setValue(dB);
 
             // Play sound
@@ -49,9 +52,16 @@ public class AudioManager {
                 clip.start();
             }
 
-            System.out.println("Playing audio: " + filePath + (loop ? " (looping)" : ""));
-        } catch (Exception e) {
-            System.err.println("Error playing audio: " + e.getMessage());
+            System.out.println("Playing audio: " + resourcePath + (loop ? " (looping)" : ""));
+        } catch (UnsupportedAudioFileException e) {
+            System.err.println("Unsupported audio file format: " + e.getMessage());
+        } catch (IOException e) {
+            System.err.println("Error reading audio resource: " + e.getMessage());
+        } catch (LineUnavailableException e) {
+            System.err.println("Audio line unavailable: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            System.err.println("Volume setting error: " + e.getMessage());
         }
     }
+
 }

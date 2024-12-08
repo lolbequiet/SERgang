@@ -1,11 +1,9 @@
 package NPCs;
 
 import Builders.FrameBuilder;
-import Engine.GraphicsHandler;
 import GameObject.Frame;
 import GameObject.ImageEffect;
 import GameObject.SpriteSheet;
-import Level.MapEntityStatus;
 import Level.NPC;
 import Level.Player;
 import Utils.Point;
@@ -14,7 +12,6 @@ import javax.imageio.ImageIO;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -64,7 +61,7 @@ public class Friend extends NPC {
     private static SpriteSheet loadFriendSprite() {
         BufferedImage spriteImage = null;
         try {
-            spriteImage = ImageIO.read(new File("resources/temp_pal.png"));
+            spriteImage = ImageIO.read(Friend.class.getClassLoader().getResource("Resources/temp_pal.png"));
             spriteImage = applyTransparency(spriteImage, new Color(255, 0, 255)); // Magenta to transparent
         } catch (IOException e) {
             e.printStackTrace();

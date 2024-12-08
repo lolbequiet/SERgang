@@ -14,7 +14,6 @@ import javax.imageio.ImageIO;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -36,10 +35,10 @@ public class WalrusMob extends NPC {
         this.attackDamage = 10;
     }
 
-    private static SpriteSheet loadWalrusSprite() {
+    public static SpriteSheet loadWalrusSprite() {
         BufferedImage spriteImage = null;
         try {
-            spriteImage = ImageIO.read(new File("resources/WalrusMob.png"));
+            spriteImage = ImageIO.read(WalrusMob.class.getClassLoader().getResource("Resources/WalrusMob.png"));
             spriteImage = applyTransparency(spriteImage, new Color(255, 0, 255)); // Magenta to transparent
         } catch (IOException e) {
             e.printStackTrace();
@@ -52,7 +51,7 @@ public class WalrusMob extends NPC {
         BufferedImage newImage = new BufferedImage(
                 image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = newImage.createGraphics();
-        
+
         for (int y = 0; y < image.getHeight(); y++) {
             for (int x = 0; x < image.getWidth(); x++) {
                 int pixel = image.getRGB(x, y);
@@ -63,7 +62,7 @@ public class WalrusMob extends NPC {
                 }
             }
         }
-        
+
         g2d.dispose();
         return newImage;
     }
@@ -74,6 +73,8 @@ public class WalrusMob extends NPC {
 
         float playerX = player.getX();
         float playerY = player.getY();
+
+//        System.out.println(distanceToPlayer(playerX, playerY));
 
         if (distanceToPlayer(playerX, playerY) <= AGGRO_RADIUS) {
             moveTowardsPlayer(playerX, playerY);
@@ -133,8 +134,8 @@ public class WalrusMob extends NPC {
             map.getFlagManager().setFlag("WalrusMobDefeated", true);
             System.out.println("All mobs defeated!");
         }
-        }
-    
+    }
+
 
     public void setActive(boolean active) {
         this.isActive = active;
@@ -152,15 +153,15 @@ public class WalrusMob extends NPC {
         int currentHealthWidth = (int) ((health / (float) maxHealth) * healthBarWidth);
 
         graphicsHandler.drawFilledRectangle(
-            screenX, screenY - 10, healthBarWidth, healthBarHeight, Color.GRAY
+                screenX, screenY - 10, healthBarWidth, healthBarHeight, Color.GRAY
         );
 
         graphicsHandler.drawFilledRectangle(
-            screenX, screenY - 10, currentHealthWidth, healthBarHeight, Color.RED
+                screenX, screenY - 10, currentHealthWidth, healthBarHeight, Color.RED
         );
 
         graphicsHandler.drawRectangle(
-            screenX, screenY - 10, healthBarWidth, healthBarHeight, Color.BLACK
+                screenX, screenY - 10, healthBarWidth, healthBarHeight, Color.BLACK
         );
     }
 
@@ -168,17 +169,17 @@ public class WalrusMob extends NPC {
     public HashMap<String, Frame[]> loadAnimations(SpriteSheet spriteSheet) {
         return new HashMap<>() {{
             put("WALK_LEFT", new Frame[]{
-                new FrameBuilder(spriteSheet.getSprite(0, 0))
-                    .withScale(3)
-                    .withBounds(7, 13, 18, 18)
-                    .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
-                    .build()
+                    new FrameBuilder(spriteSheet.getSprite(0, 0))
+                            .withScale(3)
+                            .withBounds(7, 13, 18, 18)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .build()
             });
             put("WALK_RIGHT", new Frame[]{
-                new FrameBuilder(spriteSheet.getSprite(0, 0))
-                    .withScale(3)
-                    .withBounds(7, 13, 18, 18)
-                    .build()
+                    new FrameBuilder(spriteSheet.getSprite(0, 0))
+                            .withScale(3)
+                            .withBounds(7, 13, 18, 18)
+                            .build()
             });
         }};
     }

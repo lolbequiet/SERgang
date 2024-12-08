@@ -16,21 +16,17 @@ import Engine.Key;
 import Engine.KeyLocker;
 import Engine.Keyboard;
 import Engine.ScreenManager;
-import Game.GameState;
 import GameObject.Frame;
 import GameObject.GameObject;
 import GameObject.ImageEffect;
-import GameObject.IntersectableRectangle;
 import GameObject.Rectangle;
 import GameObject.SpriteSheet;
 import Screens.DeathScreen;
 import Utils.Direction;
 import Utils.Point;
 import java.awt.Font;
-import java.io.File;
 import java.io.IOException;
 
-import java.awt.MouseInfo;
 import java.awt.Toolkit;
 
 public abstract class Player extends GameObject {
@@ -272,7 +268,7 @@ public abstract class Player extends GameObject {
 
         if (Keyboard.isKeyDown(Key.F) && !keyLocker.isKeyLocked(Key.F)) {
             Projectile fire = new Projectile(getLocation().x, getLocation().y,
-                    new Frame(ImageLoader.loadSubImage("Fireandicespells.png", 0, 0, 16, 16), ImageEffect.NONE, 3f, new Rectangle(0, 0, 16, 16)),
+                    new Frame(ImageLoader.loadSubImage("FireandIcespells.png", 0, 0, 16, 16), ImageEffect.NONE, 3f, new Rectangle(0, 0, 16, 16)),
                     shootDir, 5f, 10f);
 
             fire.setMap(map);
@@ -285,7 +281,7 @@ public abstract class Player extends GameObject {
 
         if (Keyboard.isKeyDown(Key.R) && !keyLocker.isKeyLocked(Key.R)) {
             Projectile Ice = new Projectile(getLocation().x, getLocation().y,
-                    new Frame(ImageLoader.loadSubImage("Fireandicespells.png", 34, 0, 16, 16), ImageEffect.NONE, 3f, new Rectangle(0, 0, 16, 16)),
+                    new Frame(ImageLoader.loadSubImage("FireandIcespells.png", 34, 0, 16, 16), ImageEffect.NONE, 3f, new Rectangle(0, 0, 16, 16)),
                     shootDir, 5f, 12f);
 
             Ice.setMap(map);
@@ -347,16 +343,31 @@ public abstract class Player extends GameObject {
 
     private void initializeWalkingSound() {
         try {
-            File soundFile = new File("Resources/Audio/cc_walk.wav");
-            AudioInputStream audioStream = AudioSystem.getAudioInputStream(soundFile);
-            walkingClip = AudioSystem.getClip();
+            // Load the audio file as a resource
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(
+                    getClass().getClassLoader().getResource("Resources/Audio/cc_walk.wav")
+            );
+
+            // Create and configure the audio clip
+            Clip walkingClip = AudioSystem.getClip();
             walkingClip.open(audioStream);
             walkingClip.loop(Clip.LOOP_CONTINUOUSLY); // Prepare for looping
             walkingClip.stop(); // Start with sound stopped
-        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
-            System.err.println("Error initializing walking sound: " + e.getMessage());
+
+            // Optionally store the clip as a class-level variable if needed
+            this.walkingClip = walkingClip;
+
+        } catch (UnsupportedAudioFileException e) {
+            System.err.println("The audio file format is not supported: " + e.getMessage());
+        } catch (IOException e) {
+            System.err.println("Error reading the audio file: " + e.getMessage());
+        } catch (LineUnavailableException e) {
+            System.err.println("Audio line for playing the sound is unavailable: " + e.getMessage());
+        } catch (NullPointerException e) {
+            System.err.println("Audio resource not found: " + e.getMessage());
         }
     }
+
 
     private void manageWalkingSound() {
         boolean isCurrentlyWalking = isMovingKeyPressed();
