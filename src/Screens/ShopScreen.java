@@ -5,17 +5,16 @@ import Engine.Key;
 import Engine.Screen;
 import Game.GameState;
 import Game.ScreenCoordinator;
-import GameObject.Sprite;
-import Level.*;
-import Players.Cat;
+import Level.FlagManager;
+import Level.Player;
+import Maps.ShopMap;
+import Maps.TestMap;
 import SpriteFont.SpriteFont;
-import Utils.Direction;
-import java.awt.Color;
-import Maps.*;
-import java.awt.KeyboardFocusManager;
-
 import Engine.KeyLocker;
 import Engine.Keyboard;
+
+import java.awt.Color;
+import java.util.HashMap;
 
 public class ShopScreen extends Screen {
 
@@ -24,51 +23,46 @@ public class ShopScreen extends Screen {
     protected KeyLocker keyLocker = new KeyLocker();
     protected Player player;
     protected ScreenCoordinator screenCoordinator;
-    protected SpriteFont healthPotion, mace, baconeggNcheese;
+    protected SpriteFont healthPotion, mace, sandwich;
     protected int currentShopItem = 0;
     protected int keyPressTimer;
-    protected int pointerLocationX, pointerLocationY;
-    protected TestMap TestMap;
+    protected TestMap testMap;
 
+    private HashMap<String, Integer> inventory = new HashMap<>(); // Inventory for purchased items
 
-
-
-    public enum NewShopScreenState {
-        RUNNING, LEVEL_COMPLETED, GAME_OVER, SHOP
-    }
-
-    protected SpriteFont topText;
-
-    protected SpriteFont testText;
-
-    public ShopScreen(ScreenCoordinator screenCoordinator, Player player, TestMap TestMap) {
+    public ShopScreen(ScreenCoordinator screenCoordinator, Player player, TestMap testMap) {
         this.screenCoordinator = screenCoordinator;
         this.player = player;
-        this.TestMap = TestMap;
+        this.testMap = testMap;
 
         initialize();
     }
 
     @Override
     public void initialize() {
-        // screenCoordinator.setGameState(GameState.SHOP);
         background = new ShopMap();
         background.setAdjustCamera(false);
-        topText = new SpriteFont("MIKE'S DELI", 50, 50, "Arial", 30, new Color(49, 207, 240));
-        topText.setOutlineColor(Color.black);
-        topText.setOutlineThickness(3);
 
-        healthPotion = new SpriteFont("Potion - 5 doubloons", 30, 150, "Arial",24, new Color (49, 207, 240));
+        // UI Titles and Item Descriptions
+        SpriteFont title = new SpriteFont("MIKE'S DELI", 50, 50, "Arial", 30, new Color(49, 207, 240));
+        title.setOutlineColor(Color.black);
+        title.setOutlineThickness(3);
+
+        healthPotion = new SpriteFont("Potion - 5 doubloons", 30, 150, "Arial", 24, new Color(49, 207, 240));
         healthPotion.setOutlineColor(Color.black);
         healthPotion.setOutlineThickness(2);
-       // testText = new SpriteFont("just a test for designing i guess", 50, 100, "Monsterrat", 30, new Color(0,255,0));
-        mace = new SpriteFont("Mace - 10 doubloons", 30, 200, "Arial",24, new Color (49, 207, 240));
+
+        mace = new SpriteFont("Mace - 10 doubloons", 30, 200, "Arial", 24, new Color(49, 207, 240));
         mace.setOutlineColor(Color.black);
         mace.setOutlineThickness(2);
 
-        baconeggNcheese = new SpriteFont("baconeggNcheese - 15 doubloons", 30, 250, "Arial",24, new Color (49, 207, 240));
-        baconeggNcheese.setOutlineColor(Color.black);
-        baconeggNcheese.setOutlineThickness(2);
+        sandwich = new SpriteFont("Sandwich - 15 doubloons", 30, 250, "Arial", 24, new Color(49, 207, 240));
+        sandwich.setOutlineColor(Color.black);
+        sandwich.setOutlineThickness(2);
+
+        // Initialize inventory
+        inventory.put("Potion", 0);
+        inventory.put("Sandwich", 0);
 
         keyPressTimer = 0;
         keyLocker.lockKey(Key.B);
@@ -76,9 +70,7 @@ public class ShopScreen extends Screen {
 
     @Override
     public void update() {
-
-
-        // if down or up is pressed, change menu item "hovered" over
+        // Navigate the shop menu
         if (Keyboard.isKeyDown(Key.DOWN) && keyPressTimer == 0) {
             keyPressTimer = 14;
             currentShopItem++;
@@ -91,61 +83,54 @@ public class ShopScreen extends Screen {
             }
         }
 
-        // Loop through menu options
+        // Loop through menu items
         if (currentShopItem > 2) {
             currentShopItem = 0;
         } else if (currentShopItem < 0) {
             currentShopItem = 2;
         }
 
+        // Highlight current shop item
         if (currentShopItem == 0) {
             healthPotion.setColor(Color.yellow);
             mace.setColor(Color.white);
-            baconeggNcheese.setColor(Color.white);
-            pointerLocationX = 70;
-            pointerLocationY = 50;
+            sandwich.setColor(Color.white);
         } else if (currentShopItem == 1) {
             healthPotion.setColor(Color.white);
             mace.setColor(Color.yellow);
-            baconeggNcheese.setColor(Color.white);
-            pointerLocationX = 70;
-            pointerLocationY = 150;
+            sandwich.setColor(Color.white);
         } else if (currentShopItem == 2) {
             healthPotion.setColor(Color.white);
             mace.setColor(Color.white);
-            baconeggNcheese.setColor(Color.yellow);
-            pointerLocationX = 70;
-            pointerLocationY = 200;
+            sandwich.setColor(Color.yellow);
         }
 
+        // Handle purchasing items
         if (Keyboard.isKeyDown(Key.ENTER)) {
-            
-            if (currentShopItem == 0) {
-                if (TestMap.cashinOut(5)) {
-                    System.out.println("shoutout my mom fr");
+            if (currentShopItem == 0) { // Health Potion
+                if (testMap.cashinOut(5)) {
+                    inventory.put("Potion", inventory.get("Potion") + 1);
+                    System.out.println("Potion purchased! Total potions: " + inventory.get("Potion"));
                 } else {
-                    System.out.println("BROKE BOI BOI BOI");
+                    System.out.println("Not enough coins for Potion!");
                 }
-            } else if (currentShopItem == 1) {
-                if (TestMap.cashinOut(10)) {
-                    System.out.println("shoutout my mom fr");
+            } else if (currentShopItem == 1) { // Mace
+                if (testMap.cashinOut(10)) {
+                    System.out.println("Mace purchased! (Not implemented in inventory)");
                 } else {
-                    System.out.println("BROKE BOI BOI BOI");
+                    System.out.println("Not enough coins for Mace!");
                 }
-            } else if (currentShopItem == 2)  {
-                if (TestMap.cashinOut(15)) {
-                    System.out.println("shoutout my mom fr");
+            } else if (currentShopItem == 2) { // Sandwich
+                if (testMap.cashinOut(15)) {
+                    inventory.put("Sandwich", inventory.get("Sandwich") + 1);
+                    System.out.println("Sandwich purchased! Total sandwiches: " + inventory.get("Sandwich"));
                 } else {
-                    System.out.println("BROKE BOI BOI BOI");
+                    System.out.println("Not enough coins for Sandwich!");
                 }
-
             }
-            
         }
 
-
-        
-
+        // Exit the shop
         if (Keyboard.isKeyDown(Key.B) && !keyLocker.isKeyLocked(Key.B)) {
             screenCoordinator.BackToPersist();
             keyLocker.lockKey(Key.B);
@@ -154,16 +139,35 @@ public class ShopScreen extends Screen {
         if (Keyboard.isKeyUp(Key.B)) {
             keyLocker.unlockKey(Key.B);
         }
+
+        // Handle using items
+        if (Keyboard.isKeyDown(Key.TWO)) { // Use Potion
+            if (inventory.get("Potion") > 0) {
+                player.setHealth(player.getMaxHealth()); // Restore health to max
+                inventory.put("Potion", inventory.get("Potion") - 1);
+                System.out.println("Potion used! Health restored. Remaining potions: " + inventory.get("Potion"));
+            } else {
+                System.out.println("No potions left!");
+            }
+        }
+
+        if (Keyboard.isKeyDown(Key.THREE)) { // Use Sandwich
+            if (inventory.get("Sandwich") > 0) {
+                player.setStamina(player.getMaxStamina()); // Restore stamina to max
+                inventory.put("Sandwich", inventory.get("Sandwich") - 1);
+                System.out.println("Sandwich used! Stamina restored. Remaining sandwiches: " + inventory.get("Sandwich"));
+            } else {
+                System.out.println("No sandwiches left!");
+            }
+        }
     }
 
     @Override
     public void draw(GraphicsHandler graphicsHandler) {
         graphicsHandler.drawFilledRectangle(0, 0, 1500, 800, new Color(10, 10, 10, 150));
         background.draw(graphicsHandler);
-        topText.draw(graphicsHandler);
         healthPotion.draw(graphicsHandler);
         mace.draw(graphicsHandler);
-        baconeggNcheese.draw(graphicsHandler);
-      //testText.draw(graphicsHandler);
+        sandwich.draw(graphicsHandler);
     }
 }

@@ -5,20 +5,20 @@ import Engine.ScreenManager;
 import EnhancedMapTiles.Sword;
 import Maps.TestMap;
 import Screens.ShopScreen;
+import Game.AudioManager;
 
-/*
- * The game starts here
- * This class just starts up a GameWindow and attaches the ScreenCoordinator to the ScreenManager instance in the GameWindow
- * From this point on the ScreenCoordinator class will dictate what the game does
+/**
+ * The entry point for the game.
+ * This class initializes the GameWindow and ScreenManager, attaching the ScreenCoordinator to manage screens.
+ * Background audio is started, and the game is launched.
  */
-
 public class Game {
 
     public static void main(String[] args) {
-      
-        Game game = new Game();
+        // Start the game
+        new Game();
 
- 
+        // Play background music in a loop
         AudioManager.playLoop("Resources/Audio/background_lowered_more.wav");
 
     }
@@ -26,17 +26,20 @@ public class Game {
     public Game() {
         System.out.println("Game is starting...");
 
+        // Initialize the game window
         GameWindow gameWindow = new GameWindow();
+
+        // Retrieve the ScreenManager instance
         ScreenManager screenManager = gameWindow.getScreenManager();
 
-//        TestMap testMap = new TestMap();
-//
-//        ScreenCoordinator screenCoordinator = new ScreenCoordinator();
+        // Initialize and attach ScreenCoordinator
+        ScreenCoordinator screenCoordinator = new ScreenCoordinator();
+        screenManager.SetScreenCoordinator(screenCoordinator);
 
-//        ShopScreen shopScreen = nawew ShopScreen(screenCoordinator, testMap);
+        // Set the starting screen
+        screenManager.setCurrentScreen(screenCoordinator);
 
-        screenManager.SetScreenCoordinator(new ScreenCoordinator());
-        screenManager.setCurrentScreen(ScreenManager.getScreenCoordinator());
+        // Start the game
         gameWindow.startGame();
     }
 }

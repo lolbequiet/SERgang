@@ -1,0 +1,45 @@
+package Scripts.TestMap;
+
+import java.util.ArrayList;
+import Level.Script;
+import ScriptActions.*;
+import Game.AudioManager;
+
+public class HasTalkedToChiefScript extends Script {
+
+    @Override
+    public ArrayList<ScriptAction> loadScriptActions() {
+        ArrayList<ScriptAction> scriptActions = new ArrayList<>();
+
+        // Play interaction sound
+        scriptActions.add(new CustomScriptAction() {
+            @Override
+            public void customExecute() {
+                AudioManager.playSound("Resources/Audio/ccinteract.wav");
+                System.out.println("Interaction sound played.");
+            }
+        });
+
+        // Lock the player so they cannot move during the interaction
+        scriptActions.add(new LockPlayerScriptAction());
+
+        // Make the Chief face the player
+        scriptActions.add(new NPCFacePlayerScriptAction());
+
+        // Dialogue for talking to the Chief
+        scriptActions.add(new TextboxScriptAction() {{
+            addText("Greetings, adventurer!");
+            addText("I see you have proven yourself by helping the village.");
+            addText("Your bravery has earned you our trust and respect.");
+            addText("Go forth and continue your journey with honor!");
+        }});
+
+        // Mark the "hasTalkedToChief" flag as true
+        scriptActions.add(new ChangeFlagScriptAction("Quest4_TalkToChief", true));
+
+        // Unlock the player so they can move again
+        scriptActions.add(new UnlockPlayerScriptAction());
+
+        return scriptActions;
+    }
+}

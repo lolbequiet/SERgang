@@ -90,6 +90,8 @@ public abstract class MapEntity extends GameObject {
         return isUncollidable;
     }
 
+    
+
     public void setIsUncollidable(boolean isUncollidable) {
         this.isUncollidable = isUncollidable;
     }
