@@ -45,7 +45,7 @@ public class CollectableCoin extends EnhancedMapTile {
 
             this.setMapEntityStatus(MapEntityStatus.REMOVED);
 
-            System.out.println("test for actual collecting of the coin");
+            System.out.println("picking up coin, new amount: " + player.getCoins());
 
 
         }

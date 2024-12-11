@@ -13,6 +13,7 @@ import Screens.NewWorldScreen;
 import Screens.OverWorldScreen;
 import Players.Cat;
 import Level.Player;
+import Maps.TestMap;
 
 /*
  * Based on the current game state, this class determines which Screen should be shown
@@ -29,7 +30,7 @@ public class ScreenCoordinator extends Screen {
     protected GameState previousGameState;
 
     // Player instance
-    protected Player player = new Cat(0, 0); // Instantiate player using a concrete subclass like Cat
+    protected Player _player = new Cat(0, 0); // Instantiate player using a concrete subclass like Cat
 
     public GameState getGameState() {
         return gameState;
@@ -87,7 +88,7 @@ public class ScreenCoordinator extends Screen {
                             currentScreen = new OverWorldScreen(this);
                             break;
                         case SHOP:
-                            currentScreen = new ShopScreen(this, player, null); // Pass the player and map if required
+                            currentScreen = new ShopScreen(this, _player, (TestMap)PlayLevelScreen.getMap()); // Pass the player and map if required
                             break;
                     }
 

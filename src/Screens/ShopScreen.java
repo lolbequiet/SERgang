@@ -38,6 +38,12 @@ public class ShopScreen extends Screen {
         initialize();
     }
 
+
+    //test class, might not need it
+    //public void itemPurchased(int cost){
+    //    player.subtractCoins(cost);
+   // }
+
     @Override
     public void initialize() {
         background = new ShopMap();
@@ -95,20 +101,30 @@ public class ShopScreen extends Screen {
             healthPotion.setColor(Color.yellow);
             mace.setColor(Color.white);
             sandwich.setColor(Color.white);
+            //System.out.println(player.getCoins());
         } else if (currentShopItem == 1) {
             healthPotion.setColor(Color.white);
             mace.setColor(Color.yellow);
             sandwich.setColor(Color.white);
+            //System.out.println(player.getCoins());
         } else if (currentShopItem == 2) {
             healthPotion.setColor(Color.white);
             mace.setColor(Color.white);
             sandwich.setColor(Color.yellow);
+            //System.out.println(player.getCoins());
         }
 
         // Handle purchasing items
         if (Keyboard.isKeyDown(Key.ENTER)) {
             if (currentShopItem == 0) { // Health Potion
                 if (testMap.cashinOut(5)) {
+
+                    System.out.println("the amount before you purchased the item:" + player.getCoins());
+
+                    player.subtractCoins(5);
+
+                    System.out.println("the amount after you purchased the item:" + player.getCoins());
+
                     inventory.put("Potion", inventory.get("Potion") + 1);
                     System.out.println("Potion purchased! Total potions: " + inventory.get("Potion"));
                 } else {
@@ -116,12 +132,14 @@ public class ShopScreen extends Screen {
                 }
             } else if (currentShopItem == 1) { // Mace
                 if (testMap.cashinOut(10)) {
+                    player.subtractCoins(10);
                     System.out.println("Mace purchased! (Not implemented in inventory)");
                 } else {
                     System.out.println("Not enough coins for Mace!");
                 }
             } else if (currentShopItem == 2) { // Sandwich
                 if (testMap.cashinOut(15)) {
+                    player.subtractCoins(15);
                     inventory.put("Sandwich", inventory.get("Sandwich") + 1);
                     System.out.println("Sandwich purchased! Total sandwiches: " + inventory.get("Sandwich"));
                 } else {

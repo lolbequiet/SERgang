@@ -27,38 +27,42 @@ import java.util.List;
 public class PlayLevelScreen extends Screen {
     protected ScreenCoordinator screenCoordinator;
     protected KeyLocker keyLocker = new KeyLocker();
-    protected Map map;
-    protected Player player;
-    protected PlayLevelScreenState playLevelScreenState;
-    protected WinScreen winScreen;
-    protected FlagManager flagManager;
-    protected boolean isInventoryShowing;
-    protected boolean showRectangle; // Toggle flag for rectangle
-    protected InventoryScreen inventoryScreen;
-    protected MapTile portal;
+    protected static Map map;
+        protected Player player;
+        protected PlayLevelScreenState playLevelScreenState;
+        protected WinScreen winScreen;
+        protected FlagManager flagManager;
+        protected boolean isInventoryShowing;
+        protected boolean showRectangle; // Toggle flag for rectangle
+        protected InventoryScreen inventoryScreen;
+        protected MapTile portal;
+    
+    
+        private final int screenWidth = 800;
+        private final int screenHeight = 600;
+        private final int healthBarWidth = 200;
+        private final int healthBarHeight = 20;
+        private final int expBarHeight = 14;
+    
+    
+        private long lastExpGainTime;
+        private long allMobsDefeatedTime; // Track when all mobs are defeated
+        private boolean allMobsDefeated;  // Flag to check if mobs have been defeated
+    
+    
+        public PlayLevelScreen(ScreenCoordinator screenCoordinator) {
+            this.screenCoordinator = screenCoordinator;
+            this.inventoryScreen = new InventoryScreen(screenCoordinator);
+            this.isInventoryShowing = false;
+            this.showRectangle = false; // Rectangle is hidden initially
+            initialize();
+        }
+    
+        public static Map getMap(){
+    
+            return map;
 
-
-    private final int screenWidth = 800;
-    private final int screenHeight = 600;
-    private final int healthBarWidth = 200;
-    private final int healthBarHeight = 20;
-    private final int expBarHeight = 14;
-
-
-    private long lastExpGainTime;
-    private long allMobsDefeatedTime; // Track when all mobs are defeated
-    private boolean allMobsDefeated;  // Flag to check if mobs have been defeated
-
-
-    public PlayLevelScreen(ScreenCoordinator screenCoordinator) {
-        this.screenCoordinator = screenCoordinator;
-        this.inventoryScreen = new InventoryScreen(screenCoordinator);
-        this.isInventoryShowing = false;
-        this.showRectangle = false; // Rectangle is hidden initially
-        initialize();
     }
-
-
     public void initialize() {
         flagManager = new FlagManager();
 
