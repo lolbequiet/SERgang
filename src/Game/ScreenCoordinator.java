@@ -30,7 +30,6 @@ public class ScreenCoordinator extends Screen {
     protected GameState previousGameState;
 
     // Player instance
-    protected Player _player = new Cat(0, 0); // Instantiate player using a concrete subclass like Cat
 
     public GameState getGameState() {
         return gameState;
@@ -45,6 +44,7 @@ public class ScreenCoordinator extends Screen {
         previousScreen = currentScreen;
         persistedGameState = this.gameState;
         this.gameState = gameState;
+
     }
 
     public void BackToPersist() {
@@ -57,6 +57,38 @@ public class ScreenCoordinator extends Screen {
         gameState = GameState.MENU;
     }
 
+    private void savePlayerData(Player player) {
+
+        SharedPlayerData data = SharedPlayerData.getInstance();
+        if (player != null) {
+            data.setHealth(player.getHealth());
+            data.setExperience(player.getExperience());
+            data.setStamina(player.getStamina());
+            data.setCoins(player.getCoins()); // Save coins
+            data.setInventory(player.getInventory());
+            data.setHasSword(((Cat) player).hasSword()); // Save sword status
+        }
+        
+    }
+
+    private void restorePlayerData(Player player) {
+        SharedPlayerData data = SharedPlayerData.getInstance();
+        player = new Cat(0,0);
+
+
+        if (data != null) {
+            player.setHealth(data.getHealth());
+            player.setExperience(data.getExperience());
+            player.setStamina(data.getStamina());
+            player.getInventory().clear();
+            player.getInventory().addAll(data.getInventory());
+            player.addCoins(data.getCoins()); // Restore coins
+            if (data.hasSword()) {
+                ((Cat) player).pickUpSword(); // Restore sword
+            }
+        }
+    }
+
     @Override
     public void update() {
         do {
@@ -66,6 +98,8 @@ public class ScreenCoordinator extends Screen {
 
                 if (previousScreen != null && persistedGameState == gameState) {
                     currentScreen = previousScreen;
+                    currentScreen.restorePlayerData();
+
                     previousScreen = null;
                 } else {
                     switch (gameState) {
@@ -88,7 +122,7 @@ public class ScreenCoordinator extends Screen {
                             currentScreen = new OverWorldScreen(this);
                             break;
                         case SHOP:
-                            currentScreen = new ShopScreen(this, _player, (TestMap)PlayLevelScreen.getMap()); // Pass the player and map if required
+                            currentScreen = new ShopScreen(this, (TestMap)PlayLevelScreen.getMap()); // Pass the player and map if required
                             break;
                     }
 
@@ -110,5 +144,10 @@ public class ScreenCoordinator extends Screen {
     public void draw(GraphicsHandler graphicsHandler) {
         // Call the draw method for the currentScreen
         currentScreen.draw(graphicsHandler);
+    }
+
+    @Override
+    public void restorePlayerData() {
+        // TODO Auto-generated method stub
     }
 }

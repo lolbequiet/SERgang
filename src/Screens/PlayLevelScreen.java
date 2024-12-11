@@ -516,7 +516,7 @@ flagManager.addFlag("Quest8_DefeatNemesis", false);
         RUNNING, LEVEL_COMPLETED, GAME_OVER, SHOP
     }
 
-    private void restorePlayerData() {
+    public void restorePlayerData() {
         SharedPlayerData data = SharedPlayerData.getInstance();
         if (data != null && player != null) {
             player.setHealth(data.getHealth());

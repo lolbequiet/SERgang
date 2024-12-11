@@ -5,10 +5,12 @@ import Engine.Key;
 import Engine.Screen;
 import Game.GameState;
 import Game.ScreenCoordinator;
+import Game.SharedPlayerData;
 import Level.FlagManager;
 import Level.Player;
 import Maps.ShopMap;
 import Maps.TestMap;
+import Players.Cat;
 import SpriteFont.SpriteFont;
 import Engine.KeyLocker;
 import Engine.Keyboard;
@@ -30,9 +32,8 @@ public class ShopScreen extends Screen {
 
     private HashMap<String, Integer> inventory = new HashMap<>(); // Inventory for purchased items
 
-    public ShopScreen(ScreenCoordinator screenCoordinator, Player player, TestMap testMap) {
+    public ShopScreen(ScreenCoordinator screenCoordinator, TestMap testMap) {
         this.screenCoordinator = screenCoordinator;
-        this.player = player;
         this.testMap = testMap;
 
         initialize();
@@ -48,6 +49,9 @@ public class ShopScreen extends Screen {
     public void initialize() {
         background = new ShopMap();
         background.setAdjustCamera(false);
+
+        restorePlayerData();
+
 
         // UI Titles and Item Descriptions
         SpriteFont title = new SpriteFont("MIKE'S DELI", 50, 50, "Arial", 30, new Color(49, 207, 240));
@@ -89,6 +93,11 @@ public class ShopScreen extends Screen {
             }
         }
 
+        if (Keyboard.isKeyUp(Key.ENTER)) {
+            keyLocker.unlockKey(Key.ENTER);
+        }
+
+
         // Loop through menu items
         if (currentShopItem > 2) {
             currentShopItem = 0;
@@ -115,7 +124,10 @@ public class ShopScreen extends Screen {
         }
 
         // Handle purchasing items
-        if (Keyboard.isKeyDown(Key.ENTER)) {
+        if (Keyboard.isKeyDown(Key.ENTER) && !keyLocker.isKeyLocked(Key.ENTER)) {
+
+            keyLocker.lockKey(Key.ENTER);
+
             if (currentShopItem == 0) { // Health Potion
                 if (testMap.cashinOut(5)) {
 
@@ -126,7 +138,10 @@ public class ShopScreen extends Screen {
                     System.out.println("the amount after you purchased the item:" + player.getCoins());
 
                     inventory.put("Potion", inventory.get("Potion") + 1);
+
                     System.out.println("Potion purchased! Total potions: " + inventory.get("Potion"));
+
+
                 } else {
                     System.out.println("Not enough coins for Potion!");
                 }
@@ -150,6 +165,8 @@ public class ShopScreen extends Screen {
 
         // Exit the shop
         if (Keyboard.isKeyDown(Key.B) && !keyLocker.isKeyLocked(Key.B)) {
+            savePlayerData();
+            System.out.println("saveplayer is called");
             screenCoordinator.BackToPersist();
             keyLocker.lockKey(Key.B);
         }
@@ -187,5 +204,35 @@ public class ShopScreen extends Screen {
         healthPotion.draw(graphicsHandler);
         mace.draw(graphicsHandler);
         sandwich.draw(graphicsHandler);
+    }
+
+    private void savePlayerData() {
+        SharedPlayerData data = SharedPlayerData.getInstance();
+        if (player != null) {
+            data.setHealth(player.getHealth());
+            data.setExperience(player.getExperience());
+            data.setStamina(player.getStamina());
+            data.setCoins(player.getCoins()); // Save coins
+            data.setInventory(player.getInventory());
+            data.setHasSword(((Cat) player).hasSword()); // Save sword status
+        }
+    }
+
+    public void restorePlayerData() {
+        SharedPlayerData data = SharedPlayerData.getInstance();
+        player = new Cat(0,0);
+
+
+        if (data != null) {
+            player.setHealth(data.getHealth());
+            player.setExperience(data.getExperience());
+            player.setStamina(data.getStamina());
+            player.getInventory().clear();
+            player.getInventory().addAll(data.getInventory());
+            player.addCoins(data.getCoins()); // Restore coins
+            if (data.hasSword()) {
+                ((Cat) player).pickUpSword(); // Restore sword
+            }
+        }
     }
 }
