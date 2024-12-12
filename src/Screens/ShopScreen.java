@@ -152,6 +152,7 @@ private static final long ITEM_COOLDOWN = 500; // Cooldown in milliseconds (0.5 
             } if (currentShopItem == 1) { // Sword purchase logic
                 if (testMap.cashinOut(20)) { // Assume sword costs 20 coins
                     player.addToInventory("Sword");
+                    player.subtractCoins(10);
                     System.out.println("Sword purchased! You can equip it by pressing '1'.");
                 } else {
                     System.out.println("Not enough coins for Sword!");
@@ -167,6 +168,7 @@ private static final long ITEM_COOLDOWN = 500; // Cooldown in milliseconds (0.5 
             } if (currentShopItem == 3) { // Spells
                 if (testMap.cashinOut(40)) { // Assume spells cost 40 coins
                     player.addToInventory("Spells"); // Add "Spells" to the inventory
+                    player.subtractCoins(40);
                     System.out.println("You unlocked spells! Test them out by pressing F or R.");
                 } else {
                     System.out.println("You don't have enough coins to purchase spells!");
