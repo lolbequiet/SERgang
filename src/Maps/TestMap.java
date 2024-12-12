@@ -124,13 +124,22 @@ public ArrayList<NPC> loadNPCs() {
     npcs.add(ant);
 
     // Add Shopkeeper NPC
-    mikedashopkeeper mikeBANDZ = new mikedashopkeeper(7, getMapTile(39, 4).getLocation());
+    mikedashopkeeper mikeBANDZ = new mikedashopkeeper(7, getMapTile(35, 4).getLocation());
     mikeBANDZ.setInteractScript(new mikedashopkeeperScript());
     npcs.add(mikeBANDZ);
 
-    SignNPC signNPC = new SignNPC(8, getMapTile(18, 20).getLocation());
-    signNPC .setInteractScript(new SimpleTextScript("Hints!'"));
+
+    //NPC signs, these give instructions for the player
+    SignNPC signNPC = new SignNPC(8, getMapTile(24, 18).getLocation());
+    signNPC .setInteractScript(new SimpleTextScript("Press E to pick up objects such as coins and rocks! \nHere is a valuable coin!"));
     npcs.add(signNPC);
+
+    SignNPC2 signNPC2 = new SignNPC2(8, getMapTile(27, 18).getLocation());
+    signNPC2.setInteractScript(new SimpleTextScript("Press Shift to Sprint!"));
+    npcs.add(signNPC);
+
+
+
 
     return npcs;
 }
