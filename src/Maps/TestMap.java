@@ -57,11 +57,14 @@ public class TestMap extends Map {
         // Add coins to the map
         CollectableCoin coin1 = new CollectableCoin(new Point(500, 500), 10);
         CollectableCoin coin2 = new CollectableCoin(new Point(800, 600), 10);
-        CollectableCoin coin3 = new CollectableCoin(new Point(1200, 300), 40);
+        CollectableCoin coin3 = new CollectableCoin(new Point(1250, 900), 10);
+
+        CollectableCoin coin4 = new CollectableCoin(new Point(1700, 1300), 40);
 
         enhancedMapTiles.add(coin1);
         enhancedMapTiles.add(coin2);
         enhancedMapTiles.add(coin3);
+        enhancedMapTiles.add(coin4);
 
         
 
@@ -134,9 +137,13 @@ public ArrayList<NPC> loadNPCs() {
     signNPC .setInteractScript(new SimpleTextScript("Press E to pick up objects such as coins and rocks! \nHere is a valuable coin!"));
     npcs.add(signNPC);
 
-    SignNPC2 signNPC2 = new SignNPC2(8, getMapTile(27, 18).getLocation());
+    SignNPC2 signNPC2 = new SignNPC2(8, getMapTile(14, 20).getLocation());
     signNPC2.setInteractScript(new SimpleTextScript("Press Shift to Sprint!"));
-    npcs.add(signNPC);
+    npcs.add(signNPC2);
+
+    SignNPC3 signNPC3 = new SignNPC3(8, getMapTile(21, 14).getLocation());
+    signNPC3.setInteractScript(new SimpleTextScript("Enemies are nearby...\n Press'Spacebar' to attack them as well!"));
+    npcs.add(signNPC3);
 
 
 
