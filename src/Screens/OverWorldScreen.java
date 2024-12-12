@@ -155,9 +155,9 @@ public class OverWorldScreen extends Screen {
                     // Active Quests
 
                     if (!flagManager.isFlagSet("hasTalkedToWalrus")) {
-                        graphicsHandler.drawString("Defeat Evil Clone", 1210, 430, new Font("Montserrat", Font.BOLD, 18), Color.WHITE);
+                        graphicsHandler.drawString("Escape Evil Clone", 1210, 430, new Font("Montserrat", Font.BOLD, 18), Color.WHITE);
                     } else {
-                        graphicsHandler.drawString("Defeat Evil Clone", 1210, 430, new Font("Montserrat", Font.PLAIN, 18), Color.GRAY);
+                        graphicsHandler.drawString("Escape Evil Clone", 1210, 430, new Font("Montserrat", Font.PLAIN, 18), Color.GRAY);
                     }
 
 
