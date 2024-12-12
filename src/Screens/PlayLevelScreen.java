@@ -6,6 +6,7 @@ import Game.SharedPlayerData;
 import java.awt.Graphics2D;
 import java.awt.FontMetrics;
 import Engine.GraphicsHandler;
+import Engine.ImageLoader;
 import Engine.Key;
 import Engine.KeyLocker;
 import Engine.Keyboard;
@@ -28,39 +29,40 @@ public class PlayLevelScreen extends Screen {
     protected ScreenCoordinator screenCoordinator;
     protected KeyLocker keyLocker = new KeyLocker();
     protected static Map map;
-        protected Player player;
-        protected PlayLevelScreenState playLevelScreenState;
-        protected WinScreen winScreen;
-        protected FlagManager flagManager;
-        protected boolean isInventoryShowing;
-        protected boolean showRectangle; // Toggle flag for rectangle
-        protected InventoryScreen inventoryScreen;
-        protected MapTile portal;
-    
-    
-        private final int screenWidth = 800;
-        private final int screenHeight = 600;
-        private final int healthBarWidth = 200;
-        private final int healthBarHeight = 20;
-        private final int expBarHeight = 14;
-    
-    
-        private long lastExpGainTime;
-        private long allMobsDefeatedTime; // Track when all mobs are defeated
-        private boolean allMobsDefeated;  // Flag to check if mobs have been defeated
-    
-    
-        public PlayLevelScreen(ScreenCoordinator screenCoordinator) {
-            this.screenCoordinator = screenCoordinator;
-            this.inventoryScreen = new InventoryScreen(screenCoordinator);
-            this.isInventoryShowing = false;
-            this.showRectangle = false; // Rectangle is hidden initially
-            initialize();
-        }
-    
-        public static Map getMap(){
-    
-            return map;
+    protected Player player;
+    protected PlayLevelScreenState playLevelScreenState;
+    protected WinScreen winScreen;
+    protected FlagManager flagManager;
+    protected boolean isInventoryShowing;
+    protected boolean showRectangle; // Toggle flag for rectangle
+    protected InventoryScreen inventoryScreen;
+    protected MapTile portal;
+
+    private final int screenWidth = 800;
+    private final int screenHeight = 600;
+    private final int healthBarWidth = 200;
+    private final int healthBarHeight = 20;
+    private final int expBarHeight = 14;
+
+    private long lastExpGainTime;
+    private long allMobsDefeatedTime; // Track when all mobs are defeated
+    private boolean allMobsDefeated;  // Flag to check if mobs have been defeated
+
+    // Added fields for character selection popup
+    private boolean showCharacterSelection = true; // Show popup at start
+    private boolean selectionMade = false; // Once selection is made, don't show again
+
+    public PlayLevelScreen(ScreenCoordinator screenCoordinator) {
+        this.screenCoordinator = screenCoordinator;
+        this.inventoryScreen = new InventoryScreen(screenCoordinator);
+        this.isInventoryShowing = false;
+        this.showRectangle = false; // Rectangle is hidden initially
+        initialize();
+    }
+
+    public static Map getMap(){
+
+        return map;
 
     }
     public void initialize() {
@@ -120,6 +122,10 @@ public class PlayLevelScreen extends Screen {
         lastExpGainTime = System.currentTimeMillis();
         allMobsDefeated = false;  // Initially, mobs are not defeated
 
+        // Ensure character selection is shown at start
+        showCharacterSelection = true;
+        selectionMade = false;
+
         player.syncWithSharedPlayerData();
         System.out.println("Player synced in TestMap/PlayLevelScreen. hasPurchasedSpells = " + player.hasPurchasedSpells());
 
@@ -129,6 +135,13 @@ public class PlayLevelScreen extends Screen {
     public void update() {
         switch (playLevelScreenState) {
             case RUNNING:
+
+                // If showing character selection and no selection made yet, handle it and return early
+                if (showCharacterSelection && !selectionMade) {
+                    handleCharacterSelection();
+                    return; // Skip normal update until selection is made
+                }
+
                 player.update();
                 map.update(player);
 
@@ -145,19 +158,16 @@ public class PlayLevelScreen extends Screen {
                 }
 
 
-                // }
-
-
                 Point portalLoc = portal.getLocation();
                 Point playerLoc = player.getLocation();
-               
+
                 double distance = Math.sqrt(Math.pow(portalLoc.x - playerLoc.x, 2) + Math.pow(portalLoc.y - playerLoc.y, 2));
                 if (distance < 75) {
                     if (Keyboard.isKeyDown(Key.ENTER) && !keyLocker.isKeyLocked(Key.ENTER)) {
-                       
+
                         // player.moveRight(100);
                         screenCoordinator.setGameStatePersist(GameState.OVERWORLD);
-                       
+
                         keyLocker.lockKey(Key.ENTER);
                     } else if (Keyboard.isKeyUp(Key.ENTER)) {
                         keyLocker.unlockKey(Key.ENTER);
@@ -205,31 +215,49 @@ public class PlayLevelScreen extends Screen {
         handleKeyToggles();
     }
 
+    // New method to handle character selection input
+    private void handleCharacterSelection() {
+        // Press '0' to switch to boss
+        if (Keyboard.isKeyDown(Key.ZERO)) {
+            ((Cat) player).switchToBossSprite();
+            Cat.setBossModeSelected(true);
+            selectionMade = true;
+            showCharacterSelection = false;
+        }
 
-        private void handlePortalInteraction() {
-            Point portalLoc = portal.getLocation();
-            Point playerLoc = player.getLocation();
-            double distance = Math.sqrt(Math.pow(portalLoc.x - playerLoc.x, 2) + Math.pow(portalLoc.y - playerLoc.y, 2));
+        // Press '9' to switch to cat
+        if (Keyboard.isKeyDown(Key.NINE)) {
+            ((Cat) player).switchToCatSprite();
+            Cat.setBossModeSelected(false);
+            selectionMade = true;
+            showCharacterSelection = false;
+        }
+    }
 
-            if (distance < 75) {
-                if (Keyboard.isKeyDown(Key.ENTER) && !keyLocker.isKeyLocked(Key.ENTER)) {
-                    // Set the "hasEnteredPortal" flag to true
-                    if (!map.getFlagManager().isFlagSet("hasEnteredPortal")) {
-                        map.getFlagManager().setFlag("hasEnteredPortal", true);
-                        System.out.println("Flag Set: Player has entered the portal.");
-                    }
 
-                    savePlayerData(); // Save data before transitioning
-                    screenCoordinator.setGameStatePersist(GameState.OVERWORLD); // Change game state
-                    keyLocker.lockKey(Key.ENTER);
-                } else if (Keyboard.isKeyUp(Key.ENTER)) {
-                    keyLocker.unlockKey(Key.ENTER);
+    private void handlePortalInteraction() {
+        Point portalLoc = portal.getLocation();
+        Point playerLoc = player.getLocation();
+        double distance = Math.sqrt(Math.pow(portalLoc.x - playerLoc.x, 2) + Math.pow(portalLoc.y - playerLoc.y, 2));
+
+        if (distance < 75) {
+            if (Keyboard.isKeyDown(Key.ENTER) && !keyLocker.isKeyLocked(Key.ENTER)) {
+                // Set the "hasEnteredPortal" flag to true
+                if (!map.getFlagManager().isFlagSet("hasEnteredPortal")) {
+                    map.getFlagManager().setFlag("hasEnteredPortal", true);
+                    System.out.println("Flag Set: Player has entered the portal.");
                 }
+
+                savePlayerData(); // Save data before transitioning
+                screenCoordinator.setGameStatePersist(GameState.OVERWORLD); // Change game state
+                keyLocker.lockKey(Key.ENTER);
+            } else if (Keyboard.isKeyUp(Key.ENTER)) {
+                keyLocker.unlockKey(Key.ENTER);
             }
         }
-    
+    }
 
-    
+
 
     private void handleSwordPickup() {
         if (map.getFlagManager().isFlagSet("pickedUpSword")) {
@@ -294,7 +322,7 @@ public class PlayLevelScreen extends Screen {
 
         //Triangle for Quests
         if (Keyboard.isKeyDown(Key.Q) && !keyLocker.isKeyLocked(Key.Q)) {
-            showRectangle = !showRectangle; 
+            showRectangle = !showRectangle;
             keyLocker.lockKey(Key.Q);
         } else if (Keyboard.isKeyUp(Key.Q)) {
             keyLocker.unlockKey(Key.Q);
@@ -323,20 +351,20 @@ public class PlayLevelScreen extends Screen {
             flagManager.setFlag("Quest1_TalkToSeb", true);
             System.out.println("Quest 1 Complete: Talked to Seb.");
         }
-    
+
         // Quest 2: Defeat 5 Mobs
         if (!flagManager.isFlagSet("Quest2_SaveGarden") && countDefeatedMobs() >= 5) {
             flagManager.setFlag("Quest2_SaveGarden", true);
             System.out.println("Quest 2 Complete: Defeated 5 Mobs.");
         }
-    
+
         // Quest 3: Return to Seb
         if (!flagManager.isFlagSet("Quest3_ReturnToSeb") && flagManager.isFlagSet("Quest2_SaveGarden") &&
             flagManager.isFlagSet("hasTalkedToWalrus")) {
             flagManager.setFlag("Quest3_ReturnToSeb", true);
             System.out.println("Quest 3 Complete: Returned to Seb.");
         }
-    
+
         // Quest 4: Talk to Chief
         if (!flagManager.isFlagSet("Quest4_TalkToChief") && flagManager.isFlagSet("Quest3_ReturnToSeb") &&
             flagManager.isFlagSet("hasTalkedToChief")) {
@@ -344,7 +372,7 @@ public class PlayLevelScreen extends Screen {
             System.out.println("Quest 4 Complete: Talked to Chief.");
         }
     }
-    
+
     // Helper Method to Count Defeated Mobs
     private int countDefeatedMobs() {
         int defeatedCount = 0;
@@ -355,8 +383,7 @@ public class PlayLevelScreen extends Screen {
         }
         return defeatedCount;
     }
-    
-    
+
 
 
     public void draw(GraphicsHandler graphicsHandler) {
@@ -379,7 +406,7 @@ public class PlayLevelScreen extends Screen {
                     graphicsHandler.drawFilledRectangle(1200, 400, 250, 200, new Color(0, 0, 0, 150));
                     graphicsHandler.drawRectangle(1200, 400, 252, 202, Color.WHITE);
                     graphicsHandler.drawString("Press Q to open/close Quests", 1200, 620, new Font("Arial", Font.PLAIN, 14), Color.WHITE);
-                    
+
                     // Active Quests
 
                     if (!flagManager.isFlagSet("hasTalkedToWalrus")) {
@@ -408,12 +435,17 @@ public class PlayLevelScreen extends Screen {
 
                     // Display "Enter Portal" quest
                     if (!flagManager.isFlagSet("hasEnteredPortal")) {
-                            graphicsHandler.drawString("Enter Portal", 1210, 550, new Font("Montserrat", Font.BOLD, 18), Color.WHITE);
-                        } else {
-                            graphicsHandler.drawString("Enter Portal", 1210, 550, new Font("Montserrat", Font.PLAIN, 18), Color.GRAY);
-                        }
+                        graphicsHandler.drawString("Enter Portal", 1210, 550, new Font("Montserrat", Font.BOLD, 18), Color.WHITE);
+                    } else {
+                        graphicsHandler.drawString("Enter Portal", 1210, 550, new Font("Montserrat", Font.PLAIN, 18), Color.GRAY);
+                    }
                 }
-                
+
+                // Draw character selection boxes if needed
+                if (showCharacterSelection && !selectionMade) {
+                    drawCharacterSelection(graphicsHandler);
+                }
+
             break;
 
 
@@ -433,7 +465,6 @@ public class PlayLevelScreen extends Screen {
                 break;
         }
     }
-
 
     private void drawHUD(GraphicsHandler graphicsHandler) {
         int currentHealthWidth = (int) ((player.getHealth() / (double) player.getMaxHealth()) * healthBarWidth);
@@ -463,28 +494,10 @@ public class PlayLevelScreen extends Screen {
 
 
         graphicsHandler.drawString(
-                "Coins: " + player.getCoins(), 
+                "Coins: " + player.getCoins(),
                 screenWidth + 530, 45, new Font("Montserrat", Font.BOLD, 18),
                 Color.YELLOW
         );
-
-
-        //graphicsHandler.drawString("ACTIVE QUESTS:", screenWidth - 180, 60, new Font("Montserrat", Font.BOLD, 18), Color.WHITE);
-
-
-        //if (!flagManager.isFlagSet("hasTalkedToWalrus")) {
-        //    graphicsHandler.drawString("Talk To Seb", screenWidth - 167, 125, new Font("Montserrat", Font.BOLD, 18), Color.WHITE);
-        //}
-
-
-        //if (!flagManager.isFlagSet("WalrusMobDefeated")) {
-        //    graphicsHandler.drawString("Defeat 5 Mobs", screenWidth - 170, 90, new Font("Montserrat", Font.BOLD, 18), Color.WHITE);
-        //}
-
-
-        //if (!flagManager.isFlagSet("ReturnBackToEarth")) {
-        //    graphicsHandler.drawString("Return Back to Earth", screenWidth - 200, 150, new Font("Montserrat", Font.BOLD, 18), Color.WHITE);
-        //}
 
 
         int buttonWidth = 60;
@@ -495,20 +508,42 @@ public class PlayLevelScreen extends Screen {
         graphicsHandler.drawRectangle(40, 300, buttonWidth, buttonHeight, Color.BLACK);
 
         graphicsHandler.drawString("Inventory", 43, 320, new Font("Montserrat", Font.PLAIN, 12), Color.WHITE);
-        
-        //Quest Button
+
         Font questFont = new Font("Montserrat", Font.BOLD, 12);
 
         graphicsHandler.drawFilledRectangle(1400, 300, buttonWidth, buttonHeight, Color.BLUE); // Draw rectangle
         graphicsHandler.drawRectangle(1400, 300, buttonWidth, buttonHeight, Color.BLACK); // Draw border
-        
-        // Approximate center: Adjust offsets as necessary
-        int textX = 1393 + buttonWidth / 4; 
-        int textY = 300 + buttonHeight / 2 + 4; 
-        graphicsHandler.drawString("Quest", textX, textY, questFont, Color.WHITE); // Draw text
+
+        int textX = 1393 + buttonWidth / 4;
+        int textY = 300 + buttonHeight / 2 + 4;
+        graphicsHandler.drawString("Quest", textX, textY, questFont, Color.WHITE);
     }
 
-    
+    //draw the two selection boxes at game start
+    private void drawCharacterSelection(GraphicsHandler graphicsHandler) {
+        int boxWidth = 200;
+        int boxHeight = 200;
+        int spacing = 100;
+        int totalWidth = (boxWidth * 2) + spacing;
+        int startX = (screenWidth - totalWidth) / 2;
+        int startY = (screenHeight - boxHeight) / 2;
+
+        // Boss
+        graphicsHandler.drawFilledRectangle(815, 400, boxWidth, boxHeight, new Color(0, 0, 0, 150));
+        graphicsHandler.drawRectangle(815, 400, boxWidth, boxHeight, Color.WHITE);
+        graphicsHandler.drawString("Press 0 for Boss",  840, 630, new Font("Montserrat", Font.BOLD, 18), Color.WHITE);
+        graphicsHandler.drawImage(ImageLoader.load("boss.png"), 865, 470);
+
+        // Cat
+        int box2X = startX + boxWidth + spacing;
+        graphicsHandler.drawFilledRectangle(515, 400, boxWidth, boxHeight, new Color(0, 0, 0, 150));
+        graphicsHandler.drawRectangle(515, 400, boxWidth, boxHeight, Color.WHITE);
+        graphicsHandler.drawString("Press 9 for Default",  527, 630, new Font("Montserrat", Font.BOLD, 18), Color.WHITE);
+        graphicsHandler.drawImage(ImageLoader.load("Cat.png"), 565, 470);
+
+        graphicsHandler.drawString("Choose your character:", 660, 300, new Font("Montserrat", Font.BOLD, 18), Color.WHITE);
+    }
+
 
 
     public void resetLevel() {
@@ -543,8 +578,8 @@ public class PlayLevelScreen extends Screen {
             }
         }
     }
-    
-    
+
+
 
     private void savePlayerData() {
         SharedPlayerData data = SharedPlayerData.getInstance();
@@ -557,11 +592,8 @@ public class PlayLevelScreen extends Screen {
             data.setHasSword(((Cat) player).hasSword()); // Save sword status
         }
     }
-    
-    
-    
-    
+
+
+
+
 }
-
-
-
