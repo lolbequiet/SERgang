@@ -214,14 +214,16 @@ public class PlayLevelScreen extends Screen {
     private void handleCharacterSelection() {
         // Press '0' to switch to boss
         if (Keyboard.isKeyDown(Key.ZERO)) {
-            ((Cat) player).switchToBossSprite(); 
+            ((Cat) player).switchToBossSprite();
+            Cat.setBossModeSelected(true);
             selectionMade = true;
             showCharacterSelection = false;
         }
 
         // Press '9' to switch to cat
         if (Keyboard.isKeyDown(Key.NINE)) {
-            ((Cat) player).switchToCatSprite(); 
+            ((Cat) player).switchToCatSprite();
+            Cat.setBossModeSelected(false);
             selectionMade = true;
             showCharacterSelection = false;
         }
@@ -512,7 +514,7 @@ public class PlayLevelScreen extends Screen {
         graphicsHandler.drawString("Quest", textX, textY, questFont, Color.WHITE);
     }
 
-    // New method to draw the two selection boxes at game start
+    //draw the two selection boxes at game start
     private void drawCharacterSelection(GraphicsHandler graphicsHandler) {
         int boxWidth = 200;
         int boxHeight = 200;
@@ -521,18 +523,18 @@ public class PlayLevelScreen extends Screen {
         int startX = (screenWidth - totalWidth) / 2;
         int startY = (screenHeight - boxHeight) / 2;
 
-        // Box 1 (Boss)
+        // Boss
         graphicsHandler.drawFilledRectangle(815, 400, boxWidth, boxHeight, new Color(0, 0, 0, 150));
         graphicsHandler.drawRectangle(815, 400, boxWidth, boxHeight, Color.WHITE);
-        graphicsHandler.drawString("Press 0 for Boss",  815, 630, new Font("Montserrat", Font.BOLD, 18), Color.WHITE);
-        graphicsHandler.drawImage(ImageLoader.load("boss.png"), 815, 490);
+        graphicsHandler.drawString("Press 0 for Boss",  840, 630, new Font("Montserrat", Font.BOLD, 18), Color.WHITE);
+        graphicsHandler.drawImage(ImageLoader.load("boss.png"), 865, 470);
 
-        // Box 2 (Cat)
+        // Cat
         int box2X = startX + boxWidth + spacing;
         graphicsHandler.drawFilledRectangle(515, 400, boxWidth, boxHeight, new Color(0, 0, 0, 150));
         graphicsHandler.drawRectangle(515, 400, boxWidth, boxHeight, Color.WHITE);
-        graphicsHandler.drawString("Press 9 for Default",  515, 630, new Font("Montserrat", Font.BOLD, 18), Color.WHITE);
-        graphicsHandler.drawImage(ImageLoader.load("Cat.png"), 515, 490);
+        graphicsHandler.drawString("Press 9 for Default",  527, 630, new Font("Montserrat", Font.BOLD, 18), Color.WHITE);
+        graphicsHandler.drawImage(ImageLoader.load("Cat.png"), 565, 470);
 
         graphicsHandler.drawString("Choose your character:", 660, 300, new Font("Montserrat", Font.BOLD, 18), Color.WHITE);
     }

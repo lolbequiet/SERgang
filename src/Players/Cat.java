@@ -5,6 +5,7 @@ import Engine.GraphicsHandler;
 import Engine.ImageLoader;
 import Engine.Key;
 import Engine.Keyboard;
+import Game.SharedPlayerData;
 import GameObject.Frame;
 import GameObject.ImageEffect;
 import GameObject.SpriteSheet;
@@ -30,9 +31,17 @@ public class Cat extends Player {
     private boolean eKeyPressed = false;       
     private boolean isAttacking = false;       
 
-    // Keys to switch sprites
     private boolean zeroKeyPressed = false;    
-    private boolean nineKeyPressed = false;    
+    private boolean nineKeyPressed = false;
+        private static boolean bossModeSelected = false; 
+    
+        public static void setBossModeSelected(boolean bossMode) {
+            bossModeSelected = bossMode;
+        }
+    
+        public static boolean isBossModeSelected() {
+            return bossModeSelected;
+        }
 
     public Cat(float x, float y) {
         super(new SpriteSheet(ImageLoader.load("Cat.png"), 24, 24), x, y, "STAND_RIGHT");
@@ -116,6 +125,7 @@ public class Cat extends Player {
         }
         if (Keyboard.isKeyUp(Key.ZERO)) {
             zeroKeyPressed = false;
+
         }
 
         // Press 9 to switch back to Cat.png
@@ -125,6 +135,7 @@ public class Cat extends Player {
         }
         if (Keyboard.isKeyUp(Key.NINE)) {
             nineKeyPressed = false;
+
         }
     }
 
