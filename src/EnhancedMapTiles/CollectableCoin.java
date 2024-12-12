@@ -23,7 +23,7 @@ public class CollectableCoin extends EnhancedMapTile {
 
     public CollectableCoin(Point location, int amount) {
 
-        super(location.x, location.y, new SpriteSheet(ImageLoader.load("Coin.png"), 16, 16), TileType.NOT_PASSABLE);
+        super(location.x, location.y, new SpriteSheet(ImageLoader.load("Coin.png"), 24, 24), TileType.NOT_PASSABLE);
 
         this.amount = amount;
 
@@ -55,7 +55,7 @@ public class CollectableCoin extends EnhancedMapTile {
         @Override
         protected GameObject loadBottomLayer(SpriteSheet spriteSheet) {
             Frame frame = new FrameBuilder(spriteSheet.getSubImage(0, 0))
-                .withScale(3)
+                .withScale(2)
                 .build();
         return new GameObject(x, y, frame);
     

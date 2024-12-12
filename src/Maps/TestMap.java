@@ -119,6 +119,10 @@ public ArrayList<NPC> loadNPCs() {
     mikeBANDZ.setInteractScript(new mikedashopkeeperScript());
     npcs.add(mikeBANDZ);
 
+    SignNPC signNPC = new SignNPC(8, getMapTile(18, 20).getLocation());
+    signNPC .setInteractScript(new SimpleTextScript("Hints!'"));
+    npcs.add(signNPC);
+
     return npcs;
 }
 

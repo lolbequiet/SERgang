@@ -246,58 +246,71 @@ public abstract class Player extends GameObject {
         super.update();
 
         // Handle player attack logic
-        if (Keyboard.isKeyDown(Key.SPACE) && System.currentTimeMillis() > nextAttackTime) {
-            for (NPC enemy : map.getEnemies()) {
-                Point location = enemy.getLocation();
+if (Keyboard.isKeyDown(Key.SPACE) && System.currentTimeMillis() > nextAttackTime) {
+    for (NPC enemy : map.getEnemies()) {
+        Point location = enemy.getLocation();
 
-                // Calculate the distance between the player and the enemy
-                double distance = Math.sqrt(Math.pow(getX() - location.x, 2) + Math.pow(getY() - location.y, 2));
-                System.out.println(distance);
+        // Calculate the distance between the player and the enemy
+        double distance = Math.sqrt(Math.pow(getX() - location.x, 2) + Math.pow(getY() - location.y, 2));
+        System.out.println(distance);
 
-                // Attack if within range
-                if (distance < 100) {
-                    enemy.takeDamage(getDamage());
-                }
-            }
-
-            System.out.println("attacking");
-            nextAttackTime = System.currentTimeMillis() + 1500; // Set attack cooldown
+        // Attack if within range
+        if (distance < 100) {
+            enemy.takeDamage(getDamage());
         }
+    }
 
-        deltaX = getLocation().x - lastX;
-        lastX = getLocation().x;
+    System.out.println("attacking");
+    nextAttackTime = System.currentTimeMillis() + 1500; // Set attack cooldown
+}
 
-        deltaY = getLocation().y - lastY;
-        lastY = getLocation().y;
+// Track last position to calculate shoot direction only once
+Point shootDir = new Point(0, 0);
+if (deltaX != 0 || deltaY != 0) {
+    shootDir = new Point(deltaX, deltaY).toUnit();
+}
 
-        Point shootDir = new Point(deltaX, deltaY).toUnit();
+// Check if shootDir is zero
+boolean isStationary = shootDir.x == 0 && shootDir.y == 0;
 
-        if (Keyboard.isKeyDown(Key.F) && !keyLocker.isKeyLocked(Key.F)) {
-            Projectile fire = new Projectile(getLocation().x, getLocation().y,
-                    new Frame(ImageLoader.loadSubImage("Fireandicespells.png", 0, 0, 16, 16), ImageEffect.NONE, 3f, new Rectangle(0, 0, 16, 16)),
-                    shootDir, 5f, 10f);
+if (Keyboard.isKeyDown(Key.F) && !keyLocker.isKeyLocked(Key.F)) {
+    Projectile fire = new Projectile(getLocation().x, getLocation().y,
+            new Frame(ImageLoader.loadSubImage("Fireandicespells.png", 0, 0, 16, 16), ImageEffect.NONE, 3f, new Rectangle(0, 0, 16, 16)),
+            isStationary ? new Point(1, 0) : shootDir, 5f, 10f); // Default to right if stationary
 
-            fire.setMap(map);
-            map.projectiles.add(fire);
+    fire.setMap(map);
+    map.projectiles.add(fire);
 
-            keyLocker.lockKey(Key.F);
-        } else if (Keyboard.isKeyUp(Key.F)) {
-            keyLocker.unlockKey(Key.F);
-        }
+    keyLocker.lockKey(Key.F);
+} else if (Keyboard.isKeyUp(Key.F)) {
+    keyLocker.unlockKey(Key.F);
+}
 
-        if (Keyboard.isKeyDown(Key.R) && !keyLocker.isKeyLocked(Key.R)) {
-            Projectile Ice = new Projectile(getLocation().x, getLocation().y,
-                    new Frame(ImageLoader.loadSubImage("Fireandicespells.png", 34, 0, 16, 16), ImageEffect.NONE, 3f, new Rectangle(0, 0, 16, 16)),
-                    shootDir, 5f, 12f);
+if (Keyboard.isKeyDown(Key.R) && !keyLocker.isKeyLocked(Key.R)) {
+    Projectile Ice = new Projectile(getLocation().x, getLocation().y,
+            new Frame(ImageLoader.loadSubImage("Fireandicespells.png", 34, 0, 16, 16), ImageEffect.NONE, 3f, new Rectangle(0, 0, 16, 16)),
+            isStationary ? new Point(1, 0) : shootDir, 5f, 12f); // Default to right if stationary
 
-            Ice.setMap(map);
-            map.projectiles.add(Ice);
+    Ice.setMap(map);
+    map.projectiles.add(Ice);
+
+    keyLocker.lockKey(Key.R);
+} else if (Keyboard.isKeyUp(Key.R)) {
+    keyLocker.unlockKey(Key.R);
+}
+
+// Update deltas for movement
+if (!Keyboard.isKeyDown(Key.RIGHT) && !Keyboard.isKeyDown(Key.LEFT) && !Keyboard.isKeyDown(Key.UP) && !Keyboard.isKeyDown(Key.DOWN)) {
+    deltaX = 0;
+    deltaY = 0;
+}
+deltaX = getLocation().x - lastX;
+lastX = getLocation().x;
+
+deltaY = getLocation().y - lastY;
+lastY = getLocation().y;
 
 
-            keyLocker.lockKey(Key.R);
-        } else if (Keyboard.isKeyUp(Key.R)) {
-            keyLocker.unlockKey(Key.R);
-        }
 
         // Regenerate health over time
         regenerateHealth();
