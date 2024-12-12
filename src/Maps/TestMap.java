@@ -94,8 +94,8 @@ public ArrayList<NPC> loadNPCs() {
     npcs.add(seb);
 
     // Add Village Chief NPC
-    VillageChief villageChief = new VillageChief(8, getMapTile(10, 10).getLocation());
-    villageChief.setInteractScript(new SimpleTextScript("The Chief greets you and shares wisdom."));
+    VillageChief villageChief = new VillageChief(8, getMapTile(8, 7).getLocation());
+    villageChief.setInteractScript(new DinoScript());
     npcs.add(villageChief);
 
     //adding the shopkeeper
