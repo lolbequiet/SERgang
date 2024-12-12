@@ -23,16 +23,16 @@ import Level.Player;
 import java.util.HashMap;
 
 public class Cat extends Player {
-    private boolean swordPickedUp = false;     // Track if the sword has been picked up
-    private boolean swordEquipped = false;     // Track if the sword is currently equipped
-    private final int BASE_DAMAGE = 10;        // Default damage
-    private final int SWORD_DAMAGE_BOOST = 10; // Additional damage when sword equipped
-    private boolean eKeyPressed = false;       // To prevent multiple E key detections
-    private boolean isAttacking = false;       // Track if the attack animation is playing
+    private boolean swordPickedUp = false;     
+    private boolean swordEquipped = false;     
+    private final int BASE_DAMAGE = 10;        
+    private final int SWORD_DAMAGE_BOOST = 10; 
+    private boolean eKeyPressed = false;       
+    private boolean isAttacking = false;       
 
     // Keys to switch sprites
-    private boolean zeroKeyPressed = false;    // Track pressing '0'
-    private boolean nineKeyPressed = false;    // Track pressing '9'
+    private boolean zeroKeyPressed = false;    
+    private boolean nineKeyPressed = false;    
 
     public Cat(float x, float y) {
         super(new SpriteSheet(ImageLoader.load("Cat.png"), 24, 24), x, y, "STAND_RIGHT");
@@ -109,7 +109,7 @@ public class Cat extends Player {
             resetToIdleOrWalk();
         }
 
-        // Press '0' to switch to boss.png
+        // Press 0 to switch to boss.png
         if (Keyboard.isKeyDown(Key.ZERO) && !zeroKeyPressed) {
             zeroKeyPressed = true;
             switchToBossSprite();
@@ -118,7 +118,7 @@ public class Cat extends Player {
             zeroKeyPressed = false;
         }
 
-        // Press '9' to switch back to Cat.png
+        // Press 9 to switch back to Cat.png
         if (Keyboard.isKeyDown(Key.NINE) && !nineKeyPressed) {
             nineKeyPressed = true;
             switchToCatSprite();
@@ -138,15 +138,13 @@ public class Cat extends Player {
         }
     }
 
-    // Switch to boss sprite
-    private void switchToBossSprite() {
+    public void switchToBossSprite() {
         this.spriteSheet = new SpriteSheet(ImageLoader.load("boss.png"), 24, 24);
         this.animations = loadAnimations(this.spriteSheet);
         setCurrentAnimationName("STAND_RIGHT");
     }
 
-    // Switch back to cat sprite
-    private void switchToCatSprite() {
+    public void switchToCatSprite() {
         this.spriteSheet = new SpriteSheet(ImageLoader.load("Cat.png"), 24, 24);
         this.animations = loadAnimations(this.spriteSheet);
         setCurrentAnimationName("STAND_RIGHT");
