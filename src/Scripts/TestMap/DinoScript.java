@@ -19,7 +19,6 @@ public class DinoScript extends Script {
 
     @Override
     public ArrayList<ScriptAction> loadScriptActions() {
-
         ArrayList<ScriptAction> scriptActions = new ArrayList<>();
                 scriptActions.add(new CustomScriptAction() {
             @Override
@@ -30,75 +29,67 @@ public class DinoScript extends Script {
         });
         scriptActions.add(new LockPlayerScriptAction());
 
-        scriptActions.add(new TextboxScriptAction("Isn't the land lovely?"));
+        scriptActions.add(new NPCFacePlayerScriptAction());
+
+        scriptActions.add(new TextboxScriptAction() {{
+
+            addText("Hello Traveler");
+            addText("Why do you come this way?", new String[] { "Info?", "Hi", "Exit"}); // "Yes! My ball is gone", "No, I'm good!"
+
+        }});
 
         scriptActions.add(new ConditionalScriptAction() {{
             addConditionalScriptActionGroup(new ConditionalScriptActionGroup() {{
-                addRequirement(new FlagRequirement("hasTalkedToWalrus", true));
-                addRequirement(new FlagRequirement("hasTalkedToDinosaur", false));
+                addRequirement(new CustomRequirement() {
+                    @Override
+                    public boolean isRequirementMet() {
+                        int answer = outputManager.getFlagData("TEXTBOX_OPTION_SELECTION");
+                        return answer == 0;
+                    }
+                });
 
-                addScriptAction(new WaitScriptAction(70));
-                addScriptAction(new NPCFacePlayerScriptAction());
-                addScriptAction(new TextboxScriptAction () {{
-                    addText("Oh, you're still here...");
-                    addText("...You heard from the other cloaks that he saw me with your\n ball?");
-                    addText("Well, I saw him playing with it and was worried it would\nroll into my garden.");
-                    addText("So I kicked it as far as I could into the forest.");
-                    addText("Now, if you'll excuse me, I have to go.");
+                addScriptAction(new TextboxScriptAction() {{
+                    addText("there are coins around the map you can collect \n to enter the shop to get gear!");
+
+                    addScriptAction(new ChangeFlagScriptAction("hasTalkedToDinosaur", true));
                 }});
-                addScriptAction(new NPCStandScriptAction(Direction.RIGHT));
-
-                addScriptAction(new NPCWalkScriptAction(Direction.DOWN, 36, 2));
-                addScriptAction(new NPCWalkScriptAction(Direction.RIGHT, 196, 2));
-
-                addScriptAction(new ScriptAction() {
-                    @Override
-                    public ScriptState execute() {
-                        // change door to the open door map tile
-                        Frame openDoorFrame = new FrameBuilder(map.getTileset().getSubImage(4, 4), 0)
-                            .withScale(map.getTileset().getTileScale())
-                            .build();
-
-                        Point location = map.getMapTile(17, 4).getLocation();
-
-                        MapTile mapTile = new MapTileBuilder(openDoorFrame)
-                            .withTileType(TileType.NOT_PASSABLE)
-                            .build(location.x, location.y);
-
-                        map.setMapTile(17, 4, mapTile);
-                        return ScriptState.COMPLETED;
-                    }
-                });
-
-                addScriptAction(new NPCWalkScriptAction(Direction.UP, 50, 2));
-                addScriptAction(new NPCChangeVisibilityScriptAction(Visibility.HIDDEN));
-
-                addScriptAction(new ScriptAction() {
-                    @Override
-                    public ScriptState execute() {
-                        // change door back to the closed door map tile
-                        Frame doorFrame = new FrameBuilder(map.getTileset().getSubImage(4, 3), 0)
-                            .withScale(map.getTileset().getTileScale())
-                            .build();
-
-                        Point location = map.getMapTile(17, 4).getLocation();
-
-                        MapTile mapTile = new MapTileBuilder(doorFrame)
-                            .withTileType(TileType.NOT_PASSABLE)
-                            .build(location.x, location.y);
-
-                        map.setMapTile(17, 4, mapTile);
-                        return ScriptState.COMPLETED;
-                    }
-                });
-
-                addScriptAction(new ChangeFlagScriptAction("hasTalkedToDinosaur", true));
             }});
-        }});
+            
+            addConditionalScriptActionGroup(new ConditionalScriptActionGroup() {{
+                addRequirement(new CustomRequirement() {
+                    @Override
+                    public boolean isRequirementMet() {
+                        int answer = outputManager.getFlagData("TEXTBOX_OPTION_SELECTION");
+                        return answer == 1;
+                    }
+                });
 
+                addScriptAction(new TextboxScriptAction("Caution traveling!"));
+
+
+                addScriptAction(new ChangeFlagScriptAction("hasTalkedToWalrus", true));
+
+            }});
+
+            addConditionalScriptActionGroup(new ConditionalScriptActionGroup() {{
+                addRequirement(new CustomRequirement() {
+                    @Override
+                    public boolean isRequirementMet() {
+                        int answer = outputManager.getFlagData("TEXTBOX_OPTION_SELECTION");
+                        return answer == 2;
+                    }
+                });
+
+                scriptActions.add(new UnlockPlayerScriptAction());
+
+                
+
+            }});
+
+            }});
 
         scriptActions.add(new UnlockPlayerScriptAction());
+
         return scriptActions;
     }
 }
-

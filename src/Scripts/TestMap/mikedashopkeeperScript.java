@@ -3,7 +3,6 @@ package Scripts.TestMap;
 import java.util.ArrayList;
 
 import Engine.ScreenManager;
-import Game.ScreenCoordinator;
 import Level.Script;
 import Screens.ShopScreen;
 import ScriptActions.*;
@@ -29,6 +28,8 @@ public class mikedashopkeeperScript extends Script {
             addText("aight im bugging but i run a deli");
             addText("deli but i lowkey sell weapons on the side, my fault...");
             addText("you want to check it out or nah", new String[] {"yea", "nah"});
+            
+            
 
         }});
 
@@ -44,6 +45,8 @@ public class mikedashopkeeperScript extends Script {
 
                 addScriptAction(new TextboxScriptAction() {{
                     addText("bet bet, slide");
+                    addScriptAction(new ChangeFlagScriptAction("collectgear", true));
+
                 }});
 
                 
