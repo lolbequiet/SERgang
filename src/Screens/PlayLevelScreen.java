@@ -74,15 +74,15 @@ public class PlayLevelScreen extends Screen {
         flagManager.addFlag("hasTalkedToWalrus");
         flagManager.addFlag("hasFoundBall");
         flagManager.addFlag("WalrusMobDefeated", false);
-flagManager.addFlag("collectgear", false);
-flagManager.addFlag("talktochief", false);
-flagManager.addFlag("hasTalkedToDinosaur", false);
-flagManager.addFlag("talktochief", false);
-flagManager.addFlag("hasEnteredPortal", false); // New flag for portal interaction
-flagManager.addFlag("", false);
-flagManager.addFlag("", false);
-flagManager.addFlag("", false);
-flagManager.addFlag("", false);
+        flagManager.addFlag("collectgear", false);
+        flagManager.addFlag("talktochief", false);
+        flagManager.addFlag("hasTalkedToDinosaur", false);
+        flagManager.addFlag("talktochief", false);
+        flagManager.addFlag("hasEnteredPortal", false); // New flag for portal interaction
+        flagManager.addFlag("", false);
+        flagManager.addFlag("", false);
+        flagManager.addFlag("", false);
+        flagManager.addFlag("", false);
 
 
 
