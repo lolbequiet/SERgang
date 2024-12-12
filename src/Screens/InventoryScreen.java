@@ -24,8 +24,7 @@ public class InventoryScreen extends Screen {
     private BufferedImage potionSprite;
     private BufferedImage sandwichSprite;
 
-    private boolean isSwordLoaded = false;
-    private boolean swordEquipped = false; // Track if the sword is equipped
+    private boolean isSwordLoaded = false; // Tracks if the sword sprite has been loaded
 
     public InventoryScreen(ScreenCoordinator screenCoordinator) {
         this.screenCoordinator = screenCoordinator;
@@ -90,14 +89,8 @@ public class InventoryScreen extends Screen {
      */
     private void toggleSword() {
         if (player != null) {
-            if (swordEquipped) {
-                player.deEquipSword();
-                System.out.println("Sword de-equipped.");
-            } else {
-                player.equipSword();
-                System.out.println("Sword equipped.");
-            }
-            swordEquipped = !swordEquipped;
+            player.toggleSword();
+            System.out.println("Sword " + (player.isSwordEquipped() ? "equipped" : "de-equipped") + ".");
         }
     }
 
@@ -111,9 +104,9 @@ public class InventoryScreen extends Screen {
         graphicsHandler.drawString("Inventory", 110, 90, new Font("Arial", Font.BOLD, 20), Color.WHITE);
 
         // Draw each slot
-        drawSlot(graphicsHandler, 0, 120, "Weapon Slot", swordSprite);    // Slot 1
-        drawSlot(graphicsHandler, 1, 240, "Healing Slot", potionSprite); // Slot 2
-        drawSlot(graphicsHandler, 2, 360, "Healing Slot 2", sandwichSprite); // Slot 3
+        drawSlot(graphicsHandler, 0, 120, "Upgraded Sword", swordSprite);    // Slot 1
+        drawSlot(graphicsHandler, 1, 240, "Healing Potion", potionSprite); // Slot 2
+        drawSlot(graphicsHandler, 2, 360, "Stamina Potion", sandwichSprite); // Slot 3
 
         // Instructions at the bottom
         graphicsHandler.drawString("Press I to open/close inventory", 55, 520, new Font("Arial", Font.PLAIN, 14), Color.WHITE);
@@ -124,7 +117,7 @@ public class InventoryScreen extends Screen {
      */
     private void drawSlot(GraphicsHandler graphicsHandler, int slot, int y, String label, BufferedImage sprite) {
         // Determine the background color for the slot
-        Color backgroundColor = (swordEquipped && slot == 0)
+        Color backgroundColor = (player != null && player.isSwordEquipped() && slot == 0)
             ? new Color(0, 255, 0, 150) // Green for equipped sword
             : new Color(0, 0, 0, 100);  // Default black
 

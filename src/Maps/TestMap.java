@@ -86,7 +86,7 @@ public ArrayList<NPC> loadNPCs() {
     npcs.add(walrus);
 
     // Add Dinosaur NPC
-    Dinosaur dinosaur = new Dinosaur(2, getMapTile(13, 4).getLocation());
+    Dinosaur dinosaur = new Dinosaur(2, getMapTile(0,0).getLocation());
     dinosaur.setExistenceFlag("hasTalkedToDinosaur");
     dinosaur.setInteractScript(new DinoScript());
     npcs.add(dinosaur);

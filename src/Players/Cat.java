@@ -5,107 +5,173 @@ import Engine.GraphicsHandler;
 import Engine.ImageLoader;
 import Engine.Key;
 import Engine.Keyboard;
+import Game.SharedPlayerData;
 import GameObject.Frame;
 import GameObject.ImageEffect;
 import GameObject.SpriteSheet;
+import GameObject.Rectangle;
+import GameObject.SpriteSheet;
+import Screens.DeathScreen;
+import Level.Camera;
+import Utils.Direction;
+import Level.Map;
+import Utils.Point;
+import java.awt.Font;
+import java.io.File;
+import java.io.IOException;
 import Level.Player;
 
 import java.util.HashMap;
 
 public class Cat extends Player {
-    private boolean swordPickedUp = false;  // Track if the sword has been picked up
-    private boolean swordEquipped = false;  // Track if the sword is currently equipped
-    private final int BASE_DAMAGE = 10;     // Default damage
-    private final int SWORD_DAMAGE_BOOST = 10;  // Additional damage when sword equipped
-    private boolean eKeyPressed = false;  // To prevent multiple E key detections
-    private boolean isAttacking = false;  // Track if the attack animation is playing
+    private boolean swordPickedUp = false;     
+    private boolean swordEquipped = false;     
+    private final int BASE_DAMAGE = 10;        
+    private final int SWORD_DAMAGE_BOOST = 10; 
+    private boolean eKeyPressed = false;       
+    private boolean isAttacking = false;       
+
+    private boolean zeroKeyPressed = false;    
+    private boolean nineKeyPressed = false;
+        private static boolean bossModeSelected = false; 
+    
+        public static void setBossModeSelected(boolean bossMode) {
+            bossModeSelected = bossMode;
+        }
+    
+        public static boolean isBossModeSelected() {
+            return bossModeSelected;
+        }
 
     public Cat(float x, float y) {
         super(new SpriteSheet(ImageLoader.load("Cat.png"), 24, 24), x, y, "STAND_RIGHT");
         walkSpeed = 2.3f;
+        // Load initial animations
+        this.animations = loadAnimations(this.spriteSheet);
+        setCurrentAnimationName("STAND_RIGHT");
     }
 
-    // Equip the sword to increase damage
-    public void equipSword() {
-        if (swordPickedUp && !swordEquipped) {
-            swordEquipped = true;
-            System.out.println("Sword equipped! Damage boosted.");
-        } else if (!swordPickedUp) {
-            System.out.println("You don't have the sword to equip.");
-        }
-    }
+    // Tracks if the sword is equipped
+private boolean isSwordEquipped = false;
 
-    // De-equip the sword to reset damage
-    public void deEquipSword() {
-        if (swordEquipped) {
-            swordEquipped = false;
-            System.out.println("Sword de-equipped. Damage reset.");
-        }
+// Method to toggle sword equip/de-equip
+public void toggleSword() {
+    if (hasItem("Sword")) { // Check if the player owns the sword
+        isSwordEquipped = !isSwordEquipped; // Toggle the state
+        System.out.println("Sword " + (isSwordEquipped ? "equipped!" : "de-equipped!"));
+    } else {
+        System.out.println("You don't own a sword!");
     }
+}
 
-    // Pick up the sword and equip it immediately
-    public void pickUpSword() {
-        if (!swordPickedUp) {  // Ensure it runs only once
-            swordPickedUp = true;
-            System.out.println("You picked up the sword!");
-            equipSword();
-        }
-    }
+// Method to check if the sword is equipped
+public boolean isSwordEquipped() {
+    return isSwordEquipped;
+}
 
-    // Override getDamage to reflect equipped sword damage boost
-    @Override
-    public int getDamage() {
-        return swordEquipped ? BASE_DAMAGE + SWORD_DAMAGE_BOOST : BASE_DAMAGE;
+// Method to equip the sword
+public void equipSword() {
+    if (!isSwordEquipped) {
+        isSwordEquipped = true;
+        System.out.println("Sword equipped.");
+    } else {
+        System.out.println("Sword is already equipped.");
     }
+}
+
+// Method to de-equip the sword
+public void deEquipSword() {
+    if (isSwordEquipped) {
+        isSwordEquipped = false;
+        System.out.println("Sword de-equipped.");
+    } else {
+        System.out.println("Sword is already de-equipped.");
+    }
+}
+
+private int normalDamage = 10; // Default damage without sword
+private int swordDamage = 25; // Damage with the sword equipped
+
+@Override
+public int getDamage() {
+    // Return increased damage if the sword is equipped
+    return isSwordEquipped ? swordDamage : normalDamage;
+}
+
+
+    
 
     @Override
     public void update() {
         super.update();
 
         // Handle sword equip/de-equip with E key
-        if (swordPickedUp && Keyboard.isKeyDown(Key.E) && !eKeyPressed) {
-            eKeyPressed = true;
-            if (swordEquipped) {
-                deEquipSword();
-            } else {
-                equipSword();
-            }
+        if (Keyboard.isKeyDown(Key.E) && !eKeyPressed) {
+            eKeyPressed = true; // Lock the key press
+            toggleSword(); // Toggle sword equip or de-equip
         }
 
         if (Keyboard.isKeyUp(Key.E)) {
-            eKeyPressed = false;  // Reset flag on key release
+            eKeyPressed = false; // Unlock the key press when released
         }
 
         // Handle attack animation with SPACE key
         if (Keyboard.isKeyDown(Key.SPACE) && !isAttacking) {
             isAttacking = true;
             if (getCurrentAnimationName().contains("LEFT")) {
-                this.setCurrentAnimationName("ATTACK_LEFT"); // Attack facing left
+                setCurrentAnimationName("ATTACK_LEFT"); // Attack facing left
             } else {
-                this.setCurrentAnimationName("ATTACK_RIGHT"); // Attack facing right
+                setCurrentAnimationName("ATTACK_RIGHT"); // Attack facing right
             }
         }
 
         // Reset to idle or walking animation after attack animation finishes
-        if (isAttacking && !this.getCurrentAnimationName().startsWith("ATTACK")) {
+        if (isAttacking && !getCurrentAnimationName().startsWith("ATTACK")) {
             isAttacking = false;
-            resetToIdleOrWalk(); // Reset animation to idle or walk
+            resetToIdleOrWalk();
+        }
+
+        // Press 0 to switch to boss.png
+        if (Keyboard.isKeyDown(Key.ZERO) && !zeroKeyPressed) {
+            zeroKeyPressed = true;
+            switchToBossSprite();
+        }
+        if (Keyboard.isKeyUp(Key.ZERO)) {
+            zeroKeyPressed = false;
+
+        }
+
+        // Press 9 to switch back to Cat.png
+        if (Keyboard.isKeyDown(Key.NINE) && !nineKeyPressed) {
+            nineKeyPressed = true;
+            switchToCatSprite();
+        }
+        if (Keyboard.isKeyUp(Key.NINE)) {
+            nineKeyPressed = false;
+
         }
     }
 
     private void resetToIdleOrWalk() {
         if (Keyboard.isKeyDown(Key.RIGHT)) {
-            this.setCurrentAnimationName("WALK_RIGHT");
+            setCurrentAnimationName("WALK_RIGHT");
         } else if (Keyboard.isKeyDown(Key.LEFT)) {
-            this.setCurrentAnimationName("WALK_LEFT");
+            setCurrentAnimationName("WALK_LEFT");
         } else {
-            this.setCurrentAnimationName("STAND_RIGHT");
+            setCurrentAnimationName("STAND_RIGHT");
         }
     }
 
-    @Override
-    public void draw(GraphicsHandler graphicsHandler) {
-        super.draw(graphicsHandler);
+    public void switchToBossSprite() {
+        this.spriteSheet = new SpriteSheet(ImageLoader.load("boss.png"), 24, 24);
+        this.animations = loadAnimations(this.spriteSheet);
+        setCurrentAnimationName("STAND_RIGHT");
+    }
+
+    public void switchToCatSprite() {
+        this.spriteSheet = new SpriteSheet(ImageLoader.load("Cat.png"), 24, 24);
+        this.animations = loadAnimations(this.spriteSheet);
+        setCurrentAnimationName("STAND_RIGHT");
     }
 
     @Override
@@ -174,19 +240,19 @@ public class Cat extends Player {
             });
 
             put("ATTACK_RIGHT", new Frame[]{
-                new FrameBuilder(spriteSheet.getSprite(2, 0), 30) // Slower attack frame 1
+                new FrameBuilder(spriteSheet.getSprite(2, 0), 30)
                     .withScale(3)
                     .withBounds(6, 12, 12, 7)
                     .build(),
-                new FrameBuilder(spriteSheet.getSprite(2, 1), 30) // Slower attack frame 2
+                new FrameBuilder(spriteSheet.getSprite(2, 1), 30)
                     .withScale(3)
                     .withBounds(6, 12, 12, 7)
                     .build(),
-                new FrameBuilder(spriteSheet.getSprite(2, 2), 30) // Slower attack frame 3
+                new FrameBuilder(spriteSheet.getSprite(2, 2), 30)
                     .withScale(3)
                     .withBounds(6, 12, 12, 7)
                     .build(),
-                new FrameBuilder(spriteSheet.getSprite(2, 3), 30) // Slower attack frame 4
+                new FrameBuilder(spriteSheet.getSprite(2, 3), 30)
                     .withScale(3)
                     .withBounds(6, 12, 12, 7)
                     .build()
@@ -221,5 +287,4 @@ public class Cat extends Player {
     protected void setPosition(int i, float y) {
         throw new UnsupportedOperationException("Unimplemented method 'setPosition'");
     }
-    
 }

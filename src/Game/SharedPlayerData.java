@@ -1,6 +1,7 @@
 package Game;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 // Class to persist player data across levels
@@ -13,6 +14,7 @@ public class SharedPlayerData {
     private int coins; // Add coins
     private List<String> inventory;
     private boolean hasSword; // Track whether the sword is picked up
+    private HashMap<String, Boolean> flags = new HashMap<>(); // To store flags like spell purchase status
 
     // Private constructor for singleton pattern
     private SharedPlayerData() {
@@ -81,6 +83,23 @@ public class SharedPlayerData {
         this.hasSword = hasSword;
     }
 
+    // Methods for managing flags
+
+    // Set a flag with a key and value
+    public void setFlag(String key, boolean value) {
+        flags.put(key, value);
+    }
+
+    // Get a flag value; if the flag is not set, return the default value
+    public boolean getFlag(String key, boolean defaultValue) {
+        return flags.getOrDefault(key, defaultValue);
+    }
+
+    // Optional: Clear all flags (if needed in certain scenarios)
+    public void clearFlags() {
+        flags.clear();
+    }
+
     public void reset() {
         this.experience = 0;
         this.health = 100;
@@ -88,5 +107,41 @@ public class SharedPlayerData {
         this.coins = 0; // Reset coins
         this.inventory.clear();
         this.hasSword = false; // Reset sword
+        this.flags.clear(); // Reset flags
     }
+
+    private boolean hasPurchasedSpells = false;
+
+public boolean HasPurchasedSpells() {
+    return hasPurchasedSpells;
+}
+
+public void setHasPurchasedSpells(boolean hasPurchasedSpells) {
+    this.hasPurchasedSpells = hasPurchasedSpells;
+}
+
+
+private boolean isSwordEquipped = false; // Tracks if the sword is equipped
+
+public boolean isSwordEquipped() {
+    return isSwordEquipped;
+}
+
+public void setSwordEquipped(boolean isSwordEquipped) {
+    this.isSwordEquipped = isSwordEquipped;
+}
+
+
+
+
+    public void syncWithSharedPlayerData() {
+        SharedPlayerData sharedData = SharedPlayerData.getInstance();
+        this.hasPurchasedSpells = sharedData.getFlag("hasPurchasedSpells", false);
+        System.out.println("Player synced with SharedPlayerData: hasPurchasedSpells = " + this.hasPurchasedSpells);
+        isSwordEquipped = false; // Reset sword equip state
+        System.out.println("Player synced: Inventory = " + inventory);
+    }
+
+
+    
 }

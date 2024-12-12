@@ -218,6 +218,12 @@ public class NewWorldScreen extends Screen {
             player.addCoins(data.getCoins()); // Restore coins
             if (data.hasSword()) {
                 ((Cat) player).pickUpSword(); // Restore sword
+                
+            }
+            if (Cat.isBossModeSelected()) {
+                ((Cat) player).switchToBossSprite();
+            } else {
+                ((Cat) player).switchToCatSprite();
             }
         }
     }
