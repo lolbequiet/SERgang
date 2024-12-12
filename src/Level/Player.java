@@ -26,6 +26,7 @@ import GameObject.Rectangle;
 import GameObject.SpriteSheet;
 import Screens.DeathScreen;
 import Utils.Direction;
+import Level.Map;
 import Utils.Point;
 import java.awt.Font;
 import java.io.File;
@@ -37,6 +38,7 @@ import java.awt.Toolkit;
 public abstract class Player extends GameObject {
     // values that affect player movement
     // these should be set in a subclass
+    
     protected float walkSpeed = 2.3f;
     protected float originalWalkSpeed = walkSpeed;
     protected float sprintSpeed = walkSpeed * 2.3f;
@@ -67,6 +69,8 @@ public abstract class Player extends GameObject {
     protected Direction lastMovementDirection;
     protected boolean isLocked = false; // Locking state
 
+    protected SpriteSheet spriteSheet;
+
     // define keys
     protected KeyLocker keyLocker = new KeyLocker();
     protected Key MOVE_LEFT_KEY = Key.LEFT;
@@ -90,6 +94,7 @@ public abstract class Player extends GameObject {
 
     public Player(SpriteSheet spriteSheet, float x, float y, String startingAnimationName) {
         super(spriteSheet, x, y, startingAnimationName);
+        this.spriteSheet = spriteSheet; // Store the passed-in sprite sheet
         facingDirection = Direction.RIGHT;
         playerState = PlayerState.STANDING;
         previousPlayerState = playerState;

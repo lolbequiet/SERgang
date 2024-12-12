@@ -8,21 +8,38 @@ import Engine.Keyboard;
 import GameObject.Frame;
 import GameObject.ImageEffect;
 import GameObject.SpriteSheet;
+import GameObject.Rectangle;
+import GameObject.SpriteSheet;
+import Screens.DeathScreen;
+import Level.Camera;
+import Utils.Direction;
+import Level.Map;
+import Utils.Point;
+import java.awt.Font;
+import java.io.File;
+import java.io.IOException;
 import Level.Player;
 
 import java.util.HashMap;
 
 public class Cat extends Player {
-    private boolean swordPickedUp = false;  // Track if the sword has been picked up
-    private boolean swordEquipped = false;  // Track if the sword is currently equipped
-    private final int BASE_DAMAGE = 10;     // Default damage
-    private final int SWORD_DAMAGE_BOOST = 10;  // Additional damage when sword equipped
-    private boolean eKeyPressed = false;  // To prevent multiple E key detections
-    private boolean isAttacking = false;  // Track if the attack animation is playing
+    private boolean swordPickedUp = false;     // Track if the sword has been picked up
+    private boolean swordEquipped = false;     // Track if the sword is currently equipped
+    private final int BASE_DAMAGE = 10;        // Default damage
+    private final int SWORD_DAMAGE_BOOST = 10; // Additional damage when sword equipped
+    private boolean eKeyPressed = false;       // To prevent multiple E key detections
+    private boolean isAttacking = false;       // Track if the attack animation is playing
+
+    // Keys to switch sprites
+    private boolean zeroKeyPressed = false;    // Track pressing '0'
+    private boolean nineKeyPressed = false;    // Track pressing '9'
 
     public Cat(float x, float y) {
         super(new SpriteSheet(ImageLoader.load("Cat.png"), 24, 24), x, y, "STAND_RIGHT");
         walkSpeed = 2.3f;
+        // Load initial animations
+        this.animations = loadAnimations(this.spriteSheet);
+        setCurrentAnimationName("STAND_RIGHT");
     }
 
     // Equip the sword to increase damage
@@ -80,32 +97,59 @@ public class Cat extends Player {
         if (Keyboard.isKeyDown(Key.SPACE) && !isAttacking) {
             isAttacking = true;
             if (getCurrentAnimationName().contains("LEFT")) {
-                this.setCurrentAnimationName("ATTACK_LEFT"); // Attack facing left
+                setCurrentAnimationName("ATTACK_LEFT"); // Attack facing left
             } else {
-                this.setCurrentAnimationName("ATTACK_RIGHT"); // Attack facing right
+                setCurrentAnimationName("ATTACK_RIGHT"); // Attack facing right
             }
         }
 
         // Reset to idle or walking animation after attack animation finishes
-        if (isAttacking && !this.getCurrentAnimationName().startsWith("ATTACK")) {
+        if (isAttacking && !getCurrentAnimationName().startsWith("ATTACK")) {
             isAttacking = false;
-            resetToIdleOrWalk(); // Reset animation to idle or walk
+            resetToIdleOrWalk();
+        }
+
+        // Press '0' to switch to boss.png
+        if (Keyboard.isKeyDown(Key.ZERO) && !zeroKeyPressed) {
+            zeroKeyPressed = true;
+            switchToBossSprite();
+        }
+        if (Keyboard.isKeyUp(Key.ZERO)) {
+            zeroKeyPressed = false;
+        }
+
+        // Press '9' to switch back to Cat.png
+        if (Keyboard.isKeyDown(Key.NINE) && !nineKeyPressed) {
+            nineKeyPressed = true;
+            switchToCatSprite();
+        }
+        if (Keyboard.isKeyUp(Key.NINE)) {
+            nineKeyPressed = false;
         }
     }
 
     private void resetToIdleOrWalk() {
         if (Keyboard.isKeyDown(Key.RIGHT)) {
-            this.setCurrentAnimationName("WALK_RIGHT");
+            setCurrentAnimationName("WALK_RIGHT");
         } else if (Keyboard.isKeyDown(Key.LEFT)) {
-            this.setCurrentAnimationName("WALK_LEFT");
+            setCurrentAnimationName("WALK_LEFT");
         } else {
-            this.setCurrentAnimationName("STAND_RIGHT");
+            setCurrentAnimationName("STAND_RIGHT");
         }
     }
 
-    @Override
-    public void draw(GraphicsHandler graphicsHandler) {
-        super.draw(graphicsHandler);
+    // Switch to boss sprite
+    private void switchToBossSprite() {
+        this.spriteSheet = new SpriteSheet(ImageLoader.load("boss.png"), 24, 24);
+        this.animations = loadAnimations(this.spriteSheet);
+        setCurrentAnimationName("STAND_RIGHT");
+    }
+
+    // Switch back to cat sprite
+    private void switchToCatSprite() {
+        this.spriteSheet = new SpriteSheet(ImageLoader.load("Cat.png"), 24, 24);
+        this.animations = loadAnimations(this.spriteSheet);
+        setCurrentAnimationName("STAND_RIGHT");
     }
 
     @Override
@@ -174,19 +218,19 @@ public class Cat extends Player {
             });
 
             put("ATTACK_RIGHT", new Frame[]{
-                new FrameBuilder(spriteSheet.getSprite(2, 0), 30) // Slower attack frame 1
+                new FrameBuilder(spriteSheet.getSprite(2, 0), 30)
                     .withScale(3)
                     .withBounds(6, 12, 12, 7)
                     .build(),
-                new FrameBuilder(spriteSheet.getSprite(2, 1), 30) // Slower attack frame 2
+                new FrameBuilder(spriteSheet.getSprite(2, 1), 30)
                     .withScale(3)
                     .withBounds(6, 12, 12, 7)
                     .build(),
-                new FrameBuilder(spriteSheet.getSprite(2, 2), 30) // Slower attack frame 3
+                new FrameBuilder(spriteSheet.getSprite(2, 2), 30)
                     .withScale(3)
                     .withBounds(6, 12, 12, 7)
                     .build(),
-                new FrameBuilder(spriteSheet.getSprite(2, 3), 30) // Slower attack frame 4
+                new FrameBuilder(spriteSheet.getSprite(2, 3), 30)
                     .withScale(3)
                     .withBounds(6, 12, 12, 7)
                     .build()
@@ -221,5 +265,4 @@ public class Cat extends Player {
     protected void setPosition(int i, float y) {
         throw new UnsupportedOperationException("Unimplemented method 'setPosition'");
     }
-    
 }
