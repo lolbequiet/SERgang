@@ -171,6 +171,25 @@ public class NewWorldScreen extends Screen {
             "Coins: " + player.getCoins(),
             screenWidth - 120, 20, new Font("Montserrat", Font.BOLD, 18), Color.YELLOW
         );
+        int buttonWidth = 60;
+        int buttonHeight = 30;
+        graphicsHandler.drawFilledRectangle(40, 300, buttonWidth, buttonHeight, Color.RED);
+
+
+        graphicsHandler.drawRectangle(40, 300, buttonWidth, buttonHeight, Color.BLACK);
+
+        graphicsHandler.drawString("Inventory", 43, 320, new Font("Montserrat", Font.PLAIN, 12), Color.WHITE);
+        
+        //Quest Button
+        Font questFont = new Font("Montserrat", Font.BOLD, 12);
+
+        graphicsHandler.drawFilledRectangle(1400, 300, buttonWidth, buttonHeight, Color.BLUE); // Draw rectangle
+        graphicsHandler.drawRectangle(1400, 300, buttonWidth, buttonHeight, Color.BLACK); // Draw border
+        
+        // Approximate center: Adjust offsets as necessary
+        int textX = 1393 + buttonWidth / 4; 
+        int textY = 300 + buttonHeight / 2 + 4; 
+        graphicsHandler.drawString("Quest", textX, textY, questFont, Color.WHITE); // Draw text
     }
 
     private void savePlayerData() {

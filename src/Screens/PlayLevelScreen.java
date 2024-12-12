@@ -70,15 +70,15 @@ public class PlayLevelScreen extends Screen {
         flagManager.addFlag("hasTalkedToWalrus");
         flagManager.addFlag("hasFoundBall");
         flagManager.addFlag("WalrusMobDefeated", false);
-        flagManager.addFlag("ReturnBackToEarth", false); // New quest flag
-        flagManager.addFlag("Quest1_TalkToSeb", false);
-flagManager.addFlag("Quest2_SaveGarden", false);
-flagManager.addFlag("Quest3_ReturnToSeb", false);
-flagManager.addFlag("Quest4_TalkToChief", false);
-flagManager.addFlag("Quest5_CollectGear", false);
-flagManager.addFlag("Quest6_EnterOverworld", false);
-flagManager.addFlag("Quest7_TrainAndFight", false);
-flagManager.addFlag("Quest8_DefeatNemesis", false);
+flagManager.addFlag("collectgear", false);
+flagManager.addFlag("talktochief", false);
+flagManager.addFlag("hasTalkedToDinosaur", false);
+flagManager.addFlag("talktochief", false);
+flagManager.addFlag("hasEnteredPortal", false); // New flag for portal interaction
+flagManager.addFlag("", false);
+flagManager.addFlag("", false);
+flagManager.addFlag("", false);
+flagManager.addFlag("", false);
 
 
 
@@ -197,21 +197,27 @@ flagManager.addFlag("Quest8_DefeatNemesis", false);
     }
 
 
-    private void handlePortalInteraction() {
-        Point portalLoc = portal.getLocation();
-        Point playerLoc = player.getLocation();
-        double distance = Math.sqrt(Math.pow(portalLoc.x - playerLoc.x, 2) + Math.pow(portalLoc.y - playerLoc.y, 2));
-    
-        if (distance < 75) {
-            if (Keyboard.isKeyDown(Key.ENTER) && !keyLocker.isKeyLocked(Key.ENTER)) {
-                savePlayerData(); // Save data before transitioning
-                screenCoordinator.setGameStatePersist(GameState.OVERWORLD);
-                keyLocker.lockKey(Key.ENTER);
-            } else if (Keyboard.isKeyUp(Key.ENTER)) {
-                keyLocker.unlockKey(Key.ENTER);
+        private void handlePortalInteraction() {
+            Point portalLoc = portal.getLocation();
+            Point playerLoc = player.getLocation();
+            double distance = Math.sqrt(Math.pow(portalLoc.x - playerLoc.x, 2) + Math.pow(portalLoc.y - playerLoc.y, 2));
+
+            if (distance < 75) {
+                if (Keyboard.isKeyDown(Key.ENTER) && !keyLocker.isKeyLocked(Key.ENTER)) {
+                    // Set the "hasEnteredPortal" flag to true
+                    if (!map.getFlagManager().isFlagSet("hasEnteredPortal")) {
+                        map.getFlagManager().setFlag("hasEnteredPortal", true);
+                        System.out.println("Flag Set: Player has entered the portal.");
+                    }
+
+                    savePlayerData(); // Save data before transitioning
+                    screenCoordinator.setGameStatePersist(GameState.OVERWORLD); // Change game state
+                    keyLocker.lockKey(Key.ENTER);
+                } else if (Keyboard.isKeyUp(Key.ENTER)) {
+                    keyLocker.unlockKey(Key.ENTER);
+                }
             }
         }
-    }
     
 
     
@@ -355,48 +361,49 @@ flagManager.addFlag("Quest8_DefeatNemesis", false);
                 }
 
                 if (showRectangle) {
-                    // Draw the quest UI panel
+                    // Draw a red rectangle in the middle of the screen
+                    int rectWidth = 200;
+                    int rectHeight = 100;
+                    int x = (screenWidth - rectWidth) / 2;
+                    int y = (screenHeight - rectHeight) / 2;
                     graphicsHandler.drawString("Active Quests", 1200, 390, new Font("Arial", Font.BOLD, 20), Color.WHITE);
-                    graphicsHandler.drawFilledRectangle(1200, 400, 250, 280, new Color(0, 0, 0, 150)); // Adjusted height for more quests
-                    graphicsHandler.drawRectangle(1200, 400, 252, 282, Color.WHITE);
-                    graphicsHandler.drawString("Press Q to open/close Quests", 1200, 690, new Font("Arial", Font.PLAIN, 14), Color.WHITE);
-                
-                    // Define quests and their corresponding flags
-                    String[] quests = {
-                        "Talk to Seb", // Quest 1
-                        "Defeat 5 Mobs", // Quest 2
-                        "Return to Seb", // Quest 3
-                        "Talk to Chief", // Quest 4
-                        "Collect Gear", // Quest 5
-                        "Enter Overworld", // Quest 6
-                        "Train and Fight", // Quest 7
-                        "Defeat Nemesis" // Quest 8
-                    };
-                
-                    String[] questFlags = {
-                        "Quest1_TalkToSeb",
-                        "Quest2_SaveGarden",
-                        "Quest3_ReturnToSeb",
-                        "Quest4_TalkToChief",
-                        "Quest5_CollectGear",
-                        "Quest6_EnterOverworld",
-                        "Quest7_TrainAndFight",
-                        "Quest8_DefeatNemesis"
-                    };
-                
-                    // Dynamically render each quest
-                    for (int i = 0; i < quests.length; i++) {
-                        boolean isCompleted = flagManager.isFlagSet(questFlags[i]);
-                        graphicsHandler.drawString(
-                            quests[i],
-                            1210,
-                            430 + (i * 30), // Position each quest with 30px vertical spacing
-                            new Font("Montserrat", isCompleted ? Font.PLAIN : Font.BOLD, 18),
-                            isCompleted ? Color.GRAY : Color.WHITE
-                        );
+                    graphicsHandler.drawFilledRectangle(1200, 400, 250, 200, new Color(0, 0, 0, 150));
+                    graphicsHandler.drawRectangle(1200, 400, 252, 202, Color.WHITE);
+                    graphicsHandler.drawString("Press Q to open/close Quests", 1200, 620, new Font("Arial", Font.PLAIN, 14), Color.WHITE);
+                    
+                    // Active Quests
+
+                    if (!flagManager.isFlagSet("hasTalkedToWalrus")) {
+                        graphicsHandler.drawString("Talk To Seb", 1210, 430, new Font("Montserrat", Font.BOLD, 18), Color.WHITE);
+                    } else {
+                        graphicsHandler.drawString("Talk To Seb", 1210, 430, new Font("Montserrat", Font.PLAIN, 18), Color.GRAY);
                     }
+
+                    if (!flagManager.isFlagSet("WalrusMobDefeated")) {
+                        graphicsHandler.drawString("Defeat 5 Mobs", 1210, 460, new Font("Montserrat", Font.BOLD, 18), Color.WHITE);
+                    } else {
+                        graphicsHandler.drawString("Defeat 5 Mobs", 1210, 460, new Font("Montserrat", Font.PLAIN, 18), Color.GRAY);
+                    }
+
+                    if (!flagManager.isFlagSet("hasTalkedToDinosaur")) {
+                        graphicsHandler.drawString("Talk to Chief", 1210, 490, new Font("Montserrat", Font.BOLD, 18), Color.WHITE);
+                    } else {
+                        graphicsHandler.drawString("Talk to Chief", 1210, 490, new Font("Montserrat", Font.PLAIN, 18), Color.GRAY);
+                    }
+
+                    if (!flagManager.isFlagSet("collectgear")) {
+                        graphicsHandler.drawString("Collect Gear", 1210, 520, new Font("Montserrat", Font.BOLD, 18), Color.WHITE);
+                    } else {
+                        graphicsHandler.drawString("Collect Gear", 1210, 520, new Font("Montserrat", Font.PLAIN, 18), Color.GRAY);
+                    }
+
+                    // Display "Enter Portal" quest
+                    if (!flagManager.isFlagSet("hasEnteredPortal")) {
+                            graphicsHandler.drawString("Enter Portal", 1210, 550, new Font("Montserrat", Font.BOLD, 18), Color.WHITE);
+                        } else {
+                            graphicsHandler.drawString("Enter Portal", 1210, 550, new Font("Montserrat", Font.PLAIN, 18), Color.GRAY);
+                        }
                 }
-                
                 
             break;
 
