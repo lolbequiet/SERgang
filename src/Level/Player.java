@@ -9,6 +9,7 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.swing.event.SwingPropertyChangeSupport;
 
 import Engine.GraphicsHandler;
 import Engine.ImageLoader;
@@ -508,11 +509,19 @@ lastY = getLocation().y;
 
     public void addCoins(int amount) {
         coins += amount;
-        System.out.println("test");
+        System.out.println("coins added " + getCoins());
     }
 
     public int getCoins() {
         return coins;
+    }
+
+    public void subtractCoins(int amount) {
+        if (coins >= amount){
+            coins -= amount;
+        } else {
+            System.out.println("testing for the subtractcoins method in the player");
+        }
     }
 
     public void resetCoins() {

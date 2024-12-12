@@ -57,8 +57,13 @@ public class TestMap extends Map {
         // Add coins to the map
         CollectableCoin coin1 = new CollectableCoin(new Point(500, 500), 10);
         CollectableCoin coin2 = new CollectableCoin(new Point(800, 600), 10);
+        CollectableCoin coin3 = new CollectableCoin(new Point(1200, 300), 40);
+
         enhancedMapTiles.add(coin1);
         enhancedMapTiles.add(coin2);
+        enhancedMapTiles.add(coin3);
+
+        
 
         return enhancedMapTiles;
     }
@@ -92,6 +97,10 @@ public ArrayList<NPC> loadNPCs() {
     VillageChief villageChief = new VillageChief(8, getMapTile(8, 7).getLocation());
     villageChief.setInteractScript(new DinoScript());
     npcs.add(villageChief);
+
+    //adding the shopkeeper
+
+    
 
     // Add Soldiers (3 random spawn locations)
     for (int i = 0; i < 3; i++) {
@@ -168,6 +177,12 @@ public ArrayList<NPC> loadNPCs() {
         System.out.println("New amount: " + playerWallet);
     }
 
+    @Override
+    protected void updateBands() {
+
+        playerWallet = player.getCoins();
+
+    }
     public boolean cashinOut(int total) {
         if (playerWallet >= total) {
             playerWallet -= total;
@@ -178,4 +193,6 @@ public ArrayList<NPC> loadNPCs() {
             return false;
         }
     }
+
+    
 }

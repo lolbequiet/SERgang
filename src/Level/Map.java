@@ -550,6 +550,9 @@ public abstract class Map {
     }
 
     public void update(Player player) {
+        
+        updateBands();
+        
         if (adjustCamera) {
             adjustMovementY(player);
             adjustMovementX(player);
@@ -673,5 +676,9 @@ public abstract class Map {
 
     public void setPlayer(Player player) {
         this.player = player;
+    }
+
+    protected void updateBands () {
+
     }
 }

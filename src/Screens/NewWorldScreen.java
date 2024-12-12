@@ -204,7 +204,7 @@ public class NewWorldScreen extends Screen {
         }
     }
 
-    private void restorePlayerData() {
+    public void restorePlayerData() {
         SharedPlayerData data = SharedPlayerData.getInstance();
         player = new Cat(map.getPlayerStartPosition().x, map.getPlayerStartPosition().y);
         player.setMap(map);

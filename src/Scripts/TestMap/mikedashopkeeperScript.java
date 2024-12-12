@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import Engine.ScreenManager;
 import Level.Script;
+import Players.Cat;
 import Screens.ShopScreen;
 import ScriptActions.*;
 import Game.*;
@@ -45,10 +46,10 @@ public class mikedashopkeeperScript extends Script {
 
                 addScriptAction(new TextboxScriptAction() {{
                     addText("bet bet, slide");
+
                     addScriptAction(new ChangeFlagScriptAction("collectgear", true));
 
                 }});
-
                 
                 scriptActions.add(new UnlockPlayerScriptAction());
                 scriptActions.add(new ChangeFlagScriptAction("VIPaccess", true));
@@ -59,6 +60,18 @@ public class mikedashopkeeperScript extends Script {
                         System.out.println("going to shop");
                         // screenCoordinator.setGameState(GameState.SHOP);
                         // ScreenManager.getInstance().setCurrentScreen(new ShopScreen(player));
+
+                SharedPlayerData data = SharedPlayerData.getInstance();
+        if (player != null) {
+            data.setHealth(player.getHealth());
+            data.setExperience(player.getExperience());
+            data.setStamina(player.getStamina());
+            data.setCoins(player.getCoins()); // Save coins
+            data.setInventory(player.getInventory());
+            data.setHasSword(((Cat) player).hasSword()); 
+            // Save sword status
+        }
+
                         ScreenManager.getScreenCoordinator().setGameStatePersist(GameState.SHOP);
                     }
                 });
