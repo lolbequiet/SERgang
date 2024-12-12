@@ -18,6 +18,7 @@ import Engine.KeyLocker;
 import Engine.Keyboard;
 import Engine.ScreenManager;
 import Game.GameState;
+import Game.SharedPlayerData;
 import GameObject.Frame;
 import GameObject.GameObject;
 import GameObject.ImageEffect;
@@ -95,6 +96,8 @@ public abstract class Player extends GameObject {
         previousPlayerState = playerState;
         this.affectedByTriggers = true;
 
+        maxStamina = 200; // Set default max stamina
+    stamina = maxStamina; // Initialize stamina to max
         initializeWalkingSound(); // Initialize the walking sound
     }
 
@@ -144,10 +147,16 @@ public abstract class Player extends GameObject {
         return stamina;
     }
 
+    
+public int getDamage() {
+    return isSwordEquipped ? swordDamage : normalDamage;
+}
+
     // Add this method inside Player.java
-    public int getDamage() {
-        return 10; // Default player damage
-    }
+    //public int getDamage() {
+        //return 10; // Default player damage
+        
+    //}
 
     
 
@@ -234,6 +243,16 @@ public abstract class Player extends GameObject {
             lastAmountMovedX = super.moveXHandleCollision(moveAmountX);
         }
 
+        if (Keyboard.isKeyDown(Key.ONE) && !keyLocker.isKeyLocked(Key.ONE)) {
+            toggleSword(); // Toggle sword equip/de-equip
+            keyLocker.lockKey(Key.ONE);
+        }
+        
+        if (Keyboard.isKeyUp(Key.ONE)) {
+            keyLocker.unlockKey(Key.ONE);
+        }
+        
+
         // Manage walking sound
         manageWalkingSound();
 
@@ -275,30 +294,41 @@ if (deltaX != 0 || deltaY != 0) {
 boolean isStationary = shootDir.x == 0 && shootDir.y == 0;
 
 if (Keyboard.isKeyDown(Key.F) && !keyLocker.isKeyLocked(Key.F)) {
-    Projectile fire = new Projectile(getLocation().x, getLocation().y,
+    if (hasItem("Spells")) { // Check if "Spells" is in the inventory
+        Projectile fire = new Projectile(getLocation().x, getLocation().y,
             new Frame(ImageLoader.loadSubImage("Fireandicespells.png", 0, 0, 16, 16), ImageEffect.NONE, 3f, new Rectangle(0, 0, 16, 16)),
-            isStationary ? new Point(1, 0) : shootDir, 5f, 10f); // Default to right if stationary
+            isStationary ? new Point(1, 0) : shootDir, 5f, 10f);
 
-    fire.setMap(map);
-    map.projectiles.add(fire);
+        fire.setMap(map);
+        map.projectiles.add(fire);
 
-    keyLocker.lockKey(Key.F);
+        keyLocker.lockKey(Key.F);
+    } else {
+        System.out.println("You need to purchase spells from the shop first!");
+    }
 } else if (Keyboard.isKeyUp(Key.F)) {
     keyLocker.unlockKey(Key.F);
 }
 
 if (Keyboard.isKeyDown(Key.R) && !keyLocker.isKeyLocked(Key.R)) {
-    Projectile Ice = new Projectile(getLocation().x, getLocation().y,
+    if (hasItem("Spells")) { // Check if "Spells" is in the inventory
+        Projectile ice = new Projectile(getLocation().x, getLocation().y,
             new Frame(ImageLoader.loadSubImage("Fireandicespells.png", 34, 0, 16, 16), ImageEffect.NONE, 3f, new Rectangle(0, 0, 16, 16)),
-            isStationary ? new Point(1, 0) : shootDir, 5f, 12f); // Default to right if stationary
+            isStationary ? new Point(1, 0) : shootDir, 5f, 12f);
 
-    Ice.setMap(map);
-    map.projectiles.add(Ice);
+        ice.setMap(map);
+        map.projectiles.add(ice);
 
-    keyLocker.lockKey(Key.R);
+        keyLocker.lockKey(Key.R);
+    } else {
+        System.out.println("You need to purchase spells from the shop first!");
+    }
 } else if (Keyboard.isKeyUp(Key.R)) {
     keyLocker.unlockKey(Key.R);
 }
+
+
+
 
 // Update deltas for movement
 if (!Keyboard.isKeyDown(Key.RIGHT) && !Keyboard.isKeyDown(Key.LEFT) && !Keyboard.isKeyDown(Key.UP) && !Keyboard.isKeyDown(Key.DOWN)) {
@@ -313,6 +343,8 @@ lastY = getLocation().y;
 
 
 
+
+
         // Regenerate health over time
         regenerateHealth();
 
@@ -320,7 +352,31 @@ lastY = getLocation().y;
         handlePlayerAnimation();
         updateLockedKeys();
         super.update();
+
+        if (Keyboard.isKeyDown(Key.TWO)) { // Use Potion
+            if (this.useHealthPotion()) { // Use "this" to call the method on the current instance
+                System.out.println("Potion used successfully!");
+            } else {
+                System.out.println("Failed to use potion. No potions left.");
+            }
+        }
+
+        if (Keyboard.isKeyDown(Key.THREE) && !keyLocker.isKeyLocked(Key.THREE)) { // Use Sandwich
+            System.out.println("Key 3 pressed: Attempting to use sandwich.");
+            if (this.useSandwich()) { // Use "this" to call the method on the current instance
+                System.out.println("Sandwich used successfully!");
+            } else {
+                System.out.println("Failed to use sandwich. No sandwiches left or on cooldown.");
+            }
+            keyLocker.lockKey(Key.THREE);
+        } else if (Keyboard.isKeyUp(Key.THREE)) {
+            keyLocker.unlockKey(Key.THREE);
+        }
+        
+        
     }
+
+
 
     public Direction getCurrentWalkingXDirection() {
         return currentWalkingXDirection;
@@ -484,10 +540,12 @@ lastY = getLocation().y;
 
     public void attack(NPC npc) {
         if (npc != null) {
-            npc.takeDamage(20); // Player deals 20 damage
-            System.out.println("Attacked NPC, dealt 20 damage");
+            int damage = getDamage(); // Use the dynamic damage value
+            npc.takeDamage(damage);
+            System.out.println("Attacked NPC, dealt " + damage + " damage");
         }
     }
+    
 
     public String getInventorySlot(int slot) {
         if (slot >= 0 && slot < inventory.size()) {
@@ -606,7 +664,7 @@ public void setExperience(int experience) {
 
 // Setter for stamina
 public void setStamina(int stamina) {
-    this.stamina = Math.max(0, Math.min(stamina, 200)); // Ensure stamina is within valid bounds (0-200)
+    this.stamina = Math.max(0, Math.min(stamina, maxStamina)); // Ensure stamina is within valid bounds (0-200)
     System.out.println("Player stamina set to: " + this.stamina);
 }
 
@@ -646,6 +704,8 @@ public void setMaxStamina(int maxStamina) {
     this.maxStamina = maxStamina;
 }
 
+
+
 private int maxStamina;  // Maximum stamina
 
 
@@ -655,4 +715,185 @@ private int maxStamina;  // Maximum stamina
     public abstract boolean isInteracting();
 
     protected abstract void setPosition(int i, float y);
+
+
+
+    public void syncWithSharedPlayerData() {
+        SharedPlayerData sharedData = SharedPlayerData.getInstance();
+        this.hasPurchasedSpells = sharedData.getFlag("hasPurchasedSpells", false);
+        this.inventory = new ArrayList<>(sharedData.getInventory()); // Sync inventory
+        System.out.println("Player synced: Inventory = " + inventory + ", hasPurchasedSpells = " + this.hasPurchasedSpells);
+
+
+        if (Keyboard.isKeyDown(Key.F)) {
+            System.out.println("Checking flag in Player: hasPurchasedSpells = " +
+                SharedPlayerData.getInstance().getFlag("hasPurchasedSpells", false));
+            if (SharedPlayerData.getInstance().getFlag("hasPurchasedSpells", false)) {
+                // Allow spell usage
+            } else {
+                System.out.println("You need to purchase spells from the shop first!");
+            }
+        }
+    
+        
+    }
+    
+
+    private boolean hasPurchasedSpells = false;
+
+    public boolean hasPurchasedSpells() {
+        System.out.println("Checking hasPurchasedSpells: " + hasPurchasedSpells);
+        return hasPurchasedSpells;
+    }
+
+    
+    
+    public void purchaseSpells() {
+        this.hasPurchasedSpells = true;
+    }   
+
+    public void setHasPurchasedSpells(boolean hasPurchasedSpells) {
+        this.hasPurchasedSpells = hasPurchasedSpells;
+        System.out.println("Setting hasPurchasedSpells to: " + this.hasPurchasedSpells);
+    }
+
+    // Add a field to track the number of potions
+private int potionCount = 0;
+
+// Method to add a potion to the inventory
+public void addPotion() {
+    potionCount++;
 }
+
+// Method to get the potion count
+public int getPotionCount() {
+    return potionCount;
+}
+
+// Variables for potion cooldown
+private long lastPotionUseTime = 0; // Tracks the last time a potion was used
+private final long potionCooldown = 1000; // Cooldown in milliseconds (1 second)
+
+//health potion
+public boolean useHealthPotion() {
+    long currentTime = System.currentTimeMillis();
+    System.out.println("Attempting to use health potion. Current time: " + currentTime);
+
+    if (currentTime - lastPotionUseTime >= potionCooldown && getItemCount("Potion") > 0) {
+        setHealth(getMaxHealth()); // Restore health to max
+        removeItemFromInventory("Potion"); // Remove one potion from inventory
+        lastPotionUseTime = currentTime; // Update the last usage time
+        System.out.println("Potion used. Health fully restored. Remaining potions: " + getItemCount("Potion"));
+        return true;
+    } else if (getItemCount("Potion") <= 0) {
+        System.out.println("No potions left to use.");
+    } else {
+        System.out.println("Potion on cooldown. Please wait.");
+    }
+    return false;
+}
+
+
+
+    
+    
+    // Helper method to count specific items in the inventory
+    public int countItem(String item) {
+        int count = 0;
+        for (String i : inventory) {
+            if (i.equals(item)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    // Add a field to track the number of sandwiches
+private int sandwichCount = 0;
+
+// Method to add a sandwich to the inventory
+public void addSandwich() {
+    sandwichCount++;
+}
+
+// Method to get the sandwich count
+public int getSandwichCount() {
+    return sandwichCount;
+}
+
+// Get the count of a specific item in inventory
+public int getItemCount(String itemName) {
+    int count = 0;
+    for (String item : inventory) {
+        if (item.equals(itemName)) {
+            count++;
+        }
+    }
+    System.out.println("Inventory count for " + itemName + ": " + count);
+    return count;
+}
+
+
+// Remove an item from inventory
+public void removeItemFromInventory(String itemName) {
+    if (inventory.contains(itemName)) {
+        inventory.remove(itemName);
+        System.out.println(itemName + " removed from inventory.");
+    } else {
+        System.out.println(itemName + " not found in inventory.");
+    }
+}
+
+// Method to use a sandwich
+public boolean useSandwich() {
+    long currentTime = System.currentTimeMillis();
+    System.out.println("Attempting to use sandwich. Current time: " + currentTime);
+
+    if (currentTime - lastPotionUseTime >= potionCooldown && getItemCount("Sandwich") > 0) {
+        setStamina(getMaxStamina()); // Restore stamina to max
+        removeItemFromInventory("Sandwich"); // Remove one sandwich from inventory
+        lastPotionUseTime = currentTime; // Update the last usage time
+        System.out.println("Sandwich used. Stamina fully restored. Remaining sandwiches: " + getItemCount("Sandwich"));
+        return true;
+    } else if (getItemCount("Sandwich") <= 0) {
+        System.out.println("No sandwiches left to use.");
+    } else {
+        System.out.println("Sandwich on cooldown. Please wait.");
+    }
+    return false;
+}
+
+private boolean isSwordEquipped = false; // Tracks if the sword is equipped
+private int swordDamage = 25; // Damage dealt with the sword
+private int normalDamage = 10; // Damage dealt without the sword
+
+// Method to toggle sword equip/de-equip
+public void toggleSword() {
+    if (hasItem("Sword")) { // Check if the player owns the sword
+        isSwordEquipped = !isSwordEquipped; // Toggle the state
+        System.out.println("Sword " + (isSwordEquipped ? "equipped!" : "de-equipped!"));
+    } else {
+        System.out.println("You don't own a sword!");
+    }
+}
+
+
+// Override getDamage() to use sword damage if equipped\
+
+
+
+
+
+
+
+    
+    
+    
+    
+    
+}
+
+
+
+
+

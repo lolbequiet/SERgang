@@ -64,6 +64,7 @@ public class PlayLevelScreen extends Screen {
 
     }
     public void initialize() {
+        
         flagManager = new FlagManager();
 
 
@@ -118,6 +119,10 @@ public class PlayLevelScreen extends Screen {
 
         lastExpGainTime = System.currentTimeMillis();
         allMobsDefeated = false;  // Initially, mobs are not defeated
+
+        player.syncWithSharedPlayerData();
+        System.out.println("Player synced in TestMap/PlayLevelScreen. hasPurchasedSpells = " + player.hasPurchasedSpells());
+
     }
 
 
